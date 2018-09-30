@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+- node
+cache:
+  directories:
+  - node_modules
+before_deploy:
+  - now rm node-cd --token $NOW_TOKEN --yes || true
+deploy:
+- provider: script
+  script: deploy.sh
+  skip_cleanup: true
+  on:
+    master: true
