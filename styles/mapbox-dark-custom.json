@@ -52,7 +52,7 @@
         },
         "roadtiles": {
           "type": "vector",
-          "tiles": ["http://localhost:12345/tiles/roads/{z}/{x}/{y}.pbf"],
+          "tiles": ["https://ees-server.now.sh/tiles/roads/{z}/{x}/{y}.pbf"],
           "minzoom": 0,
           "maxzoom": 14
         }

@@ -1,1 +1,11 @@
-<!DOCTYPE html><html lang=en><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><link rel=icon href=/ees-ui/favicon.ico><title>ees-ui</title><link href=/ees-ui/js/about.07b90307.js rel=prefetch><link href=/ees-ui/css/app.01a69fce.css rel=preload as=style><link href=/ees-ui/js/app.bf03b251.js rel=preload as=script><link href=/ees-ui/js/chunk-vendors.19368321.js rel=preload as=script><link href=/ees-ui/css/app.01a69fce.css rel=stylesheet></head><body><noscript><strong>We're sorry but ees-ui doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id=app></div><script src=/ees-ui/js/chunk-vendors.19368321.js></script><script src=/ees-ui/js/app.bf03b251.js></script></body></html>
+<!DOCTYPE html><html lang=en><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><link rel=icon href=/ees-ui/favicon.ico><script src=https://api.mapbox.com/mapbox-gl-js/v0.35.1/mapbox-gl.js></script><link href=https://api.mapbox.com/mapbox-gl-js/v0.35.1/mapbox-gl.css rel=stylesheet><style>body { margin:0; padding:0; }
+      #map { position:absolute; top:0; bottom:0; width:100%; }</style><title>EES</title><link href=/ees-ui/js/about.07b90307.js rel=prefetch><link href=/ees-ui/css/app.01a69fce.css rel=preload as=style><link href=/ees-ui/js/app.bf03b251.js rel=preload as=script><link href=/ees-ui/js/chunk-vendors.19368321.js rel=preload as=script><link href=/ees-ui/css/app.01a69fce.css rel=stylesheet></head><body><noscript><strong>We're sorry but ees-ui doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id=map></div><script>mapboxgl.accessToken = "pk.eyJ1IjoiZGhpeHNpbmdoIiwiYSI6ImNqbWx4OTR0ZzBkMWUzb255and1aTUweGkifQ.U0vPiwyfM4ad7axC_4dkHg";
+      var map = new mapboxgl.Map({
+          container: "map",
+          style: "/ees-ui/styles/mapbox-dark-custom.json",
+          center: [144.218571, -37.064600], // Castlemaine VIC
+          minZoom: 0,
+          zoom: 10,
+          maxZoom: 14
+      });
+      map.addControl(new mapboxgl.NavigationControl());</script><script src=/ees-ui/js/chunk-vendors.19368321.js></script><script src=/ees-ui/js/app.bf03b251.js></script></body></html>
