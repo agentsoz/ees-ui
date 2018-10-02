@@ -14,6 +14,7 @@
       show: true,
       position: 'top-left'
     }"
+    @map-load="onMapLoad"
   >
   </mapbox>
 </template>
@@ -21,23 +22,66 @@
 <script>
 import Mapbox from "mapbox-gl-vue";
 
-var baseUrl = process.env.NODE_ENV === "production" ? "/ees-ui/" : "../../"
 var opts = {
-  style: baseUrl + "/styles/mapbox-dark-custom.json",
+  style: "mapbox://styles/mapbox/dark-v9",
   center: [144.218571, -37.0646], // Castlemaine VIC
   minZoom: 0,
   zoom: 10,
   maxZoom: 14
 };
 
+function onLoad(map) {
+  map.addSource("roadtiles", {
+    type: "vector",
+    tiles: ["https://ees-server.now.sh/tiles/roads/{z}/{x}/{y}.pbf"],
+    minzoom: 0,
+    maxzoom: 14
+  });
+
+  var layers = map.getStyle().layers;
+  // Find the index of the first symbol layer in the map style
+  var firstSymbolId;
+  for (var i = 0; i < layers.length; i++) {
+    if (layers[i].type === "symbol") {
+      firstSymbolId = layers[i].id;
+      break;
+    }
+  }
+  map.addLayer(
+    {
+      id: "matsim-network",
+      type: "line",
+      source: "roadtiles",
+      "source-layer": "mount_alexander_shire_networkP",
+      minzoom: 0,
+      maxzoom: 22,
+      paint: {
+        "line-color": "#7777ff",
+        "line-width": 0.5
+      }
+    },
+    // This is the important part of this example: the addLayer
+    // method takes 2 arguments: the layer as an object, and a string
+    // representing another layer's name. if the other layer
+    // exists in the stylesheet already, the new layer will be positioned
+    // right before that layer in the stack, making it possible to put
+    // 'overlays' anywhere in the layer stack.
+    // Insert the layer beneath the first symbol layer.
+    firstSymbolId
+  );
+}
+
 export default {
   name: "home",
   components: {
     mapbox: Mapbox
   },
+  methods: {
+    onMapLoad: onLoad
+  },
   data: function() {
     return {
-      opts: opts
+      opts: opts,
     };
   }
 };
