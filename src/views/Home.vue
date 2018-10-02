@@ -30,7 +30,7 @@ var opts = {
   maxZoom: 14
 };
 
-function onLoad(map) {
+function onMapLoad(map) {
   map.addSource("roadtiles", {
     type: "vector",
     tiles: ["https://ees-server.now.sh/tiles/roads/{z}/{x}/{y}.pbf"],
@@ -47,6 +47,7 @@ function onLoad(map) {
       break;
     }
   }
+
   map.addLayer(
     {
       id: "matsim-network",
@@ -69,6 +70,23 @@ function onLoad(map) {
     // Insert the layer beneath the first symbol layer.
     firstSymbolId
   );
+  map.addLayer(
+    {
+      id: "fire-geojson",
+      type: "fill",
+      source: {
+        type: "geojson",
+        data:
+          "https://raw.githubusercontent.com/agentsoz/ees/master/scenarios/mount-alexander-shire/maldon-100-with-emergency-vehicles/scenario_fire.json"
+      },
+      layout: {},
+      paint: {
+        "fill-color": "#d00",
+        "fill-opacity": 0.2
+      }
+    },
+    firstSymbolId
+  );
 }
 
 export default {
@@ -77,11 +95,11 @@ export default {
     mapbox: Mapbox
   },
   methods: {
-    onMapLoad: onLoad
+    onMapLoad: onMapLoad
   },
   data: function() {
     return {
-      opts: opts,
+      opts: opts
     };
   }
 };
