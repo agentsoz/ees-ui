@@ -17,21 +17,7 @@
     <noscript>
       <strong>We're sorry but ees-ui doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
-    <div id="map"></div>
-    <script>
-      mapboxgl.accessToken = "pk.eyJ1IjoiZGhpeHNpbmdoIiwiYSI6ImNqbWx4OTR0ZzBkMWUzb255and1aTUweGkifQ.U0vPiwyfM4ad7axC_4dkHg";
-      var map = new mapboxgl.Map({
-          container: "map",
-          style: "<%= BASE_URL %>styles/mapbox-dark-custom.json",
-          center: [144.218571, -37.064600], // Castlemaine VIC
-          minZoom: 0,
-          zoom: 10,
-          maxZoom: 14
-      });
-      map.addControl(new mapboxgl.NavigationControl());
-    </script>
-
-    <!--<div id="app"></div>-->
+    <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
 </html>
