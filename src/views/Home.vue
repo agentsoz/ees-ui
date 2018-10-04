@@ -20,10 +20,11 @@
 </template>
 
 <script>
+import store from "../store";
 import Mapbox from "mapbox-gl-vue";
 
 var opts = {
-  style: "mapbox://styles/mapbox/dark-v9",
+  style: store.getters.mapboxStyle,
   center: [144.218571, -37.0646], // Castlemaine VIC
   minZoom: 0,
   zoom: 10,
