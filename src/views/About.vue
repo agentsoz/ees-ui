@@ -1,7 +1,7 @@
 <template>
   <div class="about">
-    <h1>Emergency Evacuation Simulator</h1>
-    <h5>&copy; 2016, 2017, 2018, RMIT University.</h5>
+    <h1>Emergency Evacuation Simulator<br/>Web User Interface</h1>
+    <h5>&copy; 2016&ndash;2018 RMIT University</h5>
     <div class="wrapper" id="logos">
       <b-img :src="rmit" fluid alt="RMIT University" />
       <b-img :src="telematics" fluid alt="Telematics Trust" />
