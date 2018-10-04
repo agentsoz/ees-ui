@@ -73,7 +73,7 @@ function onMapLoad(map) {
   map.addLayer(
     {
       id: "fire-geojson",
-      type: "fill",
+      type: "line",
       source: {
         type: "geojson",
         data:
@@ -81,8 +81,9 @@ function onMapLoad(map) {
       },
       layout: {},
       paint: {
-        "fill-color": "#d00",
-        "fill-opacity": 0.2
+        "line-color": "#f00",
+        "line-opacity": 0.4,
+        "line-width": 2.0
       }
     },
     firstSymbolId
