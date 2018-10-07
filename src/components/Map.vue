@@ -113,7 +113,7 @@ export default {
   text-align: left;
   top: 0;
   bottom: 0;
-  height: 500px;
+  height: 100%;
   width: 100%;
 }
 </style>

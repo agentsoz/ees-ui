@@ -1,7 +1,7 @@
 <template>
   <div>
-    <settings/>
     <maplayer/>
+    <settings/>
   </div>
 </template>
 
