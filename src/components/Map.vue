@@ -24,21 +24,14 @@ import store from "../store";
 import Mapbox from "mapbox-gl-vue";
 
 var opts = {
-  style: store.getters.mapboxStyle,
-  center: [144.218571, -37.0646], // Castlemaine VIC
+  style: "mapbox://styles/mapbox/" + store.getters.mapboxStyle + "-v9",
+  center: store.getters.mapCenter,
   minZoom: 0,
   zoom: 10,
   maxZoom: 14
 };
 
-function onMapLoad(map) {
-  map.addSource("roadtiles", {
-    type: "vector",
-    tiles: ["https://ees-server.now.sh/tiles/roads/{z}/{x}/{y}.pbf"],
-    minzoom: 0,
-    maxzoom: 14
-  });
-
+function addMATSimNetworkLayer(map, matsimLayer) {
   var layers = map.getStyle().layers;
   // Find the index of the first symbol layer in the map style
   var firstSymbolId;
@@ -54,7 +47,7 @@ function onMapLoad(map) {
       id: "matsim-network",
       type: "line",
       source: "roadtiles",
-      "source-layer": "mount_alexander_shire_networkP",
+      "source-layer": matsimLayer,
       minzoom: 0,
       maxzoom: 22,
       paint: {
@@ -71,14 +64,25 @@ function onMapLoad(map) {
     // Insert the layer beneath the first symbol layer.
     firstSymbolId
   );
+}
+
+function addFireLayer(map, url) {
+  var layers = map.getStyle().layers;
+  // Find the index of the first symbol layer in the map style
+  var firstSymbolId;
+  for (var i = 0; i < layers.length; i++) {
+    if (layers[i].type === "symbol") {
+      firstSymbolId = layers[i].id;
+      break;
+    }
+  }
   map.addLayer(
     {
       id: "fire-geojson",
       type: "line",
       source: {
         type: "geojson",
-        data:
-          "https://raw.githubusercontent.com/agentsoz/ees/master/scenarios/mount-alexander-shire/maldon-100-with-emergency-vehicles/scenario_fire.json"
+        data: url
       },
       layout: {},
       paint: {
@@ -91,13 +95,32 @@ function onMapLoad(map) {
   );
 }
 
+function onMapLoad(map) {
+  store.commit("setMap", map);
+  map.addSource("roadtiles", {
+    type: "vector",
+    tiles: ["https://ees-server.now.sh/tiles/roads/{z}/{x}/{y}.pbf"],
+    minzoom: 0,
+    maxzoom: 14
+  });
+  addMATSimNetworkLayer(map, store.getters.matsimNetworkLayer);
+  addFireLayer(map, store.getters.fireGeoJson);
+  map.on("styledata", function(/*event*/) {
+    if (store.getters.reloadOverlayLayersOnStyleData == true) {
+      store.commit("setReloadOverlayLayersOnStyleData", false);
+      addMATSimNetworkLayer(map, store.getters.matsimNetworkLayer);
+      addFireLayer(map, store.getters.fireGeoJson);
+    }
+  });
+}
+
 export default {
   name: "maplayer",
   components: {
     mapbox: Mapbox
   },
   methods: {
-    onMapLoad: onMapLoad
+    onMapLoad
   },
   data: function() {
     return {

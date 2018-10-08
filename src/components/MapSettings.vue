@@ -7,16 +7,15 @@
     </div>
     <div class='map-overlay' v-show="isOpen">
     <div class='map-settings-panel'>
-      <!-- <label for="mapboxStyle">Map style:</label>
-      <select v-model="selected">
-        <option disabled value="">Please select one</option>
-        <option>basic</option>
-        <option>bright</option>
-        <option>dark</option>
-        <option>light</option>
-        <option>satellite</option>
-        <option>streets</option>
-      </select> -->
+      <label for="map-style">Map style:</label>
+      <select id="map-style" v-model="mapboxStyle">
+        <option :disabled="mapboxStyle=='basic'" value="basic">basic</option>
+        <option :disabled="mapboxStyle=='bright'" value="bright">bright</option>
+        <option :disabled="mapboxStyle=='dark'" value="dark">dark</option>
+        <option :disabled="mapboxStyle=='light'" value="light">light</option>
+        <option :disabled="mapboxStyle=='satellite'" value="satellite">satellite</option>
+        <option :disabled="mapboxStyle=='streets'" value="streets">streets</option>
+      </select>
     </div>
     </div>
 </div>
@@ -30,6 +29,16 @@ export default {
     return {
       isOpen: this.$store.getters.mapSettingsIsOpen
     };
+  },
+  computed: {
+    mapboxStyle: {
+      get() {
+        return this.$store.getters.mapboxStyle;
+      },
+      set(value) {
+        this.$store.commit("setMapboxStyle", value);
+      }
+    }
   },
   methods: {
     toggle: function() {
