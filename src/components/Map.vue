@@ -14,7 +14,7 @@
       show: true,
       position: 'top-left'
     }"
-    @map-load="onMapLoad"
+    @map-load="loadLayers"
   >
   </mapbox>
 </template>
@@ -44,9 +44,9 @@ function addMATSimNetworkLayer(map, matsimLayer) {
 
   map.addLayer(
     {
-      id: "matsim-network",
+      id: matsimLayer,
       type: "line",
-      source: "roadtiles",
+      source: matsimLayer,
       "source-layer": matsimLayer,
       minzoom: 0,
       maxzoom: 22,
@@ -66,7 +66,7 @@ function addMATSimNetworkLayer(map, matsimLayer) {
   );
 }
 
-function addFireLayer(map, url) {
+function addFireLayer(map, name, url) {
   var layers = map.getStyle().layers;
   // Find the index of the first symbol layer in the map style
   var firstSymbolId;
@@ -78,7 +78,7 @@ function addFireLayer(map, url) {
   }
   map.addLayer(
     {
-      id: "fire-geojson",
+      id: name,
       type: "line",
       source: {
         type: "geojson",
@@ -95,21 +95,37 @@ function addFireLayer(map, url) {
   );
 }
 
-function onMapLoad(map) {
-  store.commit("setMap", map);
-  map.addSource("roadtiles", {
+function addMATSimNetworkSource(map, name, pbfurl) {
+  map.addSource(name, {
     type: "vector",
-    tiles: ["https://ees-server.now.sh/tiles/roads/{z}/{x}/{y}.pbf"],
+    tiles: [pbfurl],
     minzoom: 0,
     maxzoom: 14
   });
+}
+
+function loadLayers(map, tryRemove) {
+  store.commit("setMap", map);
+  // Remove the source+layer first when changing base map style
+  if (tryRemove == true) {
+    try {
+      map.removeLayer(store.getters.matsimNetworkLayer);
+      map.removeSource(store.getters.matsimNetworkLayer);
+    } catch (e) {
+      // ignore!
+    }
+  }
+  addMATSimNetworkSource(
+    map,
+    store.getters.matsimNetworkLayer,
+    "https://ees-server.now.sh/tiles/roads/{z}/{x}/{y}.pbf"
+  );
   addMATSimNetworkLayer(map, store.getters.matsimNetworkLayer);
-  addFireLayer(map, store.getters.fireGeoJson);
+  addFireLayer(map, "phoenix-layer", store.getters.fireGeoJson);
   map.on("styledata", function(/*event*/) {
     if (store.getters.reloadOverlayLayersOnStyleData == true) {
+      loadLayers(map, store.getters.reloadOverlayLayersOnStyleData);
       store.commit("setReloadOverlayLayersOnStyleData", false);
-      addMATSimNetworkLayer(map, store.getters.matsimNetworkLayer);
-      addFireLayer(map, store.getters.fireGeoJson);
     }
   });
 }
@@ -120,7 +136,7 @@ export default {
     mapbox: Mapbox
   },
   methods: {
-    onMapLoad
+    loadLayers
   },
   data: function() {
     return {

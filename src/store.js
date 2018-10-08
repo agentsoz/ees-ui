@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import Map from "@/components/Map";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -21,7 +20,8 @@ export default new Vuex.Store({
     mapSettingsIsOpen: state => state.mapSettingsIsOpen,
     matsimNetworkLayer: state => state.matsimNetworkLayer,
     fireGeoJson: state => state.fireGeoJson,
-    reloadOverlayLayersOnStyleData: state => state.reloadOverlayLayersOnStyleData
+    reloadOverlayLayersOnStyleData: state =>
+      state.reloadOverlayLayersOnStyleData
   },
 
   mutations: {
@@ -32,8 +32,6 @@ export default new Vuex.Store({
       state.mapboxStyle = newStyle;
       state.map.setStyle("mapbox://styles/mapbox/" + state.mapboxStyle + "-v9");
       state.reloadOverlayLayersOnStyleData = true;
-      //Map.methods.addMATSimNetworkLayer(state.map, state.matsimNetworkLayer);
-      //Map.methods.addFireLayer(state.map, state.fireGeoJson);
     },
     setMapSettingsIsOpen(state, newVal) {
       state.mapSettingsIsOpen = newVal;
