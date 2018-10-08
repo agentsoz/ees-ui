@@ -2,22 +2,21 @@
   <div class="map-settings-container">
     <div class='map-settings-button-container mapboxgl-ctrl-top-right'>
       <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
-        <button class="icon sprocket" type="button"></button>
+        <button class="icon sprocket" type="button" @click='toggle()'></button>
       </div>
     </div>
-    <div class='map-overlay'>
+    <div class='map-overlay' v-show="isOpen">
     <div class='map-settings-panel'>
-        <!--
-        <select v-model="selected">
-          <option disabled value="">Please select one</option>
-          <option>basic</option>
-          <option>bright</option>
-          <option>dark</option>
-          <option>light</option>
-          <option>satellite</option>
-          <option>streets</option>
-        </select>
-      -->
+      <!-- <label for="mapboxStyle">Map style:</label>
+      <select v-model="selected">
+        <option disabled value="">Please select one</option>
+        <option>basic</option>
+        <option>bright</option>
+        <option>dark</option>
+        <option>light</option>
+        <option>satellite</option>
+        <option>streets</option>
+      </select> -->
     </div>
     </div>
 </div>
@@ -26,7 +25,21 @@
 <script>
 export default {
   name: "mapSettings",
-  props: {}
+  props: {},
+  data: function() {
+    return {
+      isOpen: this.$store.getters.mapSettingsIsOpen
+    };
+  },
+  methods: {
+    toggle: function() {
+      this.isOpen = !this.isOpen;
+      this.$store.commit(
+        "setMapSettingsIsOpen",
+        !this.$store.getters.mapSettingsIsOpen
+      );
+    }
+  }
 };
 </script>
 

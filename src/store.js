@@ -6,18 +6,23 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     map: null,
-    mapboxStyle: "mapbox://styles/mapbox/dark-v9"
+    mapboxStyle: "mapbox://styles/mapbox/dark-v9",
+    mapSettingsIsOpen: false
   },
   getters: {
     map: state => state.map,
-    mapboxStyle: state => state.mapboxStyle
+    mapboxStyle: state => state.mapboxStyle,
+    mapSettingsIsOpen: state => state.mapSettingsIsOpen
   },
   mutations: {
-    setMap(newMap) {
-      this.map = newMap;
+    setMap(state, newMap) {
+      state.map = newMap;
     },
-    setStyle(newStyle) {
-      this.mapboxStyle = newStyle;
+    setStyle(state, newStyle) {
+      state.mapboxStyle = newStyle;
+    },
+    setMapSettingsIsOpen(state, newVal) {
+      state.mapSettingsIsOpen = newVal;
     }
   },
   actions: {}
