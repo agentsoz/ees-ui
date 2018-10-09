@@ -84,7 +84,7 @@ export default {
 
 
 <style>
-.v-select > .dropdown-menu {
+.map-settings-panel select {
   text-align: center;
 }
 
