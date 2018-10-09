@@ -47,7 +47,7 @@ export default new Vuex.Store({
         id: "Mount_Alexander_Shire",
         name: "Mount Alexander Shire",
         matsimNetworkTiles:
-          "https://ees-server.now.sh/tiles/roads/{z}/{x}/{y}.pbf",
+          "https://ees-server.now.sh/matsim-tiles/mount-alexander-shire/{z}/{x}/{y}.pbf",
         phoenixRuns: [
           {
             id: "20160420_MtAlexShire_FDI50_Iso",
@@ -64,6 +64,22 @@ export default new Vuex.Store({
               "Forest Fire Danger Index (FFDI) 75 with south west wind change; based on 11:00 point fire ignition and running until 18:00",
             geojson:
               "https://raw.githubusercontent.com/agentsoz/ees/72222359e6418bf491b8176ab47586dcbd551bc5/scenarios/mount-alexander-shire/app-data/maldon/20160420_MtAlexShire_FDI75_Iso.json"
+          }
+        ]
+      },
+      {
+        id: "Surf_Coast_Shire",
+        name: "Surf Coast Shire",
+        matsimNetworkTiles:
+          "https://ees-server.now.sh/matsim-tiles/surf-coast-shire/{z}/{x}/{y}.pbf",
+        phoenixRuns: [
+          {
+            id:
+              "Anglesea_evac_test_ffdi104_phx5_2016data_minsup_fh2017_grid_WSG84",
+            name: "Anglesea_FFDI104 PHX5 2016 MINSUP FH2017 GRID",
+            description: "12:00 point fire ignition",
+            geojson:
+              "https://raw.githubusercontent.com/agentsoz/ees/f25dd3427060180f08716c25198d5b6e0e530fd9/scenarios/surf-coast-shire/data/phoenix/Anglesea_evac_test_ffdi104_phx5_2016data_minsup_fh2017_grid_WSG84.json"
           }
         ]
       }

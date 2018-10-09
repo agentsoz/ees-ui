@@ -33,11 +33,13 @@ export default {
     return {
       isOpen: this.$store.getters.mapSettingsIsOpen,
       styles: this.$store.getters.map.styles,
-      regions: this.$store.getters.regions,
-      firesInSelectedRegion: this.$store.getters.firesInSelectedRegion
+      regions: this.$store.getters.regions
     };
   },
   computed: {
+    firesInSelectedRegion() {
+      return this.$store.getters.firesInSelectedRegion;
+    },
     mapboxStyle: {
       get() {
         return this.$store.getters.mapboxStyle;
@@ -65,7 +67,6 @@ export default {
           "phoenix-layer",
           this.$store.getters.selectedFireData.geojson
         );
-
       }
     }
   },
@@ -83,6 +84,10 @@ export default {
 
 
 <style>
+.v-select > .dropdown-menu {
+  text-align: center;
+}
+
 .map-settings-button-container {
   padding-top: 150px;
 }
@@ -105,17 +110,9 @@ export default {
   z-index: 100;
 }
 
-.map-overlay .map-overlay-inner {
-  background-color: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
 .map-overlay label {
   display: block;
-  margin: 0 0 10px;
+  margin: 10px 0 0 0;
 }
 
 .map-overlay input {
