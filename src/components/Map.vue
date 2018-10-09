@@ -66,7 +66,14 @@ function addMATSimNetworkLayer(map, matsimLayer) {
   );
 }
 
-function addFireLayer(map, name, url) {
+export function setFireLayer(map, name, url) {
+  // Set the data only if layer exists
+  var layer = map.getLayer(name);
+  if (typeof layer != "undefined") {
+    map.getSource(name).setData(url);
+    return;
+  }
+  // Else create the layer
   var layers = map.getStyle().layers;
   // Find the index of the first symbol layer in the map style
   var firstSymbolId;
@@ -105,7 +112,7 @@ function addMATSimNetworkSource(map, name, pbfurl) {
 }
 
 function loadLayers(map, tryRemove) {
-  store.commit("setMap", map);
+  store.commit("setMapInstance", map);
   // Remove the source+layer first when changing base map style
   if (tryRemove == true) {
     try {
@@ -121,7 +128,7 @@ function loadLayers(map, tryRemove) {
     "https://ees-server.now.sh/tiles/roads/{z}/{x}/{y}.pbf"
   );
   addMATSimNetworkLayer(map, store.getters.matsimNetworkLayer);
-  addFireLayer(map, "phoenix-layer", store.getters.fireGeoJson);
+  setFireLayer(map, "phoenix-layer", store.getters.selectedFireData.geojson);
   map.on("styledata", function(/*event*/) {
     if (store.getters.reloadOverlayLayersOnStyleData == true) {
       loadLayers(map, store.getters.reloadOverlayLayersOnStyleData);
@@ -136,7 +143,8 @@ export default {
     mapbox: Mapbox
   },
   methods: {
-    loadLayers
+    loadLayers,
+    setFireLayer
   },
   data: function() {
     return {

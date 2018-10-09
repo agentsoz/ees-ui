@@ -9,12 +9,15 @@
     <div class='map-settings-panel'>
       <label for="map-style">Map style:</label>
       <select id="map-style" v-model="mapboxStyle">
-        <option :disabled="mapboxStyle=='basic'" value="basic">basic</option>
-        <option :disabled="mapboxStyle=='bright'" value="bright">bright</option>
-        <option :disabled="mapboxStyle=='dark'" value="dark">dark</option>
-        <option :disabled="mapboxStyle=='light'" value="light">light</option>
-        <option :disabled="mapboxStyle=='satellite'" value="satellite">satellite</option>
-        <option :disabled="mapboxStyle=='streets'" value="streets">streets</option>
+        <option v-for="style in styles" :key="style.id" :value="style.id" :disabled="mapboxStyle==style.id">{{ style.name }}</option>
+      </select>
+      <label for="map-region">Region:</label>
+      <select id="map-region" v-model="selectedRegion">
+        <option v-for="region in regions" :key="region.id" :value="region.id" :disabled="selectedRegion==region.id">{{ region.name }}</option>
+      </select>
+      <label for="map-fire">Phoenix Fire:</label>
+      <select id="map-fire" v-model="selectedFire">
+        <option v-for="fire in firesInSelectedRegion" :key="fire.id" :value="fire.id" :disabled="selectedFire==fire.id">{{ fire.name }}</option>
       </select>
     </div>
     </div>
@@ -22,12 +25,16 @@
 </template>
 
 <script>
+import Map from "@/components/Map";
 export default {
   name: "mapSettings",
   props: {},
   data: function() {
     return {
-      isOpen: this.$store.getters.mapSettingsIsOpen
+      isOpen: this.$store.getters.mapSettingsIsOpen,
+      styles: this.$store.getters.map.styles,
+      regions: this.$store.getters.regions,
+      firesInSelectedRegion: this.$store.getters.firesInSelectedRegion
     };
   },
   computed: {
@@ -37,6 +44,28 @@ export default {
       },
       set(value) {
         this.$store.commit("setMapboxStyle", value);
+      }
+    },
+    selectedRegion: {
+      get() {
+        return this.$store.getters.selectedRegion;
+      },
+      set(value) {
+        this.$store.commit("setSelectedRegion", value);
+      }
+    },
+    selectedFire: {
+      get() {
+        return this.$store.getters.selectedFire;
+      },
+      set(value) {
+        this.$store.commit("setSelectedFire", value);
+        Map.methods.setFireLayer(
+          this.$store.getters.map.instance,
+          "phoenix-layer",
+          this.$store.getters.selectedFireData.geojson
+        );
+
       }
     }
   },
