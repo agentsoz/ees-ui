@@ -47,9 +47,9 @@ export default {
       }
     },
     firesInSelectedRegion() {
-      return !this.$store.getters.firesInSelectedRegion ?
-        [] :
-        this.$store.getters.firesInSelectedRegion;
+      return !this.$store.getters.firesInSelectedRegion
+        ? []
+        : this.$store.getters.firesInSelectedRegion;
     },
     mapboxStyle: {
       get() {
@@ -61,9 +61,9 @@ export default {
     },
     selectedRegion: {
       get() {
-        return !this.$store.getters.selectedRegion ?
-          "no-region" :
-          this.$store.getters.selectedRegion;
+        return !this.$store.getters.selectedRegion
+          ? "no-region"
+          : this.$store.getters.selectedRegion;
       },
       set(value) {
         this.toggle();
@@ -93,7 +93,10 @@ export default {
   },
   methods: {
     toggle: function() {
-      this.$store.commit("setMapSettingsIsOpen", !this.$store.getters.mapSettingsIsOpen);
+      this.$store.commit(
+        "setMapSettingsIsOpen",
+        !this.$store.getters.mapSettingsIsOpen
+      );
     }
   }
 };

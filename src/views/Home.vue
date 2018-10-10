@@ -17,5 +17,6 @@ export default {
   },
   methods: {
     toggleSettings: MapSettings.methods.toggle
-  }};
+  }
+};
 </script>
