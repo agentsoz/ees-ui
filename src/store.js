@@ -7,14 +7,14 @@ export default new Vuex.Store({
     mapboxStyle: "dark",
     mapCenter: [144.068722, -36.997609], // Maldon VIC
     mapSettingsIsOpen: false,
-    selectedRegion: "Mount_Alexander_Shire",
+    selectedRegion: null,
     selectedFire: "20160420_MtAlexShire_FDI50_Iso",
     reloadOverlayLayersOnStyleData: false,
-    matsimNetworkLayer: "mount_alexander_shire_networkP",
     fireGeoJson:
       "https://raw.githubusercontent.com/agentsoz/ees/master/scenarios/mount-alexander-shire/maldon-100-with-emergency-vehicles/scenario_fire.json",
     map: {
       instance: null,
+      center: [144.968447, -37.818232], // Federeation Square Melbourne
       styles: [
         {
           id: "basic",
@@ -46,6 +46,8 @@ export default new Vuex.Store({
       {
         id: "Mount_Alexander_Shire",
         name: "Mount Alexander Shire",
+        center: [144.212304, -37.064737], // Castlemaine VIC
+        matsimNetworkLayer: "mount_alexander_shire_networkP",
         matsimNetworkTiles:
           "https://ees-server.now.sh/matsim-tiles/mount-alexander-shire/{z}/{x}/{y}.pbf",
         phoenixRuns: [
@@ -70,6 +72,8 @@ export default new Vuex.Store({
       {
         id: "Surf_Coast_Shire",
         name: "Surf Coast Shire",
+        center: [144.326271, -38.332386], // Torquay Esplanade
+        matsimNetworkLayer: "???",
         matsimNetworkTiles:
           "https://ees-server.now.sh/matsim-tiles/surf-coast-shire/{z}/{x}/{y}.pbf",
         phoenixRuns: [
@@ -102,11 +106,17 @@ export default new Vuex.Store({
       return state.regions.find(region => region.id === regionId);
     },
     firesInSelectedRegion: (state, getters) => {
+      if (!state.selectedRegion) {
+        return null;
+      }
       var regionX = getters.region(state.selectedRegion);
       return regionX.phoenixRuns;
     },
     selectedFireData: (state, getters) => {
       var fires = getters.firesInSelectedRegion;
+      if (!fires) {
+        return null;
+      }
       var fire = fires.find(obj => obj.id === state.selectedFire);
       return fire;
     }

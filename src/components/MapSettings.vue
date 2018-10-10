@@ -1,5 +1,5 @@
 <template>
-  <div class="map-settings-container">
+  <div class="map-settings-container" v-on:keydown.esc="toggle()">
     <div class='map-settings-button-container mapboxgl-ctrl-top-right'>
       <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
         <button class="icon sprocket" type="button" @click='toggle()'></button>
@@ -13,10 +13,12 @@
       </select>
       <label for="map-region">Region:</label>
       <select id="map-region" v-model="selectedRegion">
+        <option value="no-region" disabled></option>
         <option v-for="region in regions" :key="region.id" :value="region.id" :disabled="selectedRegion==region.id">{{ region.name }}</option>
       </select>
       <label for="map-fire">Phoenix Fire:</label>
       <select id="map-fire" v-model="selectedFire">
+        <option value="no-fire" disabled></option>
         <option v-for="fire in firesInSelectedRegion" :key="fire.id" :value="fire.id" :disabled="selectedFire==fire.id">{{ fire.name }}</option>
       </select>
     </div>
@@ -38,7 +40,9 @@ export default {
   },
   computed: {
     firesInSelectedRegion() {
-      return this.$store.getters.firesInSelectedRegion;
+      return !this.$store.getters.firesInSelectedRegion ?
+        [] :
+        this.$store.getters.firesInSelectedRegion;
     },
     mapboxStyle: {
       get() {
@@ -50,10 +54,17 @@ export default {
     },
     selectedRegion: {
       get() {
-        return this.$store.getters.selectedRegion;
+        return !this.$store.getters.selectedRegion ?
+          "no-region" :
+          this.$store.getters.selectedRegion;
       },
       set(value) {
         this.$store.commit("setSelectedRegion", value);
+        Map.methods.flyTo(
+          this.$store.getters.map.instance,
+          this.$store.getters.region(this.$store.getters.selectedRegion).center
+        );
+        Map.methods.loadLayers(this.$store.getters.map.instance, true);
       }
     },
     selectedFire: {
@@ -62,10 +73,11 @@ export default {
       },
       set(value) {
         this.$store.commit("setSelectedFire", value);
+        var fireData = this.$store.getters.selectedFireData;
         Map.methods.setFireLayer(
           this.$store.getters.map.instance,
           "phoenix-layer",
-          this.$store.getters.selectedFireData.geojson
+          !fireData ? "" : fireData.geojson
         );
       }
     }
@@ -98,13 +110,13 @@ export default {
 .map-overlay {
   font: bold 12px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
   position: absolute;
-  width: 60%;
+  width: 40%;
   top: 10%;
-  right: 20%;
-  height: 80%;
+  right: 30%;
+  height: auto;
   overflow: auto;
   background-color: rgba(255, 255, 255, 0.7);
-  padding: 10px;
+  padding: 0 0 20px 0;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
   z-index: 100;

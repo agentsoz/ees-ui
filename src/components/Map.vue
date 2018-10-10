@@ -25,9 +25,9 @@ import Mapbox from "mapbox-gl-vue";
 
 var opts = {
   style: "mapbox://styles/mapbox/" + store.getters.mapboxStyle + "-v9",
-  center: store.getters.mapCenter,
+  center: store.getters.map.center,
   minZoom: 0,
-  zoom: 10,
+  zoom: 6,
   maxZoom: 14
 };
 
@@ -64,6 +64,27 @@ function addMATSimNetworkLayer(map, matsimLayer) {
     // Insert the layer beneath the first symbol layer.
     firstSymbolId
   );
+}
+
+export function flyTo(map, target) {
+  map.flyTo({
+      // These options control the ending camera position: centered at
+      // the target, at given zoom level, and north up.
+      center: target,
+      zoom: 8,
+      bearing: 0,
+      // These options control the flight curve, making it move
+      // slowly and zoom out almost completely before starting
+      // to pan.
+      speed: 0.5, // make the flying slow
+      curve: 1, // change the speed at which it zooms out
+
+      // This can be any easing function: it takes a number between
+      // 0 and 1 and returns another number between 0 and 1.
+      easing: function (t) {
+          return t;
+      }
+  });
 }
 
 export function setFireLayer(map, name, url) {
@@ -113,22 +134,29 @@ function addMATSimNetworkSource(map, name, pbfurl) {
 
 function loadLayers(map, tryRemove) {
   store.commit("setMapInstance", map);
-  // Remove the source+layer first when changing base map style
-  if (tryRemove == true) {
-    try {
-      map.removeLayer(store.getters.matsimNetworkLayer);
-      map.removeSource(store.getters.matsimNetworkLayer);
-    } catch (e) {
-      // ignore!
+  var selectedRegion = store.getters.selectedRegion;
+  if (selectedRegion) {
+    var region = store.getters.region(selectedRegion);
+    // Remove the source+layer first when changing base map style
+    if (tryRemove == true) {
+      try {
+        map.removeLayer(region.matsimNetworkLayer);
+        map.removeSource(region.matsimNetworkLayer);
+      } catch (e) {
+        // ignore!
+      }
     }
+    addMATSimNetworkSource(
+      map,
+      region.matsimNetworkLayer,
+      "https://ees-server.now.sh/tiles/roads/{z}/{x}/{y}.pbf"
+    );
+    addMATSimNetworkLayer(map, region.matsimNetworkLayer);
   }
-  addMATSimNetworkSource(
-    map,
-    store.getters.matsimNetworkLayer,
-    "https://ees-server.now.sh/tiles/roads/{z}/{x}/{y}.pbf"
-  );
-  addMATSimNetworkLayer(map, store.getters.matsimNetworkLayer);
-  setFireLayer(map, "phoenix-layer", store.getters.selectedFireData.geojson);
+  var selectedFire = store.getters.selectedFireData;
+  if (selectedFire) {
+    setFireLayer(map, "phoenix-layer", selectedFire.geojson);
+  }
   map.on("styledata", function(/*event*/) {
     if (store.getters.reloadOverlayLayersOnStyleData == true) {
       loadLayers(map, store.getters.reloadOverlayLayersOnStyleData);
@@ -144,7 +172,8 @@ export default {
   },
   methods: {
     loadLayers,
-    setFireLayer
+    setFireLayer,
+    flyTo
   },
   data: function() {
     return {
