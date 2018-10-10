@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-on:keydown.esc.capture="toggleSettings()">
     <maplayer/>
     <settings/>
   </div>
@@ -14,6 +14,8 @@ export default {
   components: {
     maplayer: MapComponent,
     settings: MapSettings
-  }
-};
+  },
+  methods: {
+    toggleSettings: MapSettings.methods.toggle
+  }};
 </script>

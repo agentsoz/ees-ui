@@ -1,12 +1,12 @@
 <template>
-  <div class="map-settings-container" v-on:keydown.esc="toggle()">
+  <div class="map-settings-container" v-on:keydown.esc.capture="toggle()">
     <div class='map-settings-button-container mapboxgl-ctrl-top-right'>
       <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
-        <button class="icon sprocket" type="button" @click='toggle()'></button>
+        <button class="icon sprocket" type="button" v-on:keydown.esc="toggle()" @click='toggle()'></button>
       </div>
     </div>
     <div class='map-overlay' v-show="isOpen">
-    <div class='map-settings-panel'>
+    <div class='map-settings-panel' v-on:keydown.esc.capture="toggle()">
       <label for="map-style">Map style:</label>
       <select id="map-style" v-model="mapboxStyle">
         <option v-for="style in styles" :key="style.id" :value="style.id" :disabled="mapboxStyle==style.id">{{ style.name }}</option>
@@ -33,12 +33,19 @@ export default {
   props: {},
   data: function() {
     return {
-      isOpen: this.$store.getters.mapSettingsIsOpen,
       styles: this.$store.getters.map.styles,
       regions: this.$store.getters.regions
     };
   },
   computed: {
+    isOpen: {
+      get() {
+        return this.$store.getters.mapSettingsIsOpen;
+      },
+      set(value) {
+        this.$store.commit("mapSettingsIsOpen", value);
+      }
+    },
     firesInSelectedRegion() {
       return !this.$store.getters.firesInSelectedRegion ?
         [] :
@@ -86,8 +93,7 @@ export default {
   },
   methods: {
     toggle: function() {
-      this.isOpen = !this.isOpen;
-      this.$store.commit("setMapSettingsIsOpen", this.isOpen);
+      this.$store.commit("setMapSettingsIsOpen", !this.$store.getters.mapSettingsIsOpen);
     }
   }
 };
