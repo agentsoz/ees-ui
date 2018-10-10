@@ -59,6 +59,7 @@ export default {
           this.$store.getters.selectedRegion;
       },
       set(value) {
+        this.toggle();
         this.$store.commit("setSelectedRegion", value);
         Map.methods.flyTo(
           this.$store.getters.map.instance,
@@ -72,6 +73,7 @@ export default {
         return this.$store.getters.selectedFire;
       },
       set(value) {
+        this.toggle();
         this.$store.commit("setSelectedFire", value);
         var fireData = this.$store.getters.selectedFireData;
         Map.methods.setFireLayer(
@@ -85,10 +87,7 @@ export default {
   methods: {
     toggle: function() {
       this.isOpen = !this.isOpen;
-      this.$store.commit(
-        "setMapSettingsIsOpen",
-        !this.$store.getters.mapSettingsIsOpen
-      );
+      this.$store.commit("setMapSettingsIsOpen", this.isOpen);
     }
   }
 };

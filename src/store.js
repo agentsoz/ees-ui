@@ -8,7 +8,7 @@ export default new Vuex.Store({
     mapCenter: [144.068722, -36.997609], // Maldon VIC
     mapSettingsIsOpen: false,
     selectedRegion: null,
-    selectedFire: "20160420_MtAlexShire_FDI50_Iso",
+    selectedFire: null,
     reloadOverlayLayersOnStyleData: false,
     fireGeoJson:
       "https://raw.githubusercontent.com/agentsoz/ees/master/scenarios/mount-alexander-shire/maldon-100-with-emergency-vehicles/scenario_fire.json",
