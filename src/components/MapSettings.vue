@@ -56,6 +56,7 @@ export default {
         return this.$store.getters.mapboxStyle;
       },
       set(value) {
+        this.toggle();
         this.$store.commit("setMapboxStyle", value);
       }
     },
