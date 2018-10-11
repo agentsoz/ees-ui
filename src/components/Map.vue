@@ -66,7 +66,7 @@ function addMATSimNetworkLayer(map, matsimLayer) {
   );
   map.addLayer(
     {
-      id: matsimLayer+"-highlighted",
+      id: matsimLayer + "-highlighted",
       type: "line",
       source: matsimLayer,
       "source-layer": matsimLayer,
@@ -76,10 +76,11 @@ function addMATSimNetworkLayer(map, matsimLayer) {
         "line-color": "#FF8C00",
         "line-width": 1.5
       },
-      "filter": ["in", "ID", ""]
+      filter: ["in", "ID", ""]
     },
     firstSymbolId
-  );}
+  );
+}
 
 export function flyTo(map, target) {
   map.flyTo({
@@ -156,7 +157,7 @@ function loadLayers(map, tryRemove) {
     if (tryRemove == true) {
       try {
         map.removeLayer(region.matsimNetworkLayer);
-        map.removeLayer(region.matsimNetworkLayer+"-higlighted");
+        map.removeLayer(region.matsimNetworkLayer + "-higlighted");
         map.removeSource(region.matsimNetworkLayer);
       } catch (e) {
         // ignore!
@@ -177,14 +178,15 @@ function loadLayers(map, tryRemove) {
       var features = map.queryRenderedFeatures(bbox, {
         layers: [region.matsimNetworkLayer]
       });
-      console.log("\nfeatures: %s",JSON.stringify(features));
       if (features) {
-        var filter = features.reduce(function(memo, feature) {
-                    memo.push(feature.properties.ID);
-                    return memo;
-                }, ['in', 'ID']);
-        console.log("\nfilter:%s",JSON.stringify(filter));
-        map.setFilter(region.matsimNetworkLayer+"-highlighted", filter);
+        var filter = features.reduce(
+          function(memo, feature) {
+            memo.push(feature.properties.ID);
+            return memo;
+          },
+          ["in", "ID"]
+        );
+        map.setFilter(region.matsimNetworkLayer + "-highlighted", filter);
       }
     });
   }
