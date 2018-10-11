@@ -22,6 +22,7 @@
 <script>
 import store from "../store";
 import Mapbox from "mapbox-gl-vue";
+import mapboxgl from "mapbox-gl";
 
 var opts = {
   style: "mapbox://styles/mapbox/" + store.getters.mapboxStyle + "-v9",
@@ -179,6 +180,13 @@ function loadLayers(map, tryRemove) {
         layers: [region.matsimNetworkLayer]
       });
       if (features) {
+        var coordinates = features[0].geometry.coordinates.slice()[0][0];
+        var id = features[0].properties.ID;
+        new mapboxgl.Popup()
+          .setLngLat(coordinates)
+          .setHTML("Link " + id)
+          .addTo(map);
+        //console.log("features:%s\n", JSON.stringify(features));
         var filter = features.reduce(
           function(memo, feature) {
             memo.push(feature.properties.ID);
