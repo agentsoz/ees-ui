@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.11",
+    "mapbox-gl": "^0.50.0-beta.1",
     "mapbox-gl-vue": "^1.9.0",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",
