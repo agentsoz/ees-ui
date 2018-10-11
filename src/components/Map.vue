@@ -64,7 +64,22 @@ function addMATSimNetworkLayer(map, matsimLayer) {
     // Insert the layer beneath the first symbol layer.
     firstSymbolId
   );
-}
+  map.addLayer(
+    {
+      id: matsimLayer+"-highlighted",
+      type: "line",
+      source: matsimLayer,
+      "source-layer": matsimLayer,
+      minzoom: 0,
+      maxzoom: 22,
+      paint: {
+        "line-color": "#FF8C00",
+        "line-width": 1.5
+      },
+      "filter": ["in", "ID", ""]
+    },
+    firstSymbolId
+  );}
 
 export function flyTo(map, target) {
   map.flyTo({
@@ -141,6 +156,7 @@ function loadLayers(map, tryRemove) {
     if (tryRemove == true) {
       try {
         map.removeLayer(region.matsimNetworkLayer);
+        map.removeLayer(region.matsimNetworkLayer+"-higlighted");
         map.removeSource(region.matsimNetworkLayer);
       } catch (e) {
         // ignore!
@@ -152,6 +168,25 @@ function loadLayers(map, tryRemove) {
       "https://ees-server.now.sh/tiles/roads/{z}/{x}/{y}.pbf"
     );
     addMATSimNetworkLayer(map, region.matsimNetworkLayer);
+    map.on("click", function(e) {
+      // set bbox as 5px reactangle area around clicked point
+      var bbox = [
+        [e.point.x - 5, e.point.y - 5],
+        [e.point.x + 5, e.point.y + 5]
+      ];
+      var features = map.queryRenderedFeatures(bbox, {
+        layers: [region.matsimNetworkLayer]
+      });
+      console.log("\nfeatures: %s",JSON.stringify(features));
+      if (features) {
+        var filter = features.reduce(function(memo, feature) {
+                    memo.push(feature.properties.ID);
+                    return memo;
+                }, ['in', 'ID']);
+        console.log("\nfilter:%s",JSON.stringify(filter));
+        map.setFilter(region.matsimNetworkLayer+"-highlighted", filter);
+      }
+    });
   }
   var selectedFire = store.getters.selectedFireData;
   if (selectedFire) {
