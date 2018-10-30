@@ -152,24 +152,25 @@ function addMATSimNetworkSource(map, name, pbfurl) {
 function loadLayers(map, tryRemove) {
   store.commit("setMapInstance", map);
   var selectedRegion = store.getters.selectedRegion;
+
   if (selectedRegion) {
     var region = store.getters.region(selectedRegion);
+
+    //var matsimNetworkLayer = "matsim_network_layer"; // generic name for easy removal - not working
+    var matsimNetworkLayer = region.matsimNetworkLayer;
+
     // Remove the source+layer first when changing base map style
     if (tryRemove == true) {
       try {
-        map.removeLayer(region.matsimNetworkLayer);
-        map.removeLayer(region.matsimNetworkLayer + "-higlighted");
-        map.removeSource(region.matsimNetworkLayer);
+        map.removeLayer(matsimNetworkLayer);
+        map.removeLayer(matsimNetworkLayer + "-higlighted");
+        map.removeSource(matsimNetworkLayer);
       } catch (e) {
         // ignore!
       }
     }
-    addMATSimNetworkSource(
-      map,
-      region.matsimNetworkLayer,
-      "https://ees-server.now.sh/tiles/roads/{z}/{x}/{y}.pbf"
-    );
-    addMATSimNetworkLayer(map, region.matsimNetworkLayer);
+    addMATSimNetworkSource(map, matsimNetworkLayer, region.matsimNetworkTiles);
+    addMATSimNetworkLayer(map, matsimNetworkLayer);
     map.on("click", function(e) {
       // set bbox as 5px reactangle area around clicked point
       var bbox = [
@@ -177,7 +178,7 @@ function loadLayers(map, tryRemove) {
         [e.point.x + 5, e.point.y + 5]
       ];
       var features = map.queryRenderedFeatures(bbox, {
-        layers: [region.matsimNetworkLayer]
+        layers: [matsimNetworkLayer]
       });
       if (features) {
         var coordinates = features[0].geometry.coordinates.slice()[0][0];
@@ -194,7 +195,7 @@ function loadLayers(map, tryRemove) {
           },
           ["in", "ID"]
         );
-        map.setFilter(region.matsimNetworkLayer + "-highlighted", filter);
+        map.setFilter(matsimNetworkLayer + "-highlighted", filter);
       }
     });
   }

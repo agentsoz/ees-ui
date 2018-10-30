@@ -73,7 +73,7 @@ export default new Vuex.Store({
         id: "Surf_Coast_Shire",
         name: "Surf Coast Shire",
         center: [144.326271, -38.332386], // Torquay Esplanade
-        matsimNetworkLayer: "???",
+        matsimNetworkLayer: "surf_coast_shire_networkP",
         matsimNetworkTiles:
           "https://ees-server.now.sh/matsim-tiles/surf-coast-shire/{z}/{x}/{y}.pbf",
         phoenixRuns: [
