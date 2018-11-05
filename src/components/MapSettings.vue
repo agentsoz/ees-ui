@@ -27,13 +27,12 @@
 </template>
 
 <script>
-import Map from "@/components/Map";
 export default {
   name: "mapSettings",
   props: {},
   data: function() {
     return {
-      styles: this.$store.getters.map.styles,
+      styles: this.$store.getters.styles,
       regions: this.$store.getters.regions
     };
   },
@@ -67,13 +66,12 @@ export default {
           : this.$store.getters.selectedRegion;
       },
       set(value) {
+        // close this settings window
         this.toggle();
+        // set the selected region in state
         this.$store.commit("setSelectedRegion", value);
-        Map.methods.flyTo(
-          this.$store.getters.map.instance,
-          this.$store.getters.region(this.$store.getters.selectedRegion).center
-        );
-        Map.methods.loadLayers(this.$store.getters.map.instance, true);
+        // load the relevant MATSim layers
+        this.$store.dispatch("loadMATSimRegion");
       }
     },
     selectedFire: {
@@ -84,11 +82,7 @@ export default {
         this.toggle();
         this.$store.commit("setSelectedFire", value);
         var fireData = this.$store.getters.selectedFireData;
-        Map.methods.setFireLayer(
-          this.$store.getters.map.instance,
-          "phoenix-layer",
-          !fireData ? "" : fireData.geojson
-        );
+        this.$store.dispatch("setFireLayer", !fireData ? "" : fireData.geojson);
       }
     }
   },
