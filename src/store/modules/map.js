@@ -1,10 +1,10 @@
 // Mapbox state
 // Used to store state of map, including layers etc
-import mapboxgl from "mapbox-gl";
 
 const state = {
   mapboxStyle: "dark",
   mapSettingsIsOpen: false,
+  baseMATSimLayer: null,
   loadedMATSimLayers: [],
   loadedMATSimSource: null,
   selectedRegion: null,
@@ -29,6 +29,7 @@ const getters = {
   mapboxStyle: state => state.mapboxStyle,
   mapCenter: state => state.mapCenter,
   mapSettingsIsOpen: state => state.mapSettingsIsOpen,
+  baseMATSimLayer: state => state.baseMATSimLayer,
   loadedMATSimLayers: state => state.loadedMATSimLayers,
   loadedMATSimSource: state => state.loadedMATSimSource,
   selectedRegion: state => state.selectedRegion,
@@ -68,6 +69,9 @@ const mutations = {
   setSelectedRegion(state, newVal) {
     state.selectedRegion = newVal;
   },
+  setBaseMATSimLayer(state, newVal) {
+    state.baseMATSimLayer = newVal;
+  },
   addMATSimLayer(state, layer) {
     state.loadedMATSimLayers.push(layer);
   },
@@ -75,6 +79,7 @@ const mutations = {
     state.loadedMATSimSource = newVal;
   },
   clearMATSimLayers(state) {
+    state.baseMATSimLayer = null;
     state.loadedMATSimLayers = [];
   },
   setSelectedFire(state, newVal) {
@@ -102,13 +107,13 @@ const actions = {
       }
     }
     commit("clearMATSimLayers");
-    console.log(map.getSource("statictest"));
+    //console.log(map.getSource("statictest"));
     if (getters.loadedMATSimSource) {
       map.removeSource("statictest");
       commit("loadedMATSimSource", null);
     }
   },
-  loadLayers({ dispatch, getters, rootGetters }) {
+  loadLayers({ dispatch, commit, getters, rootGetters }) {
     var map = getters.mapInstance;
     var region = rootGetters.region(getters.selectedRegion);
     var matsimNetworkLayer = region.matsimNetworkLayer;
@@ -117,34 +122,8 @@ const actions = {
       name: "statictest",
       pbfurl: region.matsimNetworkTiles
     });
+    commit("setBaseMATSimLayer", matsimNetworkLayer);
     dispatch("addMATSimNetworkLayer", matsimNetworkLayer);
-    getters.mapInstance.on("click", function(e) {
-      // set bbox as 5px reactangle area around clicked point
-      var bbox = [
-        [e.point.x - 5, e.point.y - 5],
-        [e.point.x + 5, e.point.y + 5]
-      ];
-      var features = map.queryRenderedFeatures(bbox, {
-        layers: [matsimNetworkLayer]
-      });
-      if (features) {
-        var coordinates = features[0].geometry.coordinates.slice()[0][0];
-        var id = features[0].properties.ID;
-        new mapboxgl.Popup()
-          .setLngLat(coordinates)
-          .setHTML("Link " + id)
-          .addTo(map);
-        //console.log("features:%s\n", JSON.stringify(features));
-        var filter = features.reduce(
-          function(memo, feature) {
-            memo.push(feature.properties.ID);
-            return memo;
-          },
-          ["in", "ID"]
-        );
-        map.setFilter(matsimNetworkLayer + "-highlighted", filter);
-      }
-    });
 
     var selectedFire = getters.selectedFireData;
     if (selectedFire) {
