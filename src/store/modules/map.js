@@ -114,7 +114,6 @@ const actions = {
     }
   },
   loadLayers({ dispatch, commit, getters, rootGetters }) {
-    var map = getters.mapInstance;
     var region = rootGetters.region(getters.selectedRegion);
     var matsimNetworkLayer = region.matsimNetworkLayer;
 

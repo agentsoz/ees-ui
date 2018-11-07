@@ -29,7 +29,12 @@ import { mapGetters } from "vuex";
 export default {
   name: "maplayer",
   computed: {
-    ...mapGetters(["mapInstance", "mapOpts", "mapboxAccessToken", "baseMATSimLayer"])
+    ...mapGetters([
+      "mapInstance",
+      "mapOpts",
+      "mapboxAccessToken",
+      "baseMATSimLayer"
+    ])
   },
   components: {
     mapbox: Mapbox
@@ -63,7 +68,10 @@ export default {
           },
           ["in", "ID"]
         );
-        this.mapInstance.setFilter(this.baseMATSimLayer + "-highlighted", filter);
+        this.mapInstance.setFilter(
+          this.baseMATSimLayer + "-highlighted",
+          filter
+        );
       }
     }
   }

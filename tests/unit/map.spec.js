@@ -1,12 +1,9 @@
 import { expect } from "chai";
 import map from "@/store/modules/map";
 
-describe("store", () => {
-  it("Remove all MATSim layers", () => {
-    const commit = (type, payload) => {
-      console.log(type);
-      console.log(payload);
-    };
+describe("VuexStore", () => {
+  it("Can remove all MATSim layers", () => {
+    const commit = () => {};
     const getters = {
       mapInstance: {},
       loadedMATSimLayers: [],
