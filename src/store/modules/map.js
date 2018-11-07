@@ -99,7 +99,6 @@ const actions = {
     var map = getters.mapInstance;
     var loadedMATSimLayers = getters.loadedMATSimLayers;
     for (const layer of loadedMATSimLayers) {
-      console.log(layer);
       try {
         map.removeLayer(layer);
       } catch (e) {

@@ -2,7 +2,8 @@
 //
 
 const state = {
-  mapboxAccessToken: "pk.eyJ1IjoiZGhpeHNpbmdoIiwiYSI6ImNqbWx4OTR0ZzBkMWUzb255and1aTUweGkifQ.U0vPiwyfM4ad7axC_4dkHg",
+  mapboxAccessToken:
+    "pk.eyJ1IjoiZGhpeHNpbmdoIiwiYSI6ImNqbWx4OTR0ZzBkMWUzb255and1aTUweGkifQ.U0vPiwyfM4ad7axC_4dkHg",
   styles: [
     {
       id: "basic",
@@ -36,7 +37,8 @@ const state = {
       center: [144.212304, -37.064737], // Castlemaine VIC
       matsimNetworkLayer: "mount_alexander_shire_networkP",
       matsimNetworkTiles:
-        process.env.VUE_APP_EES_TILES_API + "/matsim-tiles/mount-alexander-shire/{z}/{x}/{y}.pbf",
+        process.env.VUE_APP_EES_TILES_API +
+        "/matsim-tiles/mount-alexander-shire/{z}/{x}/{y}.pbf",
       phoenixRuns: [
         {
           id: "20160420_MtAlexShire_FDI50_Iso",
@@ -62,7 +64,8 @@ const state = {
       center: [144.326271, -38.332386], // Torquay Esplanade
       matsimNetworkLayer: "surf_coast_shire_networkP",
       matsimNetworkTiles:
-        process.env.VUE_APP_EES_TILES_API + "/matsim-tiles/surf-coast-shire/{z}/{x}/{y}.pbf",
+        process.env.VUE_APP_EES_TILES_API +
+        "/matsim-tiles/surf-coast-shire/{z}/{x}/{y}.pbf",
       phoenixRuns: [
         {
           id:
@@ -118,4 +121,4 @@ export default {
   getters,
   mutations,
   actions
-}
+};
