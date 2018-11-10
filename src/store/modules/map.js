@@ -185,6 +185,11 @@ const actions = {
       firstSymbolId
     );
   },
+  filterFire({ getters }, hour) {
+    var map = getters.mapInstance;
+    var filters = ["<=", "HOUR_BURNT", parseInt(hour)];
+    map.setFilter("phoenix-layer", filters);
+  },
   addMATSimNetworkSource({ commit, getters }, source) {
     getters.mapInstance.addSource(source.name, {
       type: "vector",

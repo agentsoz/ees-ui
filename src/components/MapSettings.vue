@@ -131,7 +131,6 @@ export default {
 }
 
 .map-overlay input {
-  background-color: transparent;
   display: inline-block;
   width: 100%;
   position: relative;
