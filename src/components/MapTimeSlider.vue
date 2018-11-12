@@ -1,9 +1,9 @@
 <template>
     <div class='map-overlay top'>
       <div class='map-overlay-inner'>
-        <h2>Significant earthquakes in 2015</h2>
+        <h2>Fire Progression</h2>
         <label id='month'></label>
-        <input :value="message" @input="updateFilter" type='range' min='0' max='11' step='1' />
+        <input :value="message" @input="updateFilter" type='range' min='0' max='540' step='10' />
       </div>
     </div>
 </template>

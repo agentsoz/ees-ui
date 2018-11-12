@@ -9,6 +9,7 @@ const state = {
   loadedMATSimSource: null,
   selectedRegion: null,
   selectedFire: null,
+  visibleFireLayer: null,
   reloadOverlayLayersOnStyleData: false,
   mapInstance: null, // MapboxGL object
   mapCenter: [144.968447, -37.818232] // Federeation Square Melbourne
@@ -34,6 +35,7 @@ const getters = {
   loadedMATSimSource: state => state.loadedMATSimSource,
   selectedRegion: state => state.selectedRegion,
   selectedFire: state => state.selectedFire,
+  visibleFireLayer: state => state.visibleFireLayer,
   reloadOverlayLayersOnStyleData: state => state.reloadOverlayLayersOnStyleData,
   firesInSelectedRegion: (state, getters, rootState, rootGetters) => {
     if (!state.selectedRegion) return null;
@@ -84,6 +86,9 @@ const mutations = {
   },
   setSelectedFire(state, newVal) {
     state.selectedFire = newVal;
+  },
+  setVisibleFireLayer(state, newVal) {
+    state.visibleFireLayer = newVal;
   }
 };
 
@@ -148,7 +153,7 @@ const actions = {
       }
     });
   },
-  setFireLayer({ getters }, url) {
+  setFireLayer({ dispatch, getters }, url) {
     var map = getters.mapInstance;
     var name = "phoenix-layer";
     // Set the data only if layer exists
@@ -167,28 +172,49 @@ const actions = {
         break;
       }
     }
-    map.addLayer(
-      {
-        id: name,
-        type: "line",
-        source: {
-          type: "geojson",
-          data: url
+    const maxVal = 9.99818 * 60; // minutes
+    map.addSource("phoenix", {
+      type: "geojson",
+      data: url
+    });
+
+    // 10 min intervals
+    for (i = 0; i < maxVal; i += 10) {
+      map.addLayer(
+        {
+          id: name + i.toString(),
+          type: "line",
+          source: "phoenix",
+          layout: {
+            visibility: "none"
+          },
+          paint: {
+            "line-color": "#f00",
+            "line-opacity": 0.4,
+            "line-width": 2.0
+          },
+          filter: ["all",
+            [">", "HOUR_BURNT", (i - 10)/ 60],
+            ["<=", "HOUR_BURNT", i / 60]
+          ]
         },
-        layout: {},
-        paint: {
-          "line-color": "#f00",
-          "line-opacity": 0.4,
-          "line-width": 2.0
-        }
-      },
-      firstSymbolId
-    );
+        firstSymbolId
+      );
+      console.log("Loaded fire layer " + name + i.toString());
+    }
+    console.log("Finished!");
+    for (i = 0; i < maxVal; i += 10)
+      map.setLayoutProperty(name + i.toString(), "visibility", "none");
+      
+    dispatch("filterFire", (i - 10).toString()); // load the final fire layer
   },
-  filterFire({ getters }, hour) {
+  filterFire({ getters, commit }, min) {
     var map = getters.mapInstance;
-    var filters = ["<=", "HOUR_BURNT", parseInt(hour)];
-    map.setFilter("phoenix-layer", filters);
+    console.log("phoenix-layer" + min);
+    map.setLayoutProperty("phoenix-layer" + min, "visibility", "visible");
+    //map.setLayoutProperty(getters.visibleFireLayer, "visibility", "none");
+
+    commit("setVisibleFireLayer", "phoenix-layer" + min);
   },
   addMATSimNetworkSource({ commit, getters }, source) {
     getters.mapInstance.addSource(source.name, {
