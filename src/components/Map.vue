@@ -22,6 +22,8 @@
 <script>
 import Mapbox from "mapbox-gl-vue";
 import mapboxgl from "mapbox-gl";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 
 import store from "../store";
 import { mapGetters } from "vuex";
@@ -42,7 +44,21 @@ export default {
   methods: {
     storeMapInstance(map) {
       map.on("click", this.mapOnClick); // inside the template not working
+      map.on("draw.create", this.squareCreated);
+      const draw = new MapboxDraw({
+        displayControlsDefault: false,
+        modes: Object.assign(
+          { draw_rectangle: DrawRectangle },
+          MapboxDraw.modes
+        )
+      });
+      map.addControl(draw);
+
       store.commit("setMapInstance", map);
+      store.commit("setDrawInstance", draw);
+    },
+    squareCreated(feature) {
+      console.log(feature);
     },
     mapOnClick(e) {
       // set bbox as 5px reactangle area around clicked point
@@ -53,7 +69,7 @@ export default {
       var features = this.mapInstance.queryRenderedFeatures(bbox, {
         layers: [this.baseMATSimLayer]
       });
-      if (features) {
+      if (typeof features != "undefined" && features.length !== 0) {
         var coordinates = features[0].geometry.coordinates.slice()[0][0];
         var id = features[0].properties.ID;
         new mapboxgl.Popup()
