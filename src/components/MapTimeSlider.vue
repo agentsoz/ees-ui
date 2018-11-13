@@ -1,18 +1,24 @@
 <template>
-    <div class='map-overlay top'>
-      <div class='map-overlay-inner'>
-        <h2>Fire Progression</h2>
-        <label id='fire-step'></label>
-        <input :value="visibleFireStep" @input="updateFilter" type='range' min='0' v-bind:max="totalFireLayers - 1" step='1' />
+    <div class='time-slider-overlay'>
+      <div class='time-slider-overlay-inner'>
+        <vue-slider ref="fireslider" id="custom-tootip" v-bind="sliderConfig" @callback="updateFilter">
+          <template slot="label" slot-scope="{ label, active }">
+            <span :class="['custom-label', { active }]" v-if="label % 6 === 0 || label === totalFireLayers - 1">
+              {{ "+" + Math.floor((label * 10) / 60).toString() + ":" + ((label * 10) % 60).toString().padStart(2, "0") }}
+            </span>
+          </template>
+        </vue-slider>
       </div>
     </div>
 </template>
 
 <script>
+import vueSlider from "vue-slider-component";
 import { mapGetters } from "vuex";
 
 export default {
   name: "mapSlider",
+  components: { vueSlider },
   props: {},
   data: function() {
     return {
@@ -21,11 +27,22 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["visibleFireStep", "totalFireLayers"])
+    ...mapGetters(["visibleFireStep", "totalFireLayers"]),
+    sliderConfig() {
+      return {
+        width: "98%",
+        show: true,
+        value: this.visibleFireStep,
+        min: 0,
+        max: this.totalFireLayers - 1,
+        piecewiseLabel: true,
+        tooltip: false
+      };
+    }
   },
   methods: {
-    updateFilter(e) {
-      this.$store.dispatch("filterFire", e.target.value);
+    updateFilter(val) {
+      this.$store.dispatch("filterFire", val);
     }
   }
 };
@@ -33,26 +50,52 @@ export default {
 
 
 <style>
-.map-overlay {
-  font: 12px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
+.time-slider-overlay {
   position: absolute;
-  width: 25%;
-  top: 0;
+  width: 88%;
+  bottom: 2.5%;
   right: 0;
-  padding: 10px;
+  height: auto;
+  overflow: auto;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+  z-index: 100;
 }
 
-.map-overlay .map-overlay-inner {
-  background-color: #fff;
+.time-slider-overlay .time-slider-overlay-inner {
+  background-color: rgba(255, 255, 255, 0.8);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   border-radius: 3px;
-  padding: 10px;
+  padding: 24px 15px 0 14px;
   margin-bottom: 10px;
+  overflow: hidden;
 }
-
-.map-overlay h2 {
-  line-height: 24px;
-  display: block;
-  margin: 0 0 10px;
+.time-slider-overlay-inner .vue-slider-component {
+  margin: 0 auto;
+}
+.custom-label {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  transform: translate(-50%, -4px);
+  margin-left: 3px;
+}
+.custom-label::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 5px);
+  width: 1px;
+  height: 5px;
+  background-color: #000;
+}
+.custom-label.active {
+  color: #2980b9;
+  font-weight: bold;
+}
+.custom-label.active::after {
+  background-color: #2980b9;
+  width: 2px;
 }
 </style>
