@@ -32,9 +32,9 @@ export default {
       return {
         width: "98%",
         show: true,
-        value: this.visibleFireStep,
+        value: this.visibleFireStep ? this.visibleFireStep : 0,
         min: 0,
-        max: this.totalFireLayers - 1,
+        max: this.totalFireLayers ? this.totalFireLayers - 1 : 0,
         piecewiseLabel: true,
         tooltip: false
       };
