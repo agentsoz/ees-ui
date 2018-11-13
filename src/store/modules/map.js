@@ -8,8 +8,11 @@ const state = {
   loadedMATSimLayers: [],
   loadedMATSimSource: null,
   selectedRegion: null,
+  fireStepMinutes: 10,
   selectedFire: null,
-  visibleFireLayer: null,
+  loadedFireLayers: [],
+  loadedFireSources: [],
+  visibleFireStep: null,
   reloadOverlayLayersOnStyleData: false,
   mapInstance: null, // MapboxGL object
   mapCenter: [144.968447, -37.818232] // Federeation Square Melbourne
@@ -34,8 +37,12 @@ const getters = {
   loadedMATSimLayers: state => state.loadedMATSimLayers,
   loadedMATSimSource: state => state.loadedMATSimSource,
   selectedRegion: state => state.selectedRegion,
+  fireStepMinutes: state => state.fireStepMinutes,
   selectedFire: state => state.selectedFire,
-  visibleFireLayer: state => state.visibleFireLayer,
+  loadedFireLayers: state => state.loadedFireLayers,
+  loadedFireSources: state => state.loadedFireSources,
+  totalFireLayers: state => state.loadedFireLayers.length,
+  visibleFireStep: state => state.visibleFireStep,
   reloadOverlayLayersOnStyleData: state => state.reloadOverlayLayersOnStyleData,
   firesInSelectedRegion: (state, getters, rootState, rootGetters) => {
     if (!state.selectedRegion) return null;
@@ -87,8 +94,18 @@ const mutations = {
   setSelectedFire(state, newVal) {
     state.selectedFire = newVal;
   },
-  setVisibleFireLayer(state, newVal) {
-    state.visibleFireLayer = newVal;
+  addFireLayer(state, layer) {
+    state.loadedFireLayers.push(layer);
+  },
+  addFireSource(state, source) {
+    state.loadedFireSources.push(source);
+  },
+  clearFire(state) {
+    state.loadedFireLayers = [];
+    state.loadedFireSources = [];
+  },
+  setVisibleFireStep(state, newVal) {
+    state.visibleFireStep = newVal;
   }
 };
 
@@ -130,7 +147,7 @@ const actions = {
 
     var selectedFire = getters.selectedFireData;
     if (selectedFire) {
-      dispatch("setFireLayer", selectedFire.geojson);
+      dispatch("fetchFire", selectedFire.geojson);
     }
   },
   flyTo({ getters }, target) {
@@ -153,16 +170,9 @@ const actions = {
       }
     });
   },
-  setFireLayer({ dispatch, getters }, url) {
+  fetchFire({ dispatch, getters }, url) {
+    // determine where the fire will sit in the layer stack
     var map = getters.mapInstance;
-    var name = "phoenix-layer";
-    // Set the data only if layer exists
-    var layer = map.getLayer(name);
-    if (typeof layer != "undefined") {
-      map.getSource(name).setData(url);
-      return;
-    }
-    // Else create the layer
     var layers = map.getStyle().layers;
     // Find the index of the first symbol layer in the map style
     var firstSymbolId;
@@ -172,49 +182,96 @@ const actions = {
         break;
       }
     }
-    const maxVal = 9.99818 * 60; // minutes
-    map.addSource("phoenix", {
-      type: "geojson",
-      data: url
-    });
 
-    // 10 min intervals
-    for (i = 0; i < maxVal; i += 10) {
-      map.addLayer(
-        {
-          id: name + i.toString(),
-          type: "line",
-          source: "phoenix",
-          layout: {
-            visibility: "none"
-          },
-          paint: {
-            "line-color": "#f00",
-            "line-opacity": 0.4,
-            "line-width": 2.0
-          },
-          filter: ["all",
-            [">", "HOUR_BURNT", (i - 10)/ 60],
-            ["<=", "HOUR_BURNT", i / 60]
-          ]
-        },
-        firstSymbolId
-      );
-      console.log("Loaded fire layer " + name + i.toString());
-    }
-    console.log("Finished!");
-    for (i = 0; i < maxVal; i += 10)
-      map.setLayoutProperty(name + i.toString(), "visibility", "none");
-      
-    dispatch("filterFire", (i - 10).toString()); // load the final fire layer
+    // download and pre-process the geojson for better performance while rendering
+    // we will build our own sources and layers for each fire step
+    fetch(url)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(geojson) {
+        var features = geojson.features;
+        // first sort
+        features.sort(function(a, b) {
+          if (a.properties.HOUR_BURNT === null) return -1;
+          if (b.properties.HOUR_BURNT === null) return 1;
+          else return a.properties.HOUR_BURNT - b.properties.HOUR_BURNT;
+        });
+        // now we can efficiently set up sources
+        const lastFeature = features[features.length - 1];
+        const totalMinutes = lastFeature.properties.HOUR_BURNT * 60;
+        const totalSteps = Math.ceil(totalMinutes / getters.fireStepMinutes);
+
+        // this will track the geojson features array
+        var j = 0;
+        // skip nulls
+        while (features[j].properties.HOUR_BURNT === null) j++;
+        // generate a geojson object for each step
+        for (i = 0; i < totalSteps; i++) {
+          // set a threshold
+          var threshold = (i * getters.fireStepMinutes) / 60;
+          // create a fresh geojson structure for this layer
+          var sect = {
+            type: "FeatureCollection",
+            features: []
+          };
+
+          // add all features below the minutes threshold to this structure
+          while (features[j].properties.HOUR_BURNT < threshold) {
+            sect.features.push(features[j]);
+            j++;
+          }
+
+          // create this layer
+          dispatch("setFireLayer", {
+            stackPos: firstSymbolId,
+            step: i,
+            geojson: sect
+          });
+        }
+        dispatch("filterFire", totalSteps - 1); // load the final fire step
+      });
   },
-  filterFire({ getters, commit }, min) {
+  setFireLayer({ getters, commit }, { stackPos, step, geojson }) {
     var map = getters.mapInstance;
-    console.log("phoenix-layer" + min);
-    map.setLayoutProperty("phoenix-layer" + min, "visibility", "visible");
-    //map.setLayoutProperty(getters.visibleFireLayer, "visibility", "none");
+    var layerName = "phoenix-layer" + step.toString();
+    var sourceName = "phoenix-source" + step.toString();
 
-    commit("setVisibleFireLayer", "phoenix-layer" + min);
+    // setup unique source and layer
+    map.addSource(sourceName, {
+      type: "geojson",
+      data: geojson
+    });
+    commit("addFireSource", sourceName);
+
+    map.addLayer(
+      {
+        id: layerName,
+        type: "line",
+        source: sourceName,
+        layout: {
+          visibility: "none"
+        },
+        paint: {
+          "line-color": "#f00",
+          "line-opacity": 0.4,
+          "line-width": 2.0
+        }
+      },
+      stackPos
+    );
+    commit("addFireLayer", layerName);
+  },
+  filterFire({ getters, commit }, fireStep) {
+    var map = getters.mapInstance;
+
+    // ensure every layer before the current step is on, and every one after is off
+    for (var i = 0; i < getters.totalFireLayers; i++) {
+      var layer = "phoenix-layer" + i.toString();
+      if (i <= fireStep) map.setLayoutProperty(layer, "visibility", "visible");
+      else map.setLayoutProperty(layer, "visibility", "none");
+    }
+    commit("setVisibleFireStep", fireStep);
   },
   addMATSimNetworkSource({ commit, getters }, source) {
     getters.mapInstance.addSource(source.name, {

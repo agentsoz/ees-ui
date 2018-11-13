@@ -2,13 +2,15 @@
     <div class='map-overlay top'>
       <div class='map-overlay-inner'>
         <h2>Fire Progression</h2>
-        <label id='month'></label>
-        <input :value="message" @input="updateFilter" type='range' min='0' max='540' step='10' />
+        <label id='fire-step'></label>
+        <input :value="visibleFireStep" @input="updateFilter" type='range' min='0' v-bind:max="totalFireLayers - 1" step='1' />
       </div>
     </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "mapSlider",
   props: {},
@@ -19,9 +21,7 @@ export default {
     };
   },
   computed: {
-    message() {
-      return 1;
-    }
+    ...mapGetters(["visibleFireStep", "totalFireLayers"])
   },
   methods: {
     updateFilter(e) {

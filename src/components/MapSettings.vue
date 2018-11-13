@@ -82,7 +82,7 @@ export default {
         this.toggle();
         this.$store.commit("setSelectedFire", value);
         var fireData = this.$store.getters.selectedFireData;
-        this.$store.dispatch("setFireLayer", !fireData ? "" : fireData.geojson);
+        this.$store.dispatch("fetchFire", !fireData ? "" : fireData.geojson);
       }
     }
   },
