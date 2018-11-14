@@ -93,27 +93,7 @@ const getters = {
   }
 };
 
-const mutations = {
-  setMapboxStyle(state, newStyle) {
-    state.mapboxStyle = newStyle;
-    state.map.instance.setStyle(
-      "mapbox://styles/mapbox/" + state.mapboxStyle + "-v9"
-    );
-    state.reloadOverlayLayersOnStyleData = true;
-  },
-  setMapSettingsIsOpen(state, newVal) {
-    state.mapSettingsIsOpen = newVal;
-  },
-  setReloadOverlayLayersOnStyleData(state, newVal) {
-    state.reloadOverlayLayersOnStyleData = newVal;
-  },
-  setSelectedRegion(state, newVal) {
-    state.selectedRegion = newVal;
-  },
-  setSelectedFire(state, newVal) {
-    state.selectedFire = newVal;
-  }
-};
+const mutations = {};
 const actions = {};
 
 export default {
