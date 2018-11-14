@@ -256,17 +256,23 @@ const actions = {
     map.addLayer(
       {
         id: layerName,
-        type: "fill",
+        type: "fill-extrusion",
         source: sourceName,
+        filter: ["has", "FLAME_HT"],
         layout: {
           visibility: "none"
         },
         paint: {
-          "fill-color": {
+          "fill-extrusion-color": {
             property: "E_INTSTY",
             stops: getters.fireIntensityLevels
           },
-          "fill-opacity": getters.fireOpacity
+          "fill-extrusion-height": {
+            property: "FLAME_HT",
+            stops: [[0, 1], [300, 1000]]
+          },
+          "fill-extrusion-base": 0,
+          "fill-extrusion-opacity": getters.fireOpacity
         }
       },
       stackPos
