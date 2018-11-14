@@ -13,6 +13,8 @@ const state = {
   loadedFireLayers: [],
   loadedFireSources: [],
   visibleFireStep: null,
+  fireOpacity: 0.4,
+  fireIntensityLevels: [[0, "#ffc107"], [100000, "#dc3545"]],
   reloadOverlayLayersOnStyleData: false,
   mapInstance: null, // MapboxGL object
   mapCenter: [144.968447, -37.818232] // Federeation Square Melbourne
@@ -43,6 +45,8 @@ const getters = {
   loadedFireSources: state => state.loadedFireSources,
   totalFireLayers: state => state.loadedFireLayers.length,
   visibleFireStep: state => state.visibleFireStep,
+  fireOpacity: state => state.fireOpacity,
+  fireIntensityLevels: state => state.fireIntensityLevels,
   reloadOverlayLayersOnStyleData: state => state.reloadOverlayLayersOnStyleData,
   firesInSelectedRegion: (state, getters, rootState, rootGetters) => {
     if (!state.selectedRegion) return null;
@@ -247,15 +251,17 @@ const actions = {
     map.addLayer(
       {
         id: layerName,
-        type: "line",
+        type: "fill",
         source: sourceName,
         layout: {
           visibility: "none"
         },
         paint: {
-          "line-color": "#f00",
-          "line-opacity": 0.4,
-          "line-width": 2.0
+          "fill-color": {
+            property: "E_INTSTY",
+            stops: getters.fireIntensityLevels
+          },
+          "fill-opacity": getters.fireOpacity
         }
       },
       stackPos
