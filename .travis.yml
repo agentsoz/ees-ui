@@ -3,7 +3,7 @@ node_js:
 - node
 cache:
   directories:
-  - node_modules
+  - "$HOME/.npm"
 before_deploy:
 - npm run test:unit
 - npm run build
