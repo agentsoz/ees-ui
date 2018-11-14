@@ -4,6 +4,9 @@
       <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
         <button class="icon sprocket" type="button" v-on:keydown.esc="toggle()" @click='toggle()'></button>
       </div>
+      <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
+        <button class="icon grid" type="button" @click='drawRectangle()'></button>
+      </div>
     </div>
     <div class='map-overlay' v-show="isOpen">
     <div class='map-settings-panel' v-on:keydown.esc.capture="toggle()">
@@ -92,6 +95,10 @@ export default {
         "setMapSettingsIsOpen",
         !this.$store.getters.mapSettingsIsOpen
       );
+    },
+    drawRectangle() {
+      const draw = this.$store.getters.drawInstance;
+      draw.changeMode("draw_rectangle");
     }
   }
 };

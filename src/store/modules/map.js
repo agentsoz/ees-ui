@@ -17,6 +17,7 @@ const state = {
   fireIntensityLevels: [[0, "#ffc107"], [100000, "#dc3545"]],
   reloadOverlayLayersOnStyleData: false,
   mapInstance: null, // MapboxGL object
+  drawInstance: null, // MapboxDraw object
   mapCenter: [144.968447, -37.818232] // Federeation Square Melbourne
 };
 
@@ -32,6 +33,7 @@ const getters = {
     return opts;
   },
   mapInstance: state => state.mapInstance,
+  drawInstance: state => state.drawInstance,
   mapboxStyle: state => state.mapboxStyle,
   mapCenter: state => state.mapCenter,
   mapSettingsIsOpen: state => state.mapSettingsIsOpen,
@@ -65,6 +67,9 @@ const getters = {
 const mutations = {
   setMapInstance(state, newMap) {
     state.mapInstance = newMap;
+  },
+  setDrawInstance(state, newDraw) {
+    state.drawInstance = newDraw;
   },
   setMapboxStyle(state, newStyle) {
     state.mapboxStyle = newStyle;
