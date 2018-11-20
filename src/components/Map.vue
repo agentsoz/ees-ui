@@ -70,8 +70,11 @@ export default {
 
       store.commit("setMapInstance", map);
       store.commit("setDrawInstance", draw);
+
+      store.commit("setFirstSymbolLayer");
     },
     resetLayersOnStyleChange() {
+      store.commit("setFirstSymbolLayer");
       store.dispatch("loadMATSimRegion");
     },
     squareCreated(feature) {

@@ -17,7 +17,6 @@ const state = {
   visibleFireStep: null,
   fireOpacity: 0.4,
   fireIntensityLevels: [[0, "#ffc107"], [100000, "#dc3545"]],
-  reloadOverlayLayersOnStyleData: false,
   mapInstance: null, // MapboxGL object
   drawInstance: null, // MapboxDraw object
   mapCenter: [144.968447, -37.818232] // Federeation Square Melbourne
@@ -57,23 +56,9 @@ const mutations = {
     state.mapInstance.setStyle(
       "mapbox://styles/mapbox/" + state.mapboxStyle + "-v9"
     );
-    var layers = state.mapInstance.getStyle().layers;
-    // Find the index of the first symbol layer in the map style
-    var firstSymbolId;
-    for (var i = 0; i < layers.length; i++) {
-      if (layers[i].type === "symbol") {
-        firstSymbolId = layers[i].id;
-        break;
-      }
-    }
-    state.firstSymbolLayer = firstSymbolId;
-    state.reloadOverlayLayersOnStyleData = true;
   },
   setMapSettingsIsOpen(state, newVal) {
     state.mapSettingsIsOpen = newVal;
-  },
-  setReloadOverlayLayersOnStyleData(state, newVal) {
-    state.reloadOverlayLayersOnStyleData = newVal;
   },
   setSelectedRegion(state, newVal) {
     state.selectedRegion = newVal;
@@ -104,6 +89,18 @@ const mutations = {
       }
     });
     state.mapCenter = target;
+  },
+  setFirstSymbolLayer(state) {
+    var layers = state.mapInstance.getStyle().layers;
+    // Find the index of the first symbol layer in the map style
+    var firstSymbolId;
+    for (var i = 0; i < layers.length; i++) {
+      if (layers[i].type === "symbol" && layers[i].id.includes("label")) {
+        firstSymbolId = layers[i].id;
+        break;
+      }
+    }
+    state.firstSymbolLayer = firstSymbolId;
   },
   addMATSimLayer(state, matsimNetwork) {
     state.mapInstance.addLayer(
@@ -212,7 +209,7 @@ const actions = {
     commit("clearMATSimLayers");
     commit("setMapboxStyle", style);
   },
-  loadMATSimRegion({ dispatch, commit, getters }) {
+  loadMATSimRegion({ dispatch, commit }) {
     // ensure any existing matsim/fire artifacts are removed
     commit("clearFire");
     commit("clearMATSimLayers");
@@ -221,6 +218,8 @@ const actions = {
   },
   loadLayers({ dispatch, getters }) {
     var region = getters.selectedRegion;
+    if (!region) return; // no region to be loaded
+
     var matsimNetwork = {
       sourceName: "matsim",
       pbfurl: region.matsimNetworkTiles,
