@@ -66,7 +66,7 @@ export default {
       get() {
         return !this.$store.getters.selectedRegion
           ? "no-region"
-          : this.$store.getters.selectedRegion;
+          : this.$store.getters.selectedRegion.id;
       },
       set(value) {
         // close this settings window

@@ -32,7 +32,10 @@ const getters = {
   baseMATSimLayer: state => state.baseMATSimLayer,
   loadedMATSimLayers: state => state.loadedMATSimLayers,
   loadedMATSimSource: state => state.loadedMATSimSource,
-  selectedRegion: state => state.selectedRegion,
+  selectedRegion: (state, getters, rootState, rootGetters) => {
+    if (!state.selectedRegion) return null;
+    return rootGetters.region(state.selectedRegion);
+  },
   fireStepMinutes: state => state.fireStepMinutes,
   selectedFire: state => state.selectedFire,
   loadedFireLayers: state => state.loadedFireLayers,
@@ -48,9 +51,8 @@ const getters = {
   },
   selectedFireData: (state, getters) => {
     var fires = getters.firesInSelectedRegion;
-    if (!fires) {
-      return null;
-    }
+    if (!fires) return null;
+
     var fire = fires.find(obj => obj.id === state.selectedFire);
     return fire;
   }
@@ -167,10 +169,10 @@ const actions = {
     commit("clearMATSimLayers");
     // Load new regions layers and fly there
     dispatch("loadLayers");
-    dispatch("flyTo", getters.region(getters.selectedRegion).center);
+    dispatch("flyTo", getters.selectedRegion.center);
   },
-  loadLayers({ dispatch, getters, rootGetters }) {
-    var region = rootGetters.region(getters.selectedRegion);
+  loadLayers({ dispatch, getters }) {
+    var region = getters.selectedRegion;
     var matsimNetwork = {
       sourceName: "matsim",
       pbfurl: region.matsimNetworkTiles,
