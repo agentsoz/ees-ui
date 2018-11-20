@@ -66,7 +66,7 @@ export default {
       get() {
         return !this.$store.state.map.selectedRegion
           ? "no-region"
-          : this.$store.state.map.selectedRegion.id;
+          : this.$store.state.map.selectedRegion;
       },
       set(value) {
         // close this settings window
