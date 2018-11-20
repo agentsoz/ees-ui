@@ -97,6 +97,27 @@ const mutations = {
   setHighlightMATSimLayer(state, newVal) {
     state.highlightMATSimLayer = newVal;
   },
+  flyTo(state, target) {
+    state.mapInstance.flyTo({
+      // These options control the ending camera position: centered at
+      // the target, at given zoom level, and north up.
+      center: target,
+      zoom: 8,
+      bearing: 0,
+      // These options control the flight curve, making it move
+      // slowly and zoom out almost completely before starting
+      // to pan.
+      speed: 0.5, // make the flying slow
+      curve: 1, // change the speed at which it zooms out
+
+      // This can be any easing function: it takes a number between
+      // 0 and 1 and returns another number between 0 and 1.
+      easing: function(t) {
+        return t;
+      }
+    });
+    state.mapCenter = target;
+  },
   addMATSimLayer(state, matsimNetwork) {
     state.mapInstance.addLayer(
       {
@@ -169,7 +190,7 @@ const actions = {
     commit("clearMATSimLayers");
     // Load new regions layers and fly there
     dispatch("loadLayers");
-    dispatch("flyTo", getters.selectedRegion.center);
+    commit("flyTo", getters.selectedRegion.center);
   },
   loadLayers({ dispatch, getters }) {
     var region = getters.selectedRegion;
@@ -191,26 +212,6 @@ const actions = {
     if (selectedFire) {
       dispatch("fetchFire", selectedFire.geojson);
     }
-  },
-  flyTo({ getters }, target) {
-    getters.mapInstance.flyTo({
-      // These options control the ending camera position: centered at
-      // the target, at given zoom level, and north up.
-      center: target,
-      zoom: 8,
-      bearing: 0,
-      // These options control the flight curve, making it move
-      // slowly and zoom out almost completely before starting
-      // to pan.
-      speed: 0.5, // make the flying slow
-      curve: 1, // change the speed at which it zooms out
-
-      // This can be any easing function: it takes a number between
-      // 0 and 1 and returns another number between 0 and 1.
-      easing: function(t) {
-        return t;
-      }
-    });
   },
   fetchFire({ dispatch, getters }, url) {
     // determine where the fire will sit in the layer stack
