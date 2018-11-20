@@ -26,30 +26,17 @@ const state = {
 const getters = {
   mapInstance: state => state.mapInstance,
   drawInstance: state => state.drawInstance,
-  mapboxStyle: state => state.mapboxStyle,
-  mapCenter: state => state.mapCenter,
-  mapSettingsIsOpen: state => state.mapSettingsIsOpen,
-  baseMATSimLayer: state => state.baseMATSimLayer,
-  loadedMATSimLayers: state => state.loadedMATSimLayers,
-  loadedMATSimSource: state => state.loadedMATSimSource,
   selectedRegion: (state, getters, rootState, rootGetters) => {
     if (!state.selectedRegion) return null;
     return rootGetters.region(state.selectedRegion);
   },
   fireStepMinutes: state => state.fireStepMinutes,
-  selectedFire: state => state.selectedFire,
-  loadedFireLayers: state => state.loadedFireLayers,
-  loadedFireSources: state => state.loadedFireSources,
   totalFireLayers: state => state.loadedFireLayers.length,
-  visibleFireStep: state => state.visibleFireStep,
-  fireOpacity: state => state.fireOpacity,
-  fireIntensityLevels: state => state.fireIntensityLevels,
-  reloadOverlayLayersOnStyleData: state => state.reloadOverlayLayersOnStyleData,
   firesInSelectedRegion: (state, getters, rootState, rootGetters) => {
     if (!state.selectedRegion) return null;
     return rootGetters.firesInRegion(state.selectedRegion);
   },
-  selectedFireData: (state, getters) => {
+  selectedFire: (state, getters) => {
     var fires = getters.firesInSelectedRegion;
     if (!fires) return null;
 
@@ -241,7 +228,7 @@ const actions = {
 
     dispatch("loadMATSimNetwork", matsimNetwork);
 
-    var selectedFire = getters.selectedFireData;
+    var selectedFire = getters.selectedFire;
     if (selectedFire) {
       dispatch("fetchFire", selectedFire.geojson);
     }

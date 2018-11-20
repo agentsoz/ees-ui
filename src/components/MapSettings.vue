@@ -35,14 +35,14 @@ export default {
   props: {},
   data: function() {
     return {
-      styles: this.$store.getters.styles,
-      regions: this.$store.getters.regions
+      styles: this.$store.state.config.styles,
+      regions: this.$store.state.config.regions
     };
   },
   computed: {
     isOpen: {
       get() {
-        return this.$store.getters.mapSettingsIsOpen;
+        return this.$store.state.map.mapSettingsIsOpen;
       },
       set(value) {
         this.$store.commit("mapSettingsIsOpen", value);
@@ -55,7 +55,7 @@ export default {
     },
     mapboxStyle: {
       get() {
-        return this.$store.getters.mapboxStyle;
+        return this.$store.state.map.mapboxStyle;
       },
       set(value) {
         this.toggle();
@@ -64,9 +64,9 @@ export default {
     },
     selectedRegion: {
       get() {
-        return !this.$store.getters.selectedRegion
+        return !this.$store.state.map.selectedRegion
           ? "no-region"
-          : this.$store.getters.selectedRegion.id;
+          : this.$store.state.map.selectedRegion.id;
       },
       set(value) {
         // close this settings window
@@ -79,12 +79,12 @@ export default {
     },
     selectedFire: {
       get() {
-        return this.$store.getters.selectedFire;
+        return this.$store.state.map.selectedFire;
       },
       set(value) {
         this.toggle();
         this.$store.commit("setSelectedFire", value);
-        var fireData = this.$store.getters.selectedFireData;
+        var fireData = this.$store.getters.selectedFire;
         this.$store.dispatch("fetchFire", !fireData ? "" : fireData.geojson);
       }
     }
@@ -93,7 +93,7 @@ export default {
     toggle: function() {
       this.$store.commit(
         "setMapSettingsIsOpen",
-        !this.$store.getters.mapSettingsIsOpen
+        !this.$store.state.map.mapSettingsIsOpen
       );
     },
     drawRectangle() {
