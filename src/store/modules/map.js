@@ -139,19 +139,15 @@ const mutations = {
   },
   clearMATSimLayers(state) {
     var map = state.mapInstance;
-    for (const layer of state.loadedMATSimLayers) {
-      try {
-        map.removeLayer(layer);
-      } catch (e) {
-        // ignore!
-      }
-    }
+    for (const layer of state.loadedMATSimLayers) map.removeLayer(layer);
+    state.loadedMATSimLayers = [];
+
     if (state.loadedMATSimSource) {
-      map.removeSource("matsim");
+      map.removeSource(state.loadedMATSimSource);
       state.loadedMATSimSource = null;
     }
     state.baseMATSimLayer = null;
-    state.loadedMATSimLayers = [];
+    state.highlightMATSimLayer = null;
   },
   setSelectedFire(state, newVal) {
     state.selectedFire = newVal;
@@ -196,7 +192,12 @@ const mutations = {
     state.loadedFireLayers.push(layerName);
   },
   clearFire(state) {
+    var map = state.mapInstance;
+    // remove layers
+    for (const layer of state.loadedFireLayers) map.removeLayer(layer);
     state.loadedFireLayers = [];
+    // remove sources
+    for (const source of state.loadedFireSources) map.removeSource(source);
     state.loadedFireSources = [];
   },
   setVisibleFireStep(state, newVal) {
@@ -205,12 +206,18 @@ const mutations = {
 };
 
 const actions = {
-  loadMATSimRegion({ dispatch, commit, getters }) {
-    // ensure any existing matsim artifacts are removed
+  resetAndMapboxStyle({ commit }, style) {
+    // ensure any existing matsim/fire artifacts are removed
+    commit("clearFire");
     commit("clearMATSimLayers");
-    // Load new regions layers and fly there
+    commit("setMapboxStyle", style);
+  },
+  loadMATSimRegion({ dispatch, commit, getters }) {
+    // ensure any existing matsim/fire artifacts are removed
+    commit("clearFire");
+    commit("clearMATSimLayers");
+    // Load new region layers
     dispatch("loadLayers");
-    commit("flyTo", getters.selectedRegion.center);
   },
   loadLayers({ dispatch, getters }) {
     var region = getters.selectedRegion;

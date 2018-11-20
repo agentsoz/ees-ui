@@ -59,7 +59,7 @@ export default {
       },
       set(value) {
         this.toggle();
-        this.$store.commit("setMapboxStyle", value);
+        this.$store.dispatch("resetAndMapboxStyle", value);
       }
     },
     selectedRegion: {
@@ -75,6 +75,7 @@ export default {
         this.$store.commit("setSelectedRegion", value);
         // load the relevant MATSim layers
         this.$store.dispatch("loadMATSimRegion");
+        this.$store.commit("flyTo", this.$store.getters.selectedRegion.center);
       }
     },
     selectedFire: {

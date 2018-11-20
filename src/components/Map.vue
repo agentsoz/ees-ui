@@ -57,6 +57,7 @@ export default {
     storeMapInstance(map) {
       map.on("click", this.mapOnClick);
       map.on("draw.create", this.squareCreated);
+      map.on("style.load", this.resetLayersOnStyleChange);
 
       const draw = new MapboxDraw({
         displayControlsDefault: false,
@@ -69,6 +70,9 @@ export default {
 
       store.commit("setMapInstance", map);
       store.commit("setDrawInstance", draw);
+    },
+    resetLayersOnStyleChange() {
+      store.dispatch("loadMATSimRegion");
     },
     squareCreated(feature) {
       console.log(feature);
