@@ -17,6 +17,7 @@ const state = {
   visibleFireStep: null,
   fireOpacity: 0.4,
   fireIntensityLevels: [[0, "#ffc107"], [100000, "#dc3545"]],
+  populationSquares: [],
   mapInstance: null, // MapboxGL object
   drawInstance: null, // MapboxDraw object
   mapCenter: [144.968447, -37.818232] // Federeation Square Melbourne
@@ -148,6 +149,9 @@ const mutations = {
   },
   setSelectedFire(state, newVal) {
     state.selectedFire = newVal;
+  },
+  addPopulationSquare(state, feature) {
+    state.populationSquares.push(feature);
   },
   addFireLayer(state, layer) {
     var map = state.mapInstance;

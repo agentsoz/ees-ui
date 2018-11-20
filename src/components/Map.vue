@@ -78,7 +78,7 @@ export default {
       store.dispatch("loadMATSimRegion");
     },
     squareCreated(feature) {
-      console.log(feature);
+      store.commit("addPopulationSquare", feature);
     },
     mapOnClick(e) {
       // set bbox as 5px reactangle area around clicked point
