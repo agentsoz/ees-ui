@@ -170,10 +170,43 @@ const mutations = {
     state.selectedFire = newVal;
   },
   addFireLayer(state, layer) {
-    state.loadedFireLayers.push(layer);
-  },
-  addFireSource(state, source) {
-    state.loadedFireSources.push(source);
+    var map = state.mapInstance;
+    var step = layer.step.toString();
+    var layerName = "phoenix-layer" + step;
+    var sourceName = "phoenix-source" + step;
+
+    // setup unique source and layer
+    map.addSource(sourceName, {
+      type: "geojson",
+      data: layer.geojson
+    });
+    state.loadedFireSources.push(sourceName);
+
+    map.addLayer(
+      {
+        id: layerName,
+        type: "fill-extrusion",
+        source: sourceName,
+        filter: ["has", "FLAME_HT"],
+        layout: {
+          visibility: "none"
+        },
+        paint: {
+          "fill-extrusion-color": {
+            property: "E_INTSTY",
+            stops: state.fireIntensityLevels
+          },
+          "fill-extrusion-height": {
+            property: "FLAME_HT",
+            stops: [[0, 1], [300, 1000]]
+          },
+          "fill-extrusion-base": 0,
+          "fill-extrusion-opacity": state.fireOpacity
+        }
+      },
+      state.firstSymbolLayer
+    );
+    state.loadedFireLayers.push(layerName);
   },
   clearFire(state) {
     state.loadedFireLayers = [];
@@ -213,19 +246,7 @@ const actions = {
       dispatch("fetchFire", selectedFire.geojson);
     }
   },
-  fetchFire({ dispatch, getters }, url) {
-    // determine where the fire will sit in the layer stack
-    var map = getters.mapInstance;
-    var layers = map.getStyle().layers;
-    // Find the index of the first symbol layer in the map style
-    var firstSymbolId;
-    for (var i = 0; i < layers.length; i++) {
-      if (layers[i].type === "symbol") {
-        firstSymbolId = layers[i].id;
-        break;
-      }
-    }
-
+  fetchFire({ dispatch, commit, getters }, url) {
     // download and pre-process the geojson for better performance while rendering
     // we will build our own sources and layers for each fire step
     fetch(url)
@@ -250,7 +271,7 @@ const actions = {
         // skip nulls
         while (features[j].properties.HOUR_BURNT === null) j++;
         // generate a geojson object for each step
-        for (i = 0; i < totalSteps; i++) {
+        for (var i = 0; i < totalSteps; i++) {
           // set a threshold
           var threshold = (i * getters.fireStepMinutes) / 60;
           // create a fresh geojson structure for this layer
@@ -266,52 +287,13 @@ const actions = {
           }
 
           // create this layer
-          dispatch("setFireLayer", {
-            stackPos: firstSymbolId,
+          commit("addFireLayer", {
             step: i,
             geojson: sect
           });
         }
         dispatch("filterFire", totalSteps - 1); // load the final fire step
       });
-  },
-  setFireLayer({ getters, commit }, { stackPos, step, geojson }) {
-    var map = getters.mapInstance;
-    var layerName = "phoenix-layer" + step.toString();
-    var sourceName = "phoenix-source" + step.toString();
-
-    // setup unique source and layer
-    map.addSource(sourceName, {
-      type: "geojson",
-      data: geojson
-    });
-    commit("addFireSource", sourceName);
-
-    map.addLayer(
-      {
-        id: layerName,
-        type: "fill-extrusion",
-        source: sourceName,
-        filter: ["has", "FLAME_HT"],
-        layout: {
-          visibility: "none"
-        },
-        paint: {
-          "fill-extrusion-color": {
-            property: "E_INTSTY",
-            stops: getters.fireIntensityLevels
-          },
-          "fill-extrusion-height": {
-            property: "FLAME_HT",
-            stops: [[0, 1], [300, 1000]]
-          },
-          "fill-extrusion-base": 0,
-          "fill-extrusion-opacity": getters.fireOpacity
-        }
-      },
-      stackPos
-    );
-    commit("addFireLayer", layerName);
   },
   filterFire({ getters, commit }, fireStep) {
     var map = getters.mapInstance;
