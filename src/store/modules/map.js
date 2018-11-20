@@ -3,8 +3,10 @@
 
 const state = {
   mapboxStyle: "dark",
+  firstSymbolLayer: null,
   mapSettingsIsOpen: false,
   baseMATSimLayer: null,
+  highlightMATSimLayer: null,
   loadedMATSimLayers: [],
   loadedMATSimSource: null,
   selectedRegion: null,
@@ -22,16 +24,6 @@ const state = {
 };
 
 const getters = {
-  mapOpts: state => {
-    var opts = {
-      style: "mapbox://styles/mapbox/" + state.mapboxStyle + "-v9",
-      center: state.mapCenter,
-      minZoom: 0,
-      zoom: 6,
-      maxZoom: 14
-    };
-    return opts;
-  },
   mapInstance: state => state.mapInstance,
   drawInstance: state => state.drawInstance,
   mapboxStyle: state => state.mapboxStyle,
@@ -76,6 +68,16 @@ const mutations = {
     state.mapInstance.setStyle(
       "mapbox://styles/mapbox/" + state.mapboxStyle + "-v9"
     );
+    var layers = state.mapInstance.getStyle().layers;
+    // Find the index of the first symbol layer in the map style
+    var firstSymbolId;
+    for (var i = 0; i < layers.length; i++) {
+      if (layers[i].type === "symbol") {
+        firstSymbolId = layers[i].id;
+        break;
+      }
+    }
+    state.firstSymbolLayer = firstSymbolId;
     state.reloadOverlayLayersOnStyleData = true;
   },
   setMapSettingsIsOpen(state, newVal) {
@@ -90,13 +92,54 @@ const mutations = {
   setBaseMATSimLayer(state, newVal) {
     state.baseMATSimLayer = newVal;
   },
-  addMATSimLayer(state, layer) {
-    state.loadedMATSimLayers.push(layer);
+  setHighlightMATSimLayer(state, newVal) {
+    state.highlightMATSimLayer = newVal;
   },
-  loadedMATSimSource(state, newVal) {
-    state.loadedMATSimSource = newVal;
+  addMATSimLayer(state, matsimNetwork) {
+    state.mapInstance.addLayer(
+      {
+        id: matsimNetwork.layerName,
+        type: "line",
+        source: matsimNetwork.sourceName,
+        "source-layer": matsimNetwork.sourceLayer,
+        minzoom: 0,
+        maxzoom: 22,
+        paint: matsimNetwork.paint,
+        filter: matsimNetwork.filter
+      },
+      // This is the important part of this example: the addLayer
+      // method takes 2 arguments: the layer as an object, and a string
+      // representing another layer's name. if the other layer
+      // exists in the stylesheet already, the new layer will be positioned
+      // right before that layer in the stack, making it possible to put
+      // 'overlays' anywhere in the layer stack.
+      // Insert the layer beneath the first symbol layer.
+      state.firstSymbolLayer
+    );
+    state.loadedMATSimLayers.push(matsimNetwork.layerName);
+  },
+  loadMATSimSource(state, matsimNetwork) {
+    state.mapInstance.addSource(matsimNetwork.sourceName, {
+      type: "vector",
+      tiles: [matsimNetwork.pbfurl],
+      minzoom: 0,
+      maxzoom: 14
+    });
+    state.loadedMATSimSource = matsimNetwork.sourceName;
   },
   clearMATSimLayers(state) {
+    var map = state.mapInstance;
+    for (const layer of state.loadedMATSimLayers) {
+      try {
+        map.removeLayer(layer);
+      } catch (e) {
+        // ignore!
+      }
+    }
+    if (state.loadedMATSimSource) {
+      map.removeSource("matsim");
+      state.loadedMATSimSource = null;
+    }
     state.baseMATSimLayer = null;
     state.loadedMATSimLayers = [];
   },
@@ -119,40 +162,28 @@ const mutations = {
 };
 
 const actions = {
-  loadMATSimRegion({ dispatch, getters }) {
+  loadMATSimRegion({ dispatch, commit, getters }) {
     // ensure any existing matsim artifacts are removed
-    dispatch("removeMATSimLayers");
+    commit("clearMATSimLayers");
     // Load new regions layers and fly there
     dispatch("loadLayers");
     dispatch("flyTo", getters.region(getters.selectedRegion).center);
   },
-  removeMATSimLayers({ commit, getters }) {
-    var map = getters.mapInstance;
-    var loadedMATSimLayers = getters.loadedMATSimLayers;
-    for (const layer of loadedMATSimLayers) {
-      try {
-        map.removeLayer(layer);
-      } catch (e) {
-        // ignore!
-      }
-    }
-    commit("clearMATSimLayers");
-    //console.log(map.getSource("statictest"));
-    if (getters.loadedMATSimSource) {
-      map.removeSource("statictest");
-      commit("loadedMATSimSource", null);
-    }
-  },
-  loadLayers({ dispatch, commit, getters, rootGetters }) {
+  loadLayers({ dispatch, getters, rootGetters }) {
     var region = rootGetters.region(getters.selectedRegion);
-    var matsimNetworkLayer = region.matsimNetworkLayer;
+    var matsimNetwork = {
+      sourceName: "matsim",
+      pbfurl: region.matsimNetworkTiles,
+      layerName: region.matsimNetworkLayer,
+      sourceLayer: region.matsimNetworkLayer,
+      paint: {
+        "line-color": "#7777ff",
+        "line-width": 0.5
+      },
+      filter: ["all"]
+    };
 
-    dispatch("addMATSimNetworkSource", {
-      name: "statictest",
-      pbfurl: region.matsimNetworkTiles
-    });
-    commit("setBaseMATSimLayer", matsimNetworkLayer);
-    dispatch("addMATSimNetworkLayer", matsimNetworkLayer);
+    dispatch("loadMATSimNetwork", matsimNetwork);
 
     var selectedFire = getters.selectedFireData;
     if (selectedFire) {
@@ -290,67 +321,26 @@ const actions = {
     }
     commit("setVisibleFireStep", fireStep);
   },
-  addMATSimNetworkSource({ commit, getters }, source) {
-    getters.mapInstance.addSource(source.name, {
-      type: "vector",
-      tiles: [source.pbfurl],
-      minzoom: 0,
-      maxzoom: 14
-    });
-    commit("loadedMATSimSource", source.name);
-  },
-  addMATSimNetworkLayer({ commit, getters }, matsimLayer) {
-    var map = getters.mapInstance;
-    var layers = map.getStyle().layers;
-    // Find the index of the first symbol layer in the map style
-    var firstSymbolId;
-    for (var i = 0; i < layers.length; i++) {
-      if (layers[i].type === "symbol") {
-        firstSymbolId = layers[i].id;
-        break;
-      }
-    }
+  loadMATSimNetwork({ commit }, matsimNetwork) {
+    // load the matsim source
+    commit("loadMATSimSource", matsimNetwork);
 
-    map.addLayer(
-      {
-        id: matsimLayer,
-        type: "line",
-        source: "statictest",
-        "source-layer": matsimLayer,
-        minzoom: 0,
-        maxzoom: 22,
-        paint: {
-          "line-color": "#7777ff",
-          "line-width": 0.5
-        }
+    // create the base matsim layer
+    commit("addMATSimLayer", matsimNetwork);
+    commit("setBaseMATSimLayer", matsimNetwork.layerName);
+
+    // create the highlight layer above this (deep copy)
+    var matsimNetworkHighlighted = JSON.parse(JSON.stringify(matsimNetwork));
+    matsimNetworkHighlighted = Object.assign(matsimNetworkHighlighted, {
+      layerName: matsimNetwork.layerName + "-highlighted",
+      paint: {
+        "line-color": "#FF8C00",
+        "line-width": 1.5
       },
-      // This is the important part of this example: the addLayer
-      // method takes 2 arguments: the layer as an object, and a string
-      // representing another layer's name. if the other layer
-      // exists in the stylesheet already, the new layer will be positioned
-      // right before that layer in the stack, making it possible to put
-      // 'overlays' anywhere in the layer stack.
-      // Insert the layer beneath the first symbol layer.
-      firstSymbolId
-    );
-    commit("addMATSimLayer", matsimLayer);
-    map.addLayer(
-      {
-        id: matsimLayer + "-highlighted",
-        type: "line",
-        source: "statictest",
-        "source-layer": matsimLayer,
-        minzoom: 0,
-        maxzoom: 22,
-        paint: {
-          "line-color": "#FF8C00",
-          "line-width": 1.5
-        },
-        filter: ["in", "ID", ""]
-      },
-      firstSymbolId
-    );
-    commit("addMATSimLayer", matsimLayer + "-highlighted");
+      filter: ["in", "ID", ""]
+    });
+    commit("addMATSimLayer", matsimNetworkHighlighted);
+    commit("setHighlightMATSimLayer", matsimNetworkHighlighted.layerName);
   }
 };
 

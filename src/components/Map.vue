@@ -26,25 +26,38 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 
 import store from "../store";
-import { mapGetters } from "vuex";
+import { mapState } from "vuex";
 
 export default {
   name: "maplayer",
   computed: {
-    ...mapGetters([
-      "mapInstance",
-      "mapOpts",
-      "mapboxAccessToken",
-      "baseMATSimLayer"
-    ])
+    ...mapState({
+      mapboxAccessToken: state => state.config.mapboxAccessToken,
+      mapboxStyle: state => state.map.mapboxStyle,
+      mapCenter: state => state.map.mapCenter,
+      mapInstance: state => state.map.mapInstance,
+      baseMATSimLayer: state => state.map.baseMATSimLayer,
+      highlightMATSimLayer: state => state.map.highlightMATSimLayer
+    }),
+    mapOpts() {
+      var opts = {
+        style: "mapbox://styles/mapbox/" + this.mapboxStyle + "-v9",
+        center: this.mapCenter,
+        minZoom: 0,
+        zoom: 6,
+        maxZoom: 14
+      };
+      return opts;
+    }
   },
   components: {
     mapbox: Mapbox
   },
   methods: {
     storeMapInstance(map) {
-      map.on("click", this.mapOnClick); // inside the template not working
+      map.on("click", this.mapOnClick);
       map.on("draw.create", this.squareCreated);
+
       const draw = new MapboxDraw({
         displayControlsDefault: false,
         modes: Object.assign(
@@ -69,6 +82,7 @@ export default {
       var features = this.mapInstance.queryRenderedFeatures(bbox, {
         layers: [this.baseMATSimLayer]
       });
+      var filter;
       if (typeof features != "undefined" && features.length !== 0) {
         var coordinates = features[0].geometry.coordinates.slice()[0][0];
         var id = features[0].properties.ID;
@@ -77,18 +91,17 @@ export default {
           .setHTML("Link " + id)
           .addTo(this.mapInstance);
         //console.log("features:%s\n", JSON.stringify(features));
-        var filter = features.reduce(
+        filter = features.reduce(
           function(memo, feature) {
             memo.push(feature.properties.ID);
             return memo;
           },
           ["in", "ID"]
         );
-        this.mapInstance.setFilter(
-          this.baseMATSimLayer + "-highlighted",
-          filter
-        );
+      } else {
+        filter = ["in", "ID", ""];
       }
+      this.mapInstance.setFilter(this.highlightMATSimLayer, filter);
     }
   }
 };

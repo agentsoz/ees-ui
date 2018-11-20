@@ -14,20 +14,17 @@
 
 <script>
 import vueSlider from "vue-slider-component";
-import { mapGetters } from "vuex";
+import { mapState, mapGetters } from "vuex";
 
 export default {
   name: "mapSlider",
   components: { vueSlider },
   props: {},
-  data: function() {
-    return {
-      styles: this.$store.getters.styles,
-      regions: this.$store.getters.regions
-    };
-  },
   computed: {
-    ...mapGetters(["visibleFireStep", "totalFireLayers"]),
+    ...mapState({
+      visibleFireStep: state => state.map.visibleFireStep
+    }),
+    ...mapGetters(["totalFireLayers"]),
     sliderConfig() {
       return {
         width: "98%",
