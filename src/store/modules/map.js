@@ -2,6 +2,7 @@
 // Used to store state of map, including layers etc
 
 const state = {
+  isLoading: 0,
   mapboxStyle: "dark",
   firstSymbolLayer: null,
   mapSettingsIsOpen: false,
@@ -46,6 +47,12 @@ const getters = {
 };
 
 const mutations = {
+  startLoading(state) {
+    state.isLoading++;
+  },
+  doneLoading(state) {
+    if (state.isLoading > 0) state.isLoading--;
+  },
   setMapInstance(state, newMap) {
     state.mapInstance = newMap;
   },
@@ -246,6 +253,7 @@ const actions = {
   fetchFire({ dispatch, commit, getters }, url) {
     // download and pre-process the geojson for better performance while rendering
     // we will build our own sources and layers for each fire step
+    commit("startLoading");
     fetch(url)
       .then(function(response) {
         return response.json();
@@ -290,6 +298,7 @@ const actions = {
           });
         }
         dispatch("filterFire", totalSteps - 1); // load the final fire step
+        commit("doneLoading");
       });
   },
   filterFire({ getters, commit }, fireStep) {
@@ -304,6 +313,12 @@ const actions = {
     commit("setVisibleFireStep", fireStep);
   },
   loadMATSimNetwork({ commit }, matsimNetwork) {
+    // wake the server and give an indication of loading (experimental)
+    commit("startLoading");
+    fetch(process.env.VUE_APP_EES_TILES_API + "/wake/please").then(function() {
+      commit("doneLoading"); // dont care about the response
+    });
+
     // load the matsim source
     commit("loadMATSimSource", matsimNetwork);
 
