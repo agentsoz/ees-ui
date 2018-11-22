@@ -161,24 +161,25 @@ const mutations = {
   addPopulationSquare(state, feature) {
     state.populationSquares.push(feature);
   },
-  addFireLayer(state, layer) {
+  addFireSource(state, fireSlice) {
     var map = state.mapInstance;
-    var step = layer.step.toString();
-    var layerName = "phoenix-layer" + step;
-    var sourceName = "phoenix-source" + step;
+    var source = fireSlice.sourceName;
 
-    // setup unique source and layer
-    map.addSource(sourceName, {
+    // setup unique source
+    map.addSource(source, {
       type: "geojson",
-      data: layer.geojson
+      data: fireSlice.geojson
     });
-    state.loadedFireSources.push(sourceName);
+    state.loadedFireSources.push(source);
+  },
+  addFireLayer(state, fireSlice) {
+    var map = state.mapInstance;
 
     map.addLayer(
       {
-        id: layerName,
+        id: fireSlice.layerName,
         type: "fill-extrusion",
-        source: sourceName,
+        source: fireSlice.sourceName,
         filter: ["has", "FLAME_HT"],
         layout: {
           visibility: "none"
@@ -198,7 +199,7 @@ const mutations = {
       },
       state.firstSymbolLayer
     );
-    state.loadedFireLayers.push(layerName);
+    state.loadedFireLayers.push(fireSlice.layerName);
   },
   clearFire(state) {
     var map = state.mapInstance;
@@ -293,9 +294,16 @@ const actions = {
           }
 
           // create this layer
-          commit("addFireLayer", {
-            step: i,
+          var stepStr = i.toString();
+          var layer = "phoenix-layer" + stepStr;
+          var source = "phoenix-source" + stepStr;
+          commit("addFireSource", {
+            sourceName: source,
             geojson: sect
+          });
+          commit("addFireLayer", {
+            sourceName: source,
+            layerName: layer
           });
         }
         dispatch("filterFire", totalSteps - 1); // load the final fire step
