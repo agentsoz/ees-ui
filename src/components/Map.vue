@@ -45,7 +45,7 @@ export default {
         center: this.mapCenter,
         minZoom: 0,
         zoom: 6,
-        maxZoom: 14
+        maxZoom: 18
       };
       return opts;
     }
