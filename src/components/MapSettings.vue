@@ -24,6 +24,8 @@
         <option value="no-fire" disabled></option>
         <option v-for="fire in firesInSelectedRegion" :key="fire.id" :value="fire.id" :disabled="selectedFire==fire.id">{{ fire.name }}</option>
       </select>
+      <label for="map-fire-3d">Render Fire in 3D:</label>
+      <input id="map-fire-3d" type="checkbox" v-model="renderFireIn3D">
     </div>
     </div>
 </div>
@@ -88,6 +90,16 @@ export default {
         var fireData = this.$store.getters.selectedFire;
         this.$store.dispatch("fetchFire", !fireData ? "" : fireData.geojson);
       }
+    },
+    renderFireIn3D: {
+      get() {
+        return this.$store.state.map.fire3DFlameHeight;
+      },
+      set(value) {
+        this.toggle();
+        this.$store.commit("setFire3DFlameHeight", value);
+        this.$store.dispatch("resetFireLayers");
+      }
     }
   },
   methods: {
@@ -143,6 +155,5 @@ export default {
   width: 100%;
   position: relative;
   margin: 0;
-  cursor: ew-resize;
 }
 </style>

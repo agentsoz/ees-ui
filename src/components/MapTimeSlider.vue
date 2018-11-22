@@ -1,5 +1,5 @@
 <template>
-    <div v-if="visibleFireStep" class='time-slider-overlay'>
+    <div v-if="visibleFireStep || visibleFireStep === 0" class='time-slider-overlay'>
       <div class='time-slider-overlay-inner'>
         <vue-slider ref="fireslider" id="custom-tootip" v-bind="sliderConfig" @callback="updateFilter">
           <template slot="label" slot-scope="{ label, active }">

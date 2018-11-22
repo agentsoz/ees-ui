@@ -16,6 +16,7 @@ const state = {
   loadedFireLayers: [],
   loadedFireSources: [],
   visibleFireStep: null,
+  fire3DFlameHeight: false,
   fireSliderTicks: true,
   fireOpacity: 0.4,
   fireIntensityLevels: [[0, "#ffc107"], [100000, "#dc3545"]],
@@ -33,6 +34,7 @@ const getters = {
     return rootGetters.region(state.selectedRegion);
   },
   fireStepMinutes: state => state.fireStepMinutes,
+  visibleFireStep: state => state.visibleFireStep,
   totalFireLayers: state => state.loadedFireLayers.length,
   firesInSelectedRegion: (state, getters, rootState, rootGetters) => {
     if (!state.selectedRegion) return null;
@@ -175,31 +177,55 @@ const mutations = {
   addFireLayer(state, fireSlice) {
     var map = state.mapInstance;
 
-    map.addLayer(
-      {
-        id: fireSlice.layerName,
-        type: "fill-extrusion",
-        source: fireSlice.sourceName,
-        filter: ["has", "FLAME_HT"],
-        layout: {
-          visibility: "none"
+    if (state.fire3DFlameHeight) {
+      map.addLayer(
+        {
+          id: fireSlice.layerName,
+          type: "fill-extrusion",
+          source: fireSlice.sourceName,
+          filter: ["has", "FLAME_HT"],
+          layout: {
+            visibility: "none"
+          },
+          paint: {
+            "fill-extrusion-color": {
+              property: "E_INTSTY",
+              stops: state.fireIntensityLevels
+            },
+            "fill-extrusion-height": {
+              property: "FLAME_HT",
+              stops: [[0, 1], [300, 1000]]
+            },
+            "fill-extrusion-base": 0,
+            "fill-extrusion-opacity": state.fireOpacity
+          }
         },
-        paint: {
-          "fill-extrusion-color": {
-            property: "E_INTSTY",
-            stops: state.fireIntensityLevels
+        state.firstSymbolLayer
+      );
+    } else {
+      map.addLayer(
+        {
+          id: fireSlice.layerName,
+          type: "fill",
+          source: fireSlice.sourceName,
+          layout: {
+            visibility: "none"
           },
-          "fill-extrusion-height": {
-            property: "FLAME_HT",
-            stops: [[0, 1], [300, 1000]]
-          },
-          "fill-extrusion-base": 0,
-          "fill-extrusion-opacity": state.fireOpacity
-        }
-      },
-      state.firstSymbolLayer
-    );
+          paint: {
+            "fill-color": {
+              property: "E_INTSTY",
+              stops: state.fireIntensityLevels
+            },
+            "fill-opacity": state.fireOpacity
+          }
+        },
+        state.firstSymbolLayer
+      );
+    }
     state.loadedFireLayers.push(fireSlice.layerName);
+  },
+  setFire3DFlameHeight(state, value) {
+    state.fire3DFlameHeight = value;
   },
   clearFire(state) {
     var map = state.mapInstance;
@@ -320,6 +346,33 @@ const actions = {
       else map.setLayoutProperty(layer, "visibility", "none");
     }
     commit("setVisibleFireStep", fireStep);
+  },
+  resetFireLayers({ dispatch, getters, commit }) {
+    var map = state.mapInstance;
+    var totalFireLayers = getters.totalFireLayers;
+    var i;
+    var step;
+    var layer;
+
+    // we dont want to clear, just reset each fire layer
+    for (i = 0; i < totalFireLayers; i++) {
+      step = i.toString();
+      layer = "phoenix-layer" + step;
+      map.removeLayer(layer);
+    }
+    state.loadedFireLayers = [];
+
+    for (i = 0; i < totalFireLayers; i++) {
+      step = i.toString();
+      var source = "phoenix-source" + step;
+      layer = "phoenix-layer" + step;
+
+      commit("addFireLayer", {
+        sourceName: source,
+        layerName: layer
+      });
+    }
+    dispatch("filterFire", getters.visibleFireStep);
   },
   loadMATSimNetwork({ commit }, matsimNetwork) {
     // wake the server and give an indication of loading (experimental)
