@@ -95,11 +95,11 @@ export default {
   background-color: rgba(255, 255, 255, 0.8);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   border-radius: 3px;
-  padding: 24px 15px 0 14px;
+  padding: 24px 15px 15px 14px;
   margin-bottom: 10px;
   overflow: hidden;
 }
-.time-slider-overlay-inner .vue-slider-component {
+.time-slider-overlay-inner .vue-slider-component.vue-slider-has-label {
   margin: 0 auto;
 }
 .custom-label {
@@ -126,5 +126,15 @@ export default {
 .custom-label.active::after {
   background-color: #2980b9;
   width: 2px;
+}
+.time-slider-overlay-inner .vue-slider-component .vue-slider-dot-handle {
+  width: 0;
+  height: 0;
+  border: 20px solid transparent;
+  background-color: transparent;
+  box-shadow: none;
+  border-bottom-color: #2488cb;
+  position: relative;
+  transform: translateY(-15px) translateX(-12px);
 }
 </style>
