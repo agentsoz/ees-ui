@@ -226,6 +226,12 @@ const mutations = {
   },
   setFire3DFlameHeight(state, value) {
     state.fire3DFlameHeight = value;
+
+    // set the pitch if we are enabling 3D
+    if (value)
+      state.mapInstance.setPitch(60);
+    else
+      state.mapInstance.setPitch(0);
   },
   clearFire(state) {
     var map = state.mapInstance;
