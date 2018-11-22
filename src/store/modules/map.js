@@ -16,6 +16,7 @@ const state = {
   loadedFireLayers: [],
   loadedFireSources: [],
   visibleFireStep: null,
+  fireSliderTicks: true,
   fireOpacity: 0.4,
   fireIntensityLevels: [[0, "#ffc107"], [100000, "#dc3545"]],
   populationSquares: [],

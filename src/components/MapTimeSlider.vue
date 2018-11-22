@@ -3,8 +3,8 @@
       <div class='time-slider-overlay-inner'>
         <vue-slider ref="fireslider" id="custom-tootip" v-bind="sliderConfig" @callback="updateFilter">
           <template slot="label" slot-scope="{ label, active }">
-            <span :class="['custom-label', { active }]" v-if="label % 6 === 0 || label === totalFireLayers - 1">
-              {{ "+" + Math.floor((label * 10) / 60).toString() + ":" + ((label * 10) % 60).toString().padStart(2, "0") }}
+            <span :class="['custom-label', { active }]" v-if="renderLabelTick(label)">
+              {{ stepToLabel(label) }}
             </span>
           </template>
         </vue-slider>
@@ -20,9 +20,19 @@ export default {
   name: "mapSlider",
   components: { vueSlider },
   props: {},
+  data: function() {
+    var ls = []; // label step size
+    ls["sm"] = 12;
+    ls["md"] = 9;
+    ls["lg"] = 6;
+    return {
+      labelStep: ls
+    };
+  },
   computed: {
     ...mapState({
-      visibleFireStep: state => state.map.visibleFireStep
+      visibleFireStep: state => state.map.visibleFireStep,
+      fireSliderTicks: state => state.map.fireSliderTicks
     }),
     ...mapGetters(["totalFireLayers"]),
     sliderConfig() {
@@ -38,6 +48,28 @@ export default {
     }
   },
   methods: {
+    renderLabelTick(timeStep) {
+      if (this.fireSliderTicks || this.hasLabel(timeStep)) return true;
+    },
+    hasLabel(timeStep) {
+      var interval = this.$data.labelStep[this.$mq];
+      var notTooClose = timeStep < this.totalFireLayers - interval + 1;
+      return (
+        (timeStep % interval === 0 && notTooClose) ||
+        timeStep === this.totalFireLayers - 1
+      );
+    },
+    stepToLabel(timeStep) {
+      // if this tick is to have a label, send it, otherwise just a tick
+      if (this.hasLabel(timeStep))
+        return (
+          "+" +
+          Math.floor((timeStep * 10) / 60).toString() +
+          ":" +
+          ((timeStep * 10) % 60).toString().padStart(2, "0")
+        );
+      else return "";
+    },
     updateFilter(val) {
       this.$store.dispatch("filterFire", val);
     }
