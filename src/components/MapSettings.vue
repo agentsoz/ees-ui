@@ -7,6 +7,9 @@
       <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
         <button class="icon grid" type="button" @click='drawRectangle()'></button>
       </div>
+      <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
+        <button :class="{ 'font-weight-bold': renderFireIn3D }" type="button" @click='toggleFireIn3D()'>3D</button>
+      </div>
     </div>
     <div class='map-overlay' v-show="isOpen">
     <div class='map-settings-panel' v-on:keydown.esc.capture="toggle()">
@@ -24,8 +27,6 @@
         <option value="no-fire" disabled></option>
         <option v-for="fire in firesInSelectedRegion" :key="fire.id" :value="fire.id" :disabled="selectedFire==fire.id">{{ fire.name }}</option>
       </select>
-      <label for="map-fire-3d">Render Fire in 3D:</label>
-      <input id="map-fire-3d" type="checkbox" v-model="renderFireIn3D">
     </div>
     </div>
 </div>
@@ -96,7 +97,6 @@ export default {
         return this.$store.state.map.fire3DFlameHeight;
       },
       set(value) {
-        this.toggle();
         this.$store.commit("setFire3DFlameHeight", value);
         this.$store.dispatch("resetFireLayers");
       }
@@ -108,6 +108,13 @@ export default {
         "setMapSettingsIsOpen",
         !this.$store.state.map.mapSettingsIsOpen
       );
+    },
+    toggleFireIn3D: function() {
+      this.$store.commit(
+        "setFire3DFlameHeight",
+        !this.$store.state.map.fire3DFlameHeight
+      );
+      this.$store.dispatch("resetFireLayers");
     },
     drawRectangle() {
       this.$store.commit("drawPopulationSquare");
