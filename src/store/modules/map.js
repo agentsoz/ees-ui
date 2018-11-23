@@ -21,6 +21,7 @@ const state = {
   fireOpacity: 0.4,
   fireIntensityLevels: [[0, "#ffc107"], [100000, "#dc3545"]],
   populationSquares: [],
+  squarePopulationIsOpen: false,
   mapInstance: null, // MapboxGL object
   drawInstance: null, // MapboxDraw object
   mapCenter: [144.968447, -37.818232] // Federeation Square Melbourne
@@ -160,8 +161,21 @@ const mutations = {
   setSelectedFire(state, newVal) {
     state.selectedFire = newVal;
   },
+  drawPopulationSquare(state) {
+    const map = state.mapInstance;
+    const draw = state.drawInstance;
+    // in order to preserve mobile touch functionality we must add the draw mode here
+    map.addControl(draw);
+    draw.changeMode("draw_rectangle");
+  },
   addPopulationSquare(state, feature) {
     state.populationSquares.push(feature);
+    state.squarePopulationIsOpen = true;
+  },
+  setSquarePopulationIsOpen(state, value) {
+    // remove the draw mode control to resume normal touch triggers
+    state.mapInstance.removeControl(state.drawInstance);
+    state.squarePopulationIsOpen = value;
   },
   addFireSource(state, fireSlice) {
     var map = state.mapInstance;

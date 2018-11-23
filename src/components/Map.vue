@@ -66,7 +66,10 @@ export default {
           MapboxDraw.modes
         )
       });
-      map.addControl(draw);
+      // we cant add the control until we actually want to draw - breaks mobile touch functionality
+      // https://github.com/mapbox/mapbox-gl-draw/issues/617
+      // Hacky Fix: https://github.com/cityofaustin/dockless/issues/48
+      // map.addControl(draw);
 
       store.commit("setMapInstance", map);
       store.commit("setDrawInstance", draw);

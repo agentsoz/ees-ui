@@ -110,8 +110,7 @@ export default {
       );
     },
     drawRectangle() {
-      const draw = this.$store.getters.drawInstance;
-      draw.changeMode("draw_rectangle");
+      this.$store.commit("drawPopulationSquare");
     }
   }
 };
