@@ -1,12 +1,7 @@
 <template>
   <div class="map-settings-container">
-    <div class='map-settings-button-container mapboxgl-ctrl-top-right'>
-      <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
-        <button class="icon sprocket" type="button" @click='toggle()'></button>
-      </div>
-    </div>
     <div class='map-overlay' v-show="isOpen">
-    <div class='map-settings-panel' v-on:keydown.esc.capture="toggle()">
+    <div class='map-population-panel'>
       <label for="map-population">Population inside square:</label>
       <input id="map-population" type="text" v-model="squarePopulation">
       <button class="icon" type="button" @click='toggle()'>Save</button>
