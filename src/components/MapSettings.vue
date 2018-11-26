@@ -27,6 +27,8 @@
         <option value="no-fire" disabled></option>
         <option v-for="fire in firesInSelectedRegion" :key="fire.id" :value="fire.id" :disabled="selectedFire==fire.id">{{ fire.name }}</option>
       </select>
+      <label for="map-fire-opacity">Fire Opacity:</label>
+      <input id="map-fire-opacity" type="number" min="0" max="1" step="0.01" v-model="fireOpacity" />
     </div>
     </div>
 </div>
@@ -92,13 +94,21 @@ export default {
         this.$store.dispatch("fetchFire", !fireData ? "" : fireData.geojson);
       }
     },
+    fireOpacity: {
+      get() {
+        return this.$store.state.map.fireOpacity;
+      },
+      set(value) {
+        var decimal=  /^[-+]?[0-9]+\.[0-9]+$/;
+        if(!value.match(decimal)) return;
+
+        this.$store.commit("setFireOpacity", parseFloat(value));
+        this.$store.dispatch("resetFireLayers");
+      }
+    },
     renderFireIn3D: {
       get() {
         return this.$store.state.map.fire3DFlameHeight;
-      },
-      set(value) {
-        this.$store.commit("setFire3DFlameHeight", value);
-        this.$store.dispatch("resetFireLayers");
       }
     }
   },

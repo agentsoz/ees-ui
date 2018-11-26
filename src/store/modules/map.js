@@ -238,6 +238,9 @@ const mutations = {
     }
     state.loadedFireLayers.push(fireSlice.layerName);
   },
+  setFireOpacity(state, value) {
+    state.fireOpacity = value;
+  },
   setFire3DFlameHeight(state, value) {
     state.fire3DFlameHeight = value;
 
