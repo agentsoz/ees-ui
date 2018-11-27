@@ -30,6 +30,12 @@ const state = {
 const getters = {
   mapInstance: state => state.mapInstance,
   drawInstance: state => state.drawInstance,
+  selectedStyle: (state, getters, rootState) => {
+    if (!state.mapboxStyle) return null;
+    var styles = rootState.config.styles;
+    var style = styles.find(obj => obj.id === state.mapboxStyle);
+    return style;
+  },
   selectedRegion: (state, getters, rootState, rootGetters) => {
     if (!state.selectedRegion) return null;
     return rootGetters.region(state.selectedRegion);
