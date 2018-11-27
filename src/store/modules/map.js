@@ -164,8 +164,6 @@ const mutations = {
   drawPopulationSquare(state) {
     const map = state.mapInstance;
     const draw = state.drawInstance;
-    // in order to preserve mobile touch functionality we must add the draw mode here
-    map.addControl(draw);
     draw.changeMode("draw_rectangle");
     map.getCanvas().style.cursor = "crosshair";
   },
@@ -176,8 +174,6 @@ const mutations = {
     state.squarePopulationIsOpen = true;
   },
   setSquarePopulationIsOpen(state, value) {
-    // remove the draw mode control to resume normal touch triggers
-    state.mapInstance.removeControl(state.drawInstance);
     state.squarePopulationIsOpen = value;
   },
   addFireSource(state, fireSlice) {
