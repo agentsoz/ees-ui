@@ -1,9 +1,5 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
     <router-view class="router-view"/>
   </div>
 </template>
@@ -14,7 +10,7 @@ body {
   height: 100%;
 }
 .router-view {
-  height: calc(100% - 30px);
+  height: 100%;
 }
 #nav {
   height: 20px;
