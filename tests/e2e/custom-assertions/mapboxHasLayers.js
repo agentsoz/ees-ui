@@ -13,7 +13,16 @@ exports.assertion = function mapboxHasLayers(match, count) {
   this.pass = val => val === count;
   this.value = res => res.value;
   function evaluator(_match) {
-    var layers = document.querySelectorAll('a')[0].__vue__.$store.getters.mapInstance.getStyle().layers;
+    var actionTags = document.querySelectorAll('a')
+    var vueLinkedElem = null;
+    // not every element has a vue attribute, lets find the navbar 'a' tag
+    for( var tag of actionTags ) {
+      if ( tag.__vue__ ) {
+        vueLinkedElem = tag;
+        break;
+      }
+    }
+    layers = vueLinkedElem.__vue__.$store.getters.mapInstance.getStyle().layers;
     return layers.filter(layer => layer.id.includes(_match)).length;
   }
   this.command = cb => this.api.execute(evaluator, [match], cb);
