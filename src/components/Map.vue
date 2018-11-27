@@ -20,9 +20,13 @@ import Mapbox from "mapbox-gl-vue";
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
+import MapAffectedLink from "@/components/MapAffectedLink.vue";
 
 import store from "../store";
+import Vue from "vue";
 import { mapState } from "vuex";
+
+var ModalComponentClass = Vue.extend(MapAffectedLink);
 
 export default {
   name: "maplayer",
@@ -110,6 +114,14 @@ export default {
         filter = ["in", "ID", ""];
       }
       this.mapInstance.setFilter(this.highlightMATSimLayer, filter);
+
+      // generate modal
+      var instance = new ModalComponentClass({
+        store,
+        propsData: { linkId: id }
+      });
+      instance.$mount("#map-link-panel");
+      store.commit("setAffectedLinkIsOpen", true);
     }
   }
 };

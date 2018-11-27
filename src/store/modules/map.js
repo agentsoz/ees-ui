@@ -22,6 +22,7 @@ const state = {
   fireIntensityLevels: [[0, "#ffc107"], [100000, "#dc3545"]],
   populationSquares: [],
   squarePopulationIsOpen: false,
+  affectedLinkIsOpen: false,
   mapInstance: null, // MapboxGL object
   drawInstance: null, // MapboxDraw object
   mapCenter: [144.968447, -37.818232] // Federeation Square Melbourne
@@ -181,6 +182,9 @@ const mutations = {
   },
   setSquarePopulationIsOpen(state, value) {
     state.squarePopulationIsOpen = value;
+  },
+  setAffectedLinkIsOpen(state, value) {
+    state.affectedLinkIsOpen = value;
   },
   addFireSource(state, fireSlice) {
     var map = state.mapInstance;

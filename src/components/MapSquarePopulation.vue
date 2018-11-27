@@ -7,6 +7,7 @@
       <button class="icon" type="button" @click='toggle()'>Save</button>
     </div>
     </div>
+    <div id="map-link-panel"></div>
 </div>
 </template>
 
