@@ -4,15 +4,11 @@
     :map-options="mapOpts"
     :geolocate-control="{
       show: true,
-      position: 'top-left'
+      position: 'top-right'
     }"
     :scale-control="{
       show: true,
       position: 'bottom-left'
-    }"
-    :fullscreen-control="{
-      show: true,
-      position: 'top-left'
     }"
     @map-load="storeMapInstance"
   >
@@ -70,7 +66,7 @@ export default {
       // https://github.com/agentsoz/ees-ui/issues/9
       // https://github.com/mapbox/mapbox-gl-draw/issues/617
       // Hacky Fix: https://github.com/cityofaustin/dockless/issues/48
-       map.addControl(draw);
+      map.addControl(draw);
 
       store.commit("setMapInstance", map);
       store.commit("setDrawInstance", draw);
@@ -81,7 +77,8 @@ export default {
       store.commit("setFirstSymbolLayer");
       store.dispatch("loadMATSimRegion");
     },
-    squareCreated(feature) {
+    squareCreated(e) {
+      var feature = e.features[0];
       store.commit("addPopulationSquare", feature);
     },
     mapOnClick(e) {
