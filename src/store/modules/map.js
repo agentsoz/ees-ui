@@ -167,8 +167,11 @@ const mutations = {
     // in order to preserve mobile touch functionality we must add the draw mode here
     map.addControl(draw);
     draw.changeMode("draw_rectangle");
+    map.getCanvas().style.cursor = "crosshair";
   },
   addPopulationSquare(state, feature) {
+    // reset cursor to default
+    state.mapInstance.getCanvas().style.cursor = "";
     state.populationSquares.push(feature);
     state.squarePopulationIsOpen = true;
   },
