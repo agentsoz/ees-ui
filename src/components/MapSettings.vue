@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "mapSettings",
   props: {},
@@ -112,18 +114,12 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["toggleFireIn3D"]),
     toggle: function() {
       this.$store.commit(
         "setMapSettingsIsOpen",
         !this.$store.state.map.mapSettingsIsOpen
       );
-    },
-    toggleFireIn3D: function() {
-      this.$store.commit(
-        "setFire3DFlameHeight",
-        !this.$store.state.fire.fire3DFlameHeight
-      );
-      this.$store.dispatch("resetFireLayers");
     },
     drawRectangle() {
       this.$store.commit("drawPopulationSquare");

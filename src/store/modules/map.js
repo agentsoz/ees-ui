@@ -90,6 +90,11 @@ const mutations = {
     });
     state.mapCenter = target;
   },
+  toggle3D(state, value) {
+    // set the pitch if we are enabling 3D
+    if (value) state.mapInstance.easeTo({ pitch: 60 });
+    else state.mapInstance.easeTo({ pitch: 0 });
+  },
   setFirstSymbolLayer(state) {
     var layers = state.mapInstance.getStyle().layers;
     // Find the index of the first symbol layer in the map style

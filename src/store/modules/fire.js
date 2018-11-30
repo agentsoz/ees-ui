@@ -92,12 +92,8 @@ const mutations = {
   setFireOpacity(state, value) {
     state.fireOpacity = value;
   },
-  setFire3DFlameHeight(state, value) {
+  toggle3D(state, value) {
     state.fire3DFlameHeight = value;
-
-    // set the pitch if we are enabling 3D
-    if (value) state.mapInstance.easeTo({ pitch: 60 });
-    else state.mapInstance.easeTo({ pitch: 0 });
   },
   clearFire(state, map) {
     // remove layers
@@ -205,8 +201,8 @@ const actions = {
     }
     commit("setVisibleFireStep", fireStep);
   },
-  resetFireLayers({ dispatch, getters, commit }) {
-    var map = state.mapInstance;
+  resetFireLayers({ dispatch, rootGetters, getters, commit }) {
+    var map = rootGetters.mapInstance;
     var totalFireLayers = getters.totalFireLayers;
     var i;
     var step;
@@ -226,12 +222,19 @@ const actions = {
       layer = "phoenix-layer" + step;
 
       commit("addFireLayer", {
-        sourceName: source,
-        layerName: layer
+        map: map,
+        fireSlice: {
+          sourceName: source,
+          layerName: layer
+        }
       });
     }
     dispatch("filterFire", getters.visibleFireStep);
-  }
+  },
+  toggleFireIn3D({ dispatch, state, commit }) {
+    commit("toggle3D", !state.fire3DFlameHeight);
+    dispatch("resetFireLayers");
+  },
 };
 
 export default {
