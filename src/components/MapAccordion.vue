@@ -139,7 +139,7 @@ export default {
     },
     renderFireIn3D: {
       get() {
-        return this.$store.state.map.fire3DFlameHeight;
+        return this.$store.state.fire.fire3DFlameHeight;
       },
       set(value) {
         this.$store.commit("setFire3DFlameHeight", value);
@@ -164,7 +164,8 @@ export default {
       // set the selected region in state
       this.$store.commit("setSelectedRegion", event.target.dataset.region);
       // load the relevant MATSim layers
-      this.$store.dispatch("loadMATSimRegion");
+      this.$store.dispatch("clearMap");
+      this.$store.dispatch("loadLayers");
       this.$store.commit("flyTo", this.$store.getters.selectedRegion.center);
     },
     setFire: function(event) {
@@ -175,7 +176,7 @@ export default {
     toggleFireIn3D: function() {
       this.$store.commit(
         "setFire3DFlameHeight",
-        !this.$store.state.map.fire3DFlameHeight
+        !this.$store.state.fire.fire3DFlameHeight
       );
       this.$store.dispatch("resetFireLayers");
     },

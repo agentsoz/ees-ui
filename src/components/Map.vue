@@ -79,7 +79,8 @@ export default {
     },
     resetLayersOnStyleChange() {
       store.commit("setFirstSymbolLayer");
-      store.dispatch("loadMATSimRegion");
+      store.dispatch("clearMap");
+      store.dispatch("loadLayers");
     },
     squareCreated(e) {
       var feature = e.features[0];

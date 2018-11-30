@@ -31,8 +31,8 @@ export default {
   },
   computed: {
     ...mapState({
-      visibleFireStep: state => state.map.visibleFireStep,
-      fireSliderTicks: state => state.map.fireSliderTicks
+      visibleFireStep: state => state.fire.visibleFireStep,
+      fireSliderTicks: state => state.fire.fireSliderTicks
     }),
     ...mapGetters(["totalFireLayers"]),
     sliderConfig() {

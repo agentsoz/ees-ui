@@ -54,9 +54,7 @@ export default {
       }
     },
     firesInSelectedRegion() {
-      return !this.$store.getters.firesInSelectedRegion
-        ? []
-        : this.$store.getters.firesInSelectedRegion;
+      return this.$store.getters.firesInSelectedRegion;
     },
     mapboxStyle: {
       get() {
@@ -79,13 +77,14 @@ export default {
         // set the selected region in state
         this.$store.commit("setSelectedRegion", value);
         // load the relevant MATSim layers
-        this.$store.dispatch("loadMATSimRegion");
+        this.$store.dispatch("clearMap");
+        this.$store.dispatch("loadLayers");
         this.$store.commit("flyTo", this.$store.getters.selectedRegion.center);
       }
     },
     selectedFire: {
       get() {
-        return this.$store.state.map.selectedFire;
+        return this.$store.state.fire.selectedFire;
       },
       set(value) {
         this.toggle();
@@ -96,7 +95,7 @@ export default {
     },
     fireOpacity: {
       get() {
-        return this.$store.state.map.fireOpacity;
+        return this.$store.state.fire.fireOpacity;
       },
       set(value) {
         var decimal=  /^[-+]?[0-9]+\.[0-9]+$/;
@@ -108,7 +107,7 @@ export default {
     },
     renderFireIn3D: {
       get() {
-        return this.$store.state.map.fire3DFlameHeight;
+        return this.$store.state.fire.fire3DFlameHeight;
       }
     }
   },
@@ -122,7 +121,7 @@ export default {
     toggleFireIn3D: function() {
       this.$store.commit(
         "setFire3DFlameHeight",
-        !this.$store.state.map.fire3DFlameHeight
+        !this.$store.state.fire.fire3DFlameHeight
       );
       this.$store.dispatch("resetFireLayers");
     },
