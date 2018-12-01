@@ -1,5 +1,22 @@
 // Mapbox state
 // Used to store state of map, including layers etc
+import {
+  START_LOADING,
+  DONE_LOADING,
+  SET_MAP_INSTANCE,
+  SET_DRAW_INSTANCE,
+  SET_MAPBOX_STYLE,
+  SETTINGS_VISIBILITY,
+  SELECT_REGION,
+  CLEAR_REGION,
+  FLY_TO,
+  SET_FIRST_SYMBOL_LAYER,
+  MATSIM_ADD_SOURCE,
+  MATSIM_ADD_LAYER,
+  MATSIM_SET_BASE_LAYER,
+  MATSIM_SET_HIGHLIGHT_LAYER,
+  TOGGLE_3D
+} from "@/store/mutation-types";
 
 const state = {
   isLoading: 0,
@@ -39,37 +56,37 @@ const getters = {
 };
 
 const mutations = {
-  startLoading(state) {
+  [START_LOADING] (state) {
     state.isLoading++;
   },
-  doneLoading(state) {
+  [DONE_LOADING] (state) {
     if (state.isLoading > 0) state.isLoading--;
   },
-  setMapInstance(state, newMap) {
+  [SET_MAP_INSTANCE] (state, newMap) {
     state.mapInstance = newMap;
   },
-  setDrawInstance(state, newDraw) {
+  [SET_DRAW_INSTANCE] (state, newDraw) {
     state.drawInstance = newDraw;
   },
-  setMapboxStyle(state, newStyle) {
+  [SET_MAPBOX_STYLE] (state, newStyle) {
     state.mapboxStyle = newStyle;
     state.mapInstance.setStyle(
       "mapbox://styles/mapbox/" + state.mapboxStyle + "-v9"
     );
   },
-  setMapSettingsIsOpen(state, newVal) {
+  [SETTINGS_VISIBILITY] (state, newVal) {
     state.mapSettingsIsOpen = newVal;
   },
-  setSelectedRegion(state, newVal) {
+  [SELECT_REGION](state, newVal) {
     state.selectedRegion = newVal;
   },
-  setBaseMATSimLayer(state, newVal) {
+  [MATSIM_SET_BASE_LAYER](state, newVal) {
     state.baseMATSimLayer = newVal;
   },
-  setHighlightMATSimLayer(state, newVal) {
+  [MATSIM_SET_HIGHLIGHT_LAYER](state, newVal) {
     state.highlightMATSimLayer = newVal;
   },
-  flyTo(state, target) {
+  [FLY_TO](state, target) {
     state.mapInstance.flyTo({
       // These options control the ending camera position: centered at
       // the target, at given zoom level, and north up.
@@ -90,12 +107,12 @@ const mutations = {
     });
     state.mapCenter = target;
   },
-  toggle3D(state, value) {
+  [TOGGLE_3D](state, value) {
     // set the pitch if we are enabling 3D
     if (value) state.mapInstance.easeTo({ pitch: 60 });
     else state.mapInstance.easeTo({ pitch: 0 });
   },
-  setFirstSymbolLayer(state) {
+  [SET_FIRST_SYMBOL_LAYER](state) {
     var layers = state.mapInstance.getStyle().layers;
     // Find the index of the first symbol layer in the map style
     var firstSymbolId;
@@ -107,7 +124,7 @@ const mutations = {
     }
     state.firstSymbolLayer = firstSymbolId;
   },
-  addMATSimLayer(state, matsimNetwork) {
+  [MATSIM_ADD_LAYER](state, matsimNetwork) {
     state.mapInstance.addLayer(
       {
         id: matsimNetwork.layerName,
@@ -130,7 +147,7 @@ const mutations = {
     );
     state.loadedMATSimLayers.push(matsimNetwork.layerName);
   },
-  loadMATSimSource(state, matsimNetwork) {
+  [MATSIM_ADD_SOURCE](state, matsimNetwork) {
     state.mapInstance.addSource(matsimNetwork.sourceName, {
       type: "vector",
       tiles: [matsimNetwork.pbfurl],
@@ -139,7 +156,7 @@ const mutations = {
     });
     state.loadedMATSimSource = matsimNetwork.sourceName;
   },
-  clearMATSimLayers(state) {
+  [CLEAR_REGION](state) {
     var map = state.mapInstance;
     for (const layer of state.loadedMATSimLayers) map.removeLayer(layer);
     state.loadedMATSimLayers = [];
@@ -172,14 +189,25 @@ const mutations = {
 };
 
 const actions = {
-  resetAndMapboxStyle({ commit }, style) {
-    // ensure any existing matsim artifacts are removed
-    commit("clearMATSimLayers");
-    commit("setMapboxStyle", style);
+  toggleSettingsVis({ state, commit }) {
+    commit(SETTINGS_VISIBILITY, !state.mapSettingsIsOpen);
   },
-  clearMap({ dispatch, commit }) {
+  changeMapboxStyle({ commit, dispatch }, style) {
+    // ensure any existing matsim artifacts are removed
+    // by dispatch to all store modules
+    dispatch("clearMap");
+    commit(SET_MAPBOX_STYLE, style);
+  },
+  clearMap({ commit }) {
     // ensure any existing matsim/fire artifacts are removed
-    commit("clearMATSimLayers");
+    commit(CLEAR_REGION);
+  },
+  selectRegion({ dispatch, commit, getters }, value) {
+    commit(SELECT_REGION, value);
+    // load the relevant MATSim layers
+    dispatch("clearMap");
+    dispatch("loadLayers");
+    commit(FLY_TO, getters.selectedRegion.center);
   },
   loadLayers({ dispatch, getters }) {
     var region = getters.selectedRegion;
@@ -201,17 +229,17 @@ const actions = {
   },
   loadMATSimNetwork({ commit }, matsimNetwork) {
     // wake the server and give an indication of loading (experimental)
-    commit("startLoading");
+    commit(START_LOADING);
     fetch(process.env.VUE_APP_EES_TILES_API + "/wake/please").then(function() {
-      commit("doneLoading"); // dont care about the response
+      commit(DONE_LOADING); // dont care about the response
     });
 
     // load the matsim source
-    commit("loadMATSimSource", matsimNetwork);
+    commit(MATSIM_ADD_SOURCE, matsimNetwork);
 
     // create the base matsim layer
-    commit("addMATSimLayer", matsimNetwork);
-    commit("setBaseMATSimLayer", matsimNetwork.layerName);
+    commit(MATSIM_ADD_LAYER, matsimNetwork);
+    commit(MATSIM_SET_BASE_LAYER, matsimNetwork.layerName);
 
     // create the highlight layer above this (deep copy)
     var matsimNetworkHighlighted = JSON.parse(JSON.stringify(matsimNetwork));
@@ -223,8 +251,8 @@ const actions = {
       },
       filter: ["in", "ID", ""]
     });
-    commit("addMATSimLayer", matsimNetworkHighlighted);
-    commit("setHighlightMATSimLayer", matsimNetworkHighlighted.layerName);
+    commit(MATSIM_ADD_LAYER, matsimNetworkHighlighted);
+    commit(MATSIM_SET_HIGHLIGHT_LAYER, matsimNetworkHighlighted.layerName);
   }
 };
 

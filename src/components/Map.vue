@@ -22,7 +22,12 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import MapAffectedLink from "@/components/MapAffectedLink.vue";
 
-import store from "../store";
+import store from "@/store";
+import {
+  SET_MAP_INSTANCE,
+  SET_DRAW_INSTANCE,
+  SET_FIRST_SYMBOL_LAYER
+} from "@/store/mutation-types";
 import Vue from "vue";
 import { mapState } from "vuex";
 
@@ -57,7 +62,7 @@ export default {
     storeMapInstance(map) {
       map.on("click", this.mapOnClick);
       map.on("draw.create", this.squareCreated);
-      map.on("style.load", this.resetLayersOnStyleChange);
+      map.on("style.load", this.loadLayersOnStyleChange);
 
       const draw = new MapboxDraw({
         displayControlsDefault: false,
@@ -72,14 +77,13 @@ export default {
       // Hacky Fix: https://github.com/cityofaustin/dockless/issues/48
       map.addControl(draw);
 
-      store.commit("setMapInstance", map);
-      store.commit("setDrawInstance", draw);
+      store.commit(SET_MAP_INSTANCE, map);
+      store.commit(SET_DRAW_INSTANCE, draw);
 
-      store.commit("setFirstSymbolLayer");
+      store.commit(SET_FIRST_SYMBOL_LAYER);
     },
-    resetLayersOnStyleChange() {
-      store.commit("setFirstSymbolLayer");
-      store.dispatch("clearMap");
+    loadLayersOnStyleChange() {
+      store.commit(SET_FIRST_SYMBOL_LAYER);
       store.dispatch("loadLayers");
     },
     squareCreated(e) {

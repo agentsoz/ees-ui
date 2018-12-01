@@ -64,7 +64,7 @@ export default {
       },
       set(value) {
         this.toggle();
-        this.$store.dispatch("resetAndMapboxStyle", value);
+        this.changeMapboxStyle(value);
       }
     },
     selectedRegion: {
@@ -77,11 +77,7 @@ export default {
         // close this settings window
         this.toggle();
         // set the selected region in state
-        this.$store.commit("setSelectedRegion", value);
-        // load the relevant MATSim layers
-        this.$store.dispatch("clearMap");
-        this.$store.dispatch("loadLayers");
-        this.$store.commit("flyTo", this.$store.getters.selectedRegion.center);
+        this.selectRegion(value);
       }
     },
     selectedFire: {
@@ -100,7 +96,7 @@ export default {
         return this.$store.state.fire.fireOpacity;
       },
       set(value) {
-        var decimal=  /^[-+]?[0-9]+\.[0-9]+$/;
+        var decimal = /^[-+]?[0-9]+\.[0-9]+$/;
         if(!value.match(decimal)) return;
 
         this.$store.commit("setFireOpacity", parseFloat(value));
@@ -114,13 +110,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["toggleFireIn3D"]),
-    toggle: function() {
-      this.$store.commit(
-        "setMapSettingsIsOpen",
-        !this.$store.state.map.mapSettingsIsOpen
-      );
-    },
+    ...mapActions({
+      toggleFireIn3D: "toggleFireIn3D",
+      toggle: "toggleSettingsVis",
+      changeMapboxStyle: "changeMapboxStyle",
+      selectRegion: "selectRegion"
+    }),
     drawRectangle() {
       this.$store.commit("drawPopulationSquare");
     }

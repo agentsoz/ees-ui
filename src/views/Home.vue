@@ -1,5 +1,5 @@
 <template>
-  <div v-on:keydown.esc.capture="toggleSettings()">
+  <div v-on:keydown.esc.capture="toggleSettingsVis()">
     <maplayer/>
     <slider/>
     <spinner/>
@@ -17,6 +17,8 @@ import MapLoadSpinner from "@/components/MapLoadSpinner.vue";
 import MapAccordion from "@/components/MapAccordion.vue";
 import MapSettings from "@/components/MapSettings.vue";
 
+import { mapActions } from "vuex";
+
 export default {
   name: "home",
   components: {
@@ -28,7 +30,7 @@ export default {
     settings: MapSettings
   },
   methods: {
-    toggleSettings: MapSettings.methods.toggle
+    ...mapActions(["toggleSettingsVis"])
   }
 };
 </script>

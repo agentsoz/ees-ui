@@ -1,5 +1,10 @@
 // Phoenix fire
 // Used to store state of fire geojson and layers
+import {
+  START_LOADING,
+  DONE_LOADING,
+  TOGGLE_3D,
+} from "@/store/mutation-types";
 
 const state = {
   fireStepMinutes: 10,
@@ -25,7 +30,7 @@ const getters = {
     return fire;
   },
   fireAboveLayer: (state, getters, rootState) => {
-    return rootState.firstSymbolLayer
+    return rootState.firstSymbolLayer;
   }
 };
 
@@ -92,7 +97,7 @@ const mutations = {
   setFireOpacity(state, value) {
     state.fireOpacity = value;
   },
-  toggle3D(state, value) {
+  [TOGGLE_3D](state, value) {
     state.fire3DFlameHeight = value;
   },
   clearFire(state, map) {
@@ -109,11 +114,7 @@ const mutations = {
 };
 
 const actions = {
-  resetAndMapboxStyle({ commit, rootGetters }, style) {
-    // ensure any existing matsim/fire artifacts are removed
-    commit("clearFire", rootGetters.mapInstance);
-  },
-  clearMap({ dispatch, commit, rootGetters }) {
+  clearMap({ commit, rootGetters }) {
     // ensure any existing matsim/fire artifacts are removed
     commit("clearFire", rootGetters.mapInstance);
   },
@@ -125,7 +126,7 @@ const actions = {
   },
   fetchFire({ dispatch, commit, getters, rootGetters }, url) {
     const map = rootGetters.mapInstance;
-    commit("startLoading");
+    commit(START_LOADING);
 
     // download and pre-process the geojson for better performance while rendering
     // we will build our own sources and layers for each fire step
@@ -187,7 +188,7 @@ const actions = {
           });
         }
         dispatch("filterFire", totalSteps - 1); // load the final fire step
-        commit("doneLoading");
+        commit(DONE_LOADING);
       });
   },
   filterFire({ getters, commit }, fireStep) {
@@ -232,9 +233,9 @@ const actions = {
     dispatch("filterFire", getters.visibleFireStep);
   },
   toggleFireIn3D({ dispatch, state, commit }) {
-    commit("toggle3D", !state.fire3DFlameHeight);
+    commit(TOGGLE_3D, !state.fire3DFlameHeight);
     dispatch("resetFireLayers");
-  },
+  }
 };
 
 export default {

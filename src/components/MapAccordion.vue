@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   name: "mapSettings",
@@ -148,37 +148,18 @@ export default {
     }
   },
   methods: {
-    toggle: function() {
-      this.$store.commit(
-        "setMapSettingsIsOpen",
-        !this.$store.state.map.mapSettingsIsOpen
-      );
-    },
+    ...mapActions(["selectRegion", "toggleFireIn3D", "changeMapboxStyle"]),
     setStyle: function(event) {
-      this.$store.dispatch(
-        "resetAndMapboxStyle",
-        event.target.dataset.mapStyle
-      );
+      this.changeMapboxStyle(event.target.dataset.mapStyle);
     },
     setRegion: function(event) {
       // set the selected region in state
-      this.$store.commit("setSelectedRegion", event.target.dataset.region);
-      // load the relevant MATSim layers
-      this.$store.dispatch("clearMap");
-      this.$store.dispatch("loadLayers");
-      this.$store.commit("flyTo", this.$store.getters.selectedRegion.center);
+      this.selectRegion(event.target.dataset.region);
     },
     setFire: function(event) {
       this.$store.commit("setSelectedFire", event.target.dataset.fire);
       var fireData = this.$store.getters.selectedFire;
       this.$store.dispatch("fetchFire", !fireData ? "" : fireData.geojson);
-    },
-    toggleFireIn3D: function() {
-      this.$store.commit(
-        "setFire3DFlameHeight",
-        !this.$store.state.fire.fire3DFlameHeight
-      );
-      this.$store.dispatch("resetFireLayers");
     },
     drawRectangle() {
       this.$store.commit("drawPopulationSquare");
