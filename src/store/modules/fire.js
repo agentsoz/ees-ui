@@ -3,6 +3,12 @@
 import {
   START_LOADING,
   DONE_LOADING,
+  SELECT_FIRE,
+  PHOENIX_ADD_SOURCE,
+  PHOENIX_ADD_LAYER,
+  PHOENIX_SET_OPACITY,
+  PHOENIX_TIME_STEP,
+  CLEAR_FIRE,
   TOGGLE_3D,
 } from "@/store/mutation-types";
 
@@ -35,10 +41,10 @@ const getters = {
 };
 
 const mutations = {
-  setSelectedFire(state, newVal) {
+  [SELECT_FIRE](state, newVal) {
     state.selectedFire = newVal;
   },
-  addFireSource(state, payload) {
+  [PHOENIX_ADD_SOURCE](state, payload) {
     var fireSlice = payload.fireSlice;
     var source = fireSlice.sourceName;
 
@@ -49,7 +55,7 @@ const mutations = {
     });
     state.loadedFireSources.push(source);
   },
-  addFireLayer(state, payload) {
+  [PHOENIX_ADD_LAYER](state, payload) {
     var fireSlice = payload.fireSlice;
     var layer;
     if (state.fire3DFlameHeight) {
@@ -94,13 +100,13 @@ const mutations = {
     payload.map.addLayer(layer, payload.beforeLayer);
     state.loadedFireLayers.push(fireSlice.layerName);
   },
-  setFireOpacity(state, value) {
+  [PHOENIX_SET_OPACITY](state, value) {
     state.fireOpacity = value;
   },
   [TOGGLE_3D](state, value) {
     state.fire3DFlameHeight = value;
   },
-  clearFire(state, map) {
+  [CLEAR_FIRE](state, map) {
     // remove layers
     for (const layer of state.loadedFireLayers) map.removeLayer(layer);
     state.loadedFireLayers = [];
@@ -108,7 +114,7 @@ const mutations = {
     for (const source of state.loadedFireSources) map.removeSource(source);
     state.loadedFireSources = [];
   },
-  setVisibleFireStep(state, newVal) {
+  [PHOENIX_TIME_STEP](state, newVal) {
     state.visibleFireStep = newVal;
   }
 };
@@ -116,13 +122,18 @@ const mutations = {
 const actions = {
   clearMap({ commit, rootGetters }) {
     // ensure any existing matsim/fire artifacts are removed
-    commit("clearFire", rootGetters.mapInstance);
+    commit(CLEAR_FIRE, rootGetters.mapInstance);
   },
   loadLayers({ dispatch, getters }) {
     var selectedFire = getters.selectedFire;
     if (selectedFire) {
       dispatch("fetchFire", selectedFire.geojson);
     }
+  },
+  selectFire({ dispatch, commit, getters }, fire) {
+    commit(SELECT_FIRE, fire);
+    var fireData = getters.selectedFire;
+    dispatch("fetchFire", !fireData ? "" : fireData.geojson);
   },
   fetchFire({ dispatch, commit, getters, rootGetters }, url) {
     const map = rootGetters.mapInstance;
@@ -171,14 +182,14 @@ const actions = {
           var stepStr = i.toString();
           var layer = "phoenix-layer" + stepStr;
           var source = "phoenix-source" + stepStr;
-          commit("addFireSource", {
+          commit(PHOENIX_ADD_SOURCE, {
             map: map,
             fireSlice: {
               sourceName: source,
               geojson: sect
             }
           });
-          commit("addFireLayer", {
+          commit(PHOENIX_ADD_LAYER, {
             map: map,
             beforeLayer: getters.fireBeforeLayer,
             fireSlice: {
@@ -222,7 +233,7 @@ const actions = {
       var source = "phoenix-source" + step;
       layer = "phoenix-layer" + step;
 
-      commit("addFireLayer", {
+      commit(PHOENIX_ADD_LAYER, {
         map: map,
         fireSlice: {
           sourceName: source,

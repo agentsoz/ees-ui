@@ -136,19 +136,14 @@ export default {
       return !this.$store.getters.firesInSelectedRegion
         ? []
         : this.$store.getters.firesInSelectedRegion;
-    },
-    renderFireIn3D: {
-      get() {
-        return this.$store.state.fire.fire3DFlameHeight;
-      },
-      set(value) {
-        this.$store.commit("setFire3DFlameHeight", value);
-        this.$store.dispatch("resetFireLayers");
-      }
     }
   },
   methods: {
-    ...mapActions(["selectRegion", "toggleFireIn3D", "changeMapboxStyle"]),
+    ...mapActions([
+      "selectRegion",
+      "changeMapboxStyle",
+      "selectFire"
+    ]),
     setStyle: function(event) {
       this.changeMapboxStyle(event.target.dataset.mapStyle);
     },
@@ -157,9 +152,7 @@ export default {
       this.selectRegion(event.target.dataset.region);
     },
     setFire: function(event) {
-      this.$store.commit("setSelectedFire", event.target.dataset.fire);
-      var fireData = this.$store.getters.selectedFire;
-      this.$store.dispatch("fetchFire", !fireData ? "" : fireData.geojson);
+      this.selectFire(event.target.dataset.fire);
     },
     drawRectangle() {
       this.$store.commit("drawPopulationSquare");

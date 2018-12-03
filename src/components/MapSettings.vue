@@ -36,6 +36,7 @@
 
 <script>
 import { mapActions } from "vuex";
+import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
 
 export default {
   name: "mapSettings",
@@ -86,9 +87,7 @@ export default {
       },
       set(value) {
         this.toggle();
-        this.$store.commit("setSelectedFire", value);
-        var fireData = this.$store.getters.selectedFire;
-        this.$store.dispatch("fetchFire", !fireData ? "" : fireData.geojson);
+        this.selectFire(value);
       }
     },
     fireOpacity: {
@@ -97,9 +96,9 @@ export default {
       },
       set(value) {
         var decimal = /^[-+]?[0-9]+\.[0-9]+$/;
-        if(!value.match(decimal)) return;
+        if (!value.match(decimal)) return;
 
-        this.$store.commit("setFireOpacity", parseFloat(value));
+        this.$store.commit(PHOENIX_SET_OPACITY, parseFloat(value));
         this.$store.dispatch("resetFireLayers");
       }
     },
@@ -114,7 +113,8 @@ export default {
       toggleFireIn3D: "toggleFireIn3D",
       toggle: "toggleSettingsVis",
       changeMapboxStyle: "changeMapboxStyle",
-      selectRegion: "selectRegion"
+      selectRegion: "selectRegion",
+      selectFire: "selectFire"
     }),
     drawRectangle() {
       this.$store.commit("drawPopulationSquare");

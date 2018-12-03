@@ -20,5 +20,13 @@ export const MATSIM_ADD_LAYER = "MATSIM_ADD_LAYER";
 export const MATSIM_SET_BASE_LAYER = "MATSIM_SET_BASE_LAYER";
 export const MATSIM_SET_HIGHLIGHT_LAYER = "MATSIM_SET_HIGHLIGHT_LAYER";
 
+export const SELECT_FIRE = "SELECT_FIRE";
+export const CLEAR_FIRE = "CLEAR_FIRE";
+
+export const PHOENIX_ADD_SOURCE = "PHOENIX_ADD_SOURCE";
+export const PHOENIX_ADD_LAYER = "PHOENIX_ADD_LAYER";
+export const PHOENIX_SET_OPACITY = "PHOENIX_SET_OPACITY";
+export const PHOENIX_TIME_STEP = "PHOENIX_TIME_STEP";
+
 // used to trigger pitch change, and 3D fire
 export const TOGGLE_3D = "TOGGLE_3D";
