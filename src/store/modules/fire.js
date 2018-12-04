@@ -9,7 +9,7 @@ import {
   PHOENIX_SET_OPACITY,
   PHOENIX_TIME_STEP,
   CLEAR_FIRE,
-  TOGGLE_3D,
+  TOGGLE_3D
 } from "@/store/mutation-types";
 
 const state = {
@@ -113,6 +113,7 @@ const mutations = {
     // remove sources
     for (const source of state.loadedFireSources) map.removeSource(source);
     state.loadedFireSources = [];
+    state.visibleFireStep = null;
   },
   [PHOENIX_TIME_STEP](state, newVal) {
     state.visibleFireStep = newVal;
@@ -211,7 +212,7 @@ const actions = {
       if (i <= fireStep) map.setLayoutProperty(layer, "visibility", "visible");
       else map.setLayoutProperty(layer, "visibility", "none");
     }
-    commit("setVisibleFireStep", fireStep);
+    commit(PHOENIX_TIME_STEP, fireStep);
   },
   resetFireLayers({ dispatch, rootGetters, getters, commit }) {
     var map = rootGetters.mapInstance;
