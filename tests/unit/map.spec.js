@@ -4,6 +4,7 @@ jest.mock('mapbox-gl/dist/mapbox-gl', () => ({
 
 import { expect } from "chai";
 import mapboxgl from "mapbox-gl";
+import * as m from "@/store/mutation-types";
 import map from "@/store/modules/map";
 
 // helper for testing action with expected mutations
@@ -77,27 +78,28 @@ const testAction = (
  * changing styles or changing the selected region
  */
 describe("High level calls to cleanup region & fire mutations", () => {
-  it("loadMATSimRegion", done => {
+  const getters = {
+    selectedRegion: {
+      center: [138,42]
+    }
+  };
+  it("selectRegion", done => {
     testAction(
-      map.actions.loadMATSimRegion,
+      map.actions.selectRegion,
       null,
-      {},
-      [{ type: "loadLayers" }],
-      [{ type: "clearFire" }, { type: "clearMATSimLayers" }],
+      getters,
+      [{ type: "clearMap" }, { type: "loadLayers" }],
+      [{ type: m.SELECT_REGION }, { type: m.FLY_TO, payload: getters.selectedRegion.center }],
       done
     );
   });
-  it("resetAndSetStyle", done => {
+  it("changeMapboxStyle", done => {
     testAction(
-      map.actions.resetAndMapboxStyle,
+      map.actions.changeMapboxStyle,
       null,
       {},
-      [],
-      [
-        { type: "clearFire" },
-        { type: "clearMATSimLayers" },
-        { type: "setMapboxStyle" }
-      ],
+      [{ type: "clearMap" }], // features are re-added upon receiving change style callback
+      [{ type: m.SET_MAPBOX_STYLE }],
       done
     );
   });
@@ -160,14 +162,14 @@ describe("Actions & mutations responsible for Region selection", () => {
       {},
       [],
       [
-        { type: "startLoading" },
-        { type: "doneLoading" },
-        { type: "loadMATSimSource", payload: matsimNetwork },
-        { type: "addMATSimLayer", payload: matsimNetwork },
-        { type: "setBaseMATSimLayer", payload: matsimNetwork.layerName },
-        { type: "addMATSimLayer", payload: matsimNetworkHighlighted },
+        { type: m.START_LOADING },
+        { type: m.DONE_LOADING },
+        { type: m.MATSIM_ADD_SOURCE, payload: matsimNetwork },
+        { type: m.MATSIM_ADD_LAYER, payload: matsimNetwork },
+        { type: m.MATSIM_SET_BASE_LAYER, payload: matsimNetwork.layerName },
+        { type: m.MATSIM_ADD_LAYER, payload: matsimNetworkHighlighted },
         {
-          type: "setHighlightMATSimLayer",
+          type: m.MATSIM_SET_HIGHLIGHT_LAYER,
           payload: matsimNetworkHighlighted.layerName
         }
       ],
@@ -175,7 +177,7 @@ describe("Actions & mutations responsible for Region selection", () => {
     );
   });
   it("loadMATSimSource asserts the network source in the store", () => {
-    map.mutations.loadMATSimSource(state, matsimNetwork);
+    map.mutations[m.MATSIM_ADD_SOURCE](state, matsimNetwork);
     expect(state.loadedMATSimSource).to.equal(matsimNetwork.sourceName);
   });
 });
