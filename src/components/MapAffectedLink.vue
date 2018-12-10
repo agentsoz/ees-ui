@@ -1,12 +1,25 @@
 <template>
-  <div class='map-overlay' v-show="isOpen">
   <div class='map-link-panel'>
-    <label for="map-link">MATSim Link ID:</label>
-    <input id="map-link" type="text" v-model="linkId">
-    <label for="map-link-start">Disruption Start Time:</label>
-    <input id="map-link-start" type="text" v-model="linkStart">
+      <b-form-group
+        label="MATSim Link ID:"
+        label-for="map-link">
+        <b-form-input
+          id="map-link"
+          type="text"
+          v-model="linkId"
+          placeholder="Please select a MATSim Network Link from the map" readonly>
+        </b-form-input>
+      </b-form-group>
+      <b-form-group
+        label="Disruption Start Time:"
+        label-for="map-link-start">
+        <b-form-input
+          id="map-link-start"
+          type="text"
+          v-model="linkStart">
+        </b-form-input>
+      </b-form-group>
     <button class="icon" type="button" @click='toggle()'>Save</button>
-  </div>
   </div>
 </template>
 
@@ -15,7 +28,7 @@ export default {
   name: "mapAffectedLink",
   props: {
     linkId: {
-      default: "0",
+      default: "",
       type: String
     },
     linkStart: {

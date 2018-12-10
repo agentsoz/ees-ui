@@ -4,7 +4,7 @@
     <slider/>
     <spinner/>
     <population/>
-    <accordion/>
+    <setup/>
     <settings/>
   </div>
 </template>
@@ -14,7 +14,7 @@ import MapComponent from "@/components/Map.vue";
 import MapTimeSlider from "@/components/MapTimeSlider.vue";
 import MapSquarePopulation from "@/components/MapSquarePopulation.vue";
 import MapLoadSpinner from "@/components/MapLoadSpinner.vue";
-import MapAccordion from "@/components/MapAccordion.vue";
+import MapSetup from "@/components/MapSetup.vue";
 import MapSettings from "@/components/MapSettings.vue";
 
 import { mapActions } from "vuex";
@@ -26,7 +26,7 @@ export default {
     slider: MapTimeSlider,
     spinner: MapLoadSpinner,
     population: MapSquarePopulation,
-    accordion: MapAccordion,
+    setup: MapSetup,
     settings: MapSettings
   },
   methods: {

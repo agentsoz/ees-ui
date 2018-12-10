@@ -15,6 +15,8 @@ import {
   MATSIM_ADD_LAYER,
   MATSIM_SET_BASE_LAYER,
   MATSIM_SET_HIGHLIGHT_LAYER,
+  MATSIM_SELECT_LINK,
+  MATSIM_DESELECT_LINK,
   TOGGLE_3D
 } from "@/store/mutation-types";
 
@@ -30,6 +32,7 @@ const state = {
   selectedRegion: null,
   populationSquares: [],
   squarePopulationIsOpen: false,
+  selectedMATSimLink: "",
   affectedLinkIsOpen: false,
   mapInstance: null, // MapboxGL object
   drawInstance: null, // MapboxDraw object
@@ -182,6 +185,12 @@ const mutations = {
   },
   setSquarePopulationIsOpen(state, value) {
     state.squarePopulationIsOpen = value;
+  },
+  [MATSIM_SELECT_LINK](state, value) {
+    state.selectedMATSimLink = value;
+  },
+  [MATSIM_DESELECT_LINK](state) {
+    state.selectedMATSimLink = "";
   },
   setAffectedLinkIsOpen(state, value) {
     state.affectedLinkIsOpen = value;

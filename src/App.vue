@@ -13,7 +13,6 @@ body {
   height: 100%;
 }
 #nav {
-  height: 20px;
   background-color: #eee;
   a {
     font-weight: bold;

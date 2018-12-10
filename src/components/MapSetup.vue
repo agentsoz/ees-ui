@@ -3,11 +3,12 @@
     <b-row no-gutters class="h-100">
       <b-col lg="4" md="4" sm="12" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col">
         <div id="nav">
+          <h5>Emergency Evacuation Simulator</h5>
           <router-link to="/">Home</router-link> |
           <router-link to="/about">About</router-link>
         </div>
         <div class="h-100 map-accordion-container">
-          <b-card no-body class="mb-1">
+          <b-card header="Map Style" no-body class="mb-1">
             <div class="p-1" role="tab">
               <div block href="#" v-b-toggle.map-style-accordion variant="info">
                 {{ selectedStyle.name }}
@@ -27,7 +28,7 @@
               </ul>
             </b-collapse>
           </b-card>
-          <b-card no-body class="mb-1">
+          <b-card header="Region" no-body class="mb-1">
             <div class="p-1" role="tab">
               <div block href="#" v-b-toggle.map-region-accordion variant="info">
                 {{ selectedRegion ? selectedRegion.name : "Region" }}
@@ -47,7 +48,7 @@
               </ul>
             </b-collapse>
           </b-card>
-          <b-card no-body class="mb-1">
+          <b-card header="Emergency Incident" no-body class="mb-1">
             <div class="p-1" role="tab">
               <div block href="#" v-b-toggle.map-fire-accordion variant="info">
                 {{ selectedFire ? selectedFire.name : "Phoenix Fire" }}
@@ -67,7 +68,7 @@
               </ul>
             </b-collapse>
           </b-card>
-          <b-card no-body class="mb-1">
+          <b-card header="Vehicle Configuration" no-body class="mb-1">
             <div class="p-1" role="tab">
               <div block href="#" v-b-toggle.map-vehicle-accordion variant="info">
                 Vehicle Configuration
@@ -83,11 +84,12 @@
                 </li>
               </ul>
             </b-collapse>
+            <div class="card-text">Test</div>
           </b-card>
-          <b-card no-body class="mb-1">
+          <b-card header="Impacted Links" no-body class="mb-1">
             <div class="p-1" role="tab">
               <div block href="#" v-b-toggle.map-link-accordion variant="info">
-                Impacted Links
+                Provisioned Links
                 <div class="icon caret-down" style="float:right"></div>
               </div>
             </div>
@@ -100,6 +102,15 @@
                 </li>
               </ul>
             </b-collapse>
+            <div class="p-1" role="tab">
+              <div block href="#" v-b-toggle.add-map-link-accordion variant="info">
+                Create New Link
+                <a href="#" class="icon plus" style="float:right"></a>
+              </div>
+            </div>
+            <b-collapse id="add-map-link-accordion" accordion="map-accordion" role="tabpanel">
+              <mapAffectedLink :linkId=selectedMATSimLink />
+            </b-collapse>
           </b-card>
         </div>
       </b-col>
@@ -109,9 +120,10 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
+import MapAffectedLink from "@/components/MapAffectedLink.vue";
 
 export default {
-  name: "mapSettings",
+  name: "mapSetup",
   props: {},
   data: function() {
     return {
@@ -121,7 +133,8 @@ export default {
   },
   computed: {
     ...mapState({
-      populationSquares: state => state.map.populationSquares
+      populationSquares: state => state.map.populationSquares,
+      selectedMATSimLink: state => state.map.selectedMATSimLink
     }),
     ...mapGetters(["selectedStyle", "selectedRegion", "selectedFire"]),
     isOpen: {
@@ -137,6 +150,9 @@ export default {
         ? []
         : this.$store.getters.firesInSelectedRegion;
     }
+  },
+  components: {
+    mapAffectedLink: MapAffectedLink
   },
   methods: {
     ...mapActions([
@@ -163,19 +179,19 @@ export default {
 
 <style>
 #nav {
- width: 100%;
- position: absolute;
- left: 0;
+  width: 100%;
+  position: absolute;
+  left: 0;
 }
 .map-sidebar-container {
 }
 .map-accordion-container {
-  background-color: rgba(255, 255, 255, 0.8);
   text-align: left;
-  padding: 40px 20px;
+  padding: 80px 20px;
 }
 
 .map-sidebar-container .map-sidebar-col {
+  background-color: rgba(255, 255, 255, 0.8);
   overflow-y: auto;
 }
 </style>
