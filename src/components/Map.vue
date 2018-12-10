@@ -26,7 +26,8 @@ import {
   SET_MAP_INSTANCE,
   SET_DRAW_INSTANCE,
   SET_FIRST_SYMBOL_LAYER,
-  MATSIM_SELECT_LINK
+  MATSIM_SELECT_LINK,
+  MATSIM_DESELECT_LINK
 } from "@/store/mutation-types";
 import Vue from "vue";
 import { mapState } from "vuex";
@@ -118,6 +119,7 @@ export default {
         store.commit(MATSIM_SELECT_LINK, id);
       } else {
         filter = ["in", "ID", ""];
+        store.commit(MATSIM_DESELECT_LINK, id);
       }
       this.mapInstance.setFilter(this.highlightMATSimLayer, filter);
 
