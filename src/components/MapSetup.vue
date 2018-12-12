@@ -1,11 +1,12 @@
 <template>
   <b-container fluid class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container">
     <b-row no-gutters class="h-100">
-      <b-col lg="4" md="4" sm="12" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col">
+      <b-col lg="4" md="4" sm="12" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col" :class="{ hidden: isHidden }">
         <div id="nav">
           <h5>Emergency Evacuation Simulator</h5>
           <router-link to="/">Home</router-link> |
           <router-link to="/about">About</router-link>
+          <b-button style="position:absolute;bottom:2px;right:5px;" size="sm" variant="secondary" @click="toggle()">Hide</b-button>
         </div>
         <div class="h-100 map-accordion-container">
           <b-card header="Map Style" no-body class="mb-1">
@@ -127,6 +128,7 @@ export default {
   props: {},
   data: function() {
     return {
+      isHidden: false,
       styles: this.$store.state.config.styles,
       regions: this.$store.state.config.regions
     };
@@ -137,14 +139,6 @@ export default {
       selectedMATSimLink: state => state.map.selectedMATSimLink
     }),
     ...mapGetters(["selectedStyle", "selectedRegion", "selectedFire"]),
-    isOpen: {
-      get() {
-        return this.$store.state.map.mapSettingsIsOpen;
-      },
-      set(value) {
-        this.$store.commit("mapSettingsIsOpen", value);
-      }
-    },
     firesInSelectedRegion() {
       return !this.$store.getters.firesInSelectedRegion
         ? []
@@ -172,6 +166,9 @@ export default {
     },
     drawRectangle() {
       this.$store.commit("drawPopulationSquare");
+    },
+    toggle() {
+      this.isHidden = !this.isHidden;
     }
   }
 };
