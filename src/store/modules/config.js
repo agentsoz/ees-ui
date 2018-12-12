@@ -41,21 +41,93 @@ const state = {
         "/matsim-tiles/mount-alexander-shire/{z}/{x}/{y}.pbf",
       phoenixRuns: [
         {
-          id: "20160420_MtAlexShire_FDI50_Iso",
-          name: "20160420 Maldon FFDI50 ISO",
-          description:
-            "Forest Fire Danger Index (FFDI) 50 with south west wind change; based on 11:00 point fire ignition and running until 18:00",
+          id: "20181109_mountalex_evac_ffdi50a_grid",
+          name: "20181109 Mountalex evac FFDI50a",
+          description: "",
           geojson:
-            "https://raw.githubusercontent.com/agentsoz/ees/72222359e6418bf491b8176ab47586dcbd551bc5/scenarios/mount-alexander-shire/app-data/maldon/20160420_MtAlexShire_FDI50_Iso.json"
+            process.env.VUE_APP_EES_TILES_API +
+            "/phoenix/20181109_mountalex_evac_ffdi50a_grid.shp.json"
         },
         {
-          id: "20160420_MtAlexShire_FDI75_Iso",
-          name: "20160420 Maldon FFDI75 ISO",
-          description:
-            "Forest Fire Danger Index (FFDI) 75 with south west wind change; based on 11:00 point fire ignition and running until 18:00",
+          id: "20181109_mountalex_evac_ffdi50b_grid",
+          name: "20181109 Mountalex evac FFDI50b",
+          description: "",
           geojson:
-            "https://raw.githubusercontent.com/agentsoz/ees/72222359e6418bf491b8176ab47586dcbd551bc5/scenarios/mount-alexander-shire/app-data/maldon/20160420_MtAlexShire_FDI75_Iso.json"
-        }
+            process.env.VUE_APP_EES_TILES_API +
+            "/phoenix/20181109_mountalex_evac_ffdi50b_grid.shp.json"
+        },
+        {
+          id: "20181109_mountalex_evac_ffdi50c_grid",
+          name: "20181109 Mountalex evac FFDI50c",
+          description: "",
+          geojson:
+            process.env.VUE_APP_EES_TILES_API +
+            "/phoenix/20181109_mountalex_evac_ffdi50c_grid.shp.json"
+        },
+        {
+          id: "20181109_mountalex_evac_ffdi50d_grid",
+          name: "20181109 Mountalex evac FFDI50d",
+          description: "",
+          geojson:
+            process.env.VUE_APP_EES_TILES_API +
+            "/phoenix/20181109_mountalex_evac_ffdi50d_grid.shp.json"
+        },
+        {
+          id: "20181109_mountalex_evac_ffdi75a_grid",
+          name: "20181109 Mountalex evac FFDI75a",
+          description: "",
+          geojson:
+            process.env.VUE_APP_EES_TILES_API +
+            "/phoenix/20181109_mountalex_evac_ffdi75a_grid.shp.json"
+        },
+        {
+          id: "20181109_mountalex_evac_ffdi75b_grid",
+          name: "20181109 Mountalex evac FFDI75b",
+          description: "",
+          geojson:
+            process.env.VUE_APP_EES_TILES_API +
+            "/phoenix/20181109_mountalex_evac_ffdi75b_grid.shp.json"
+        },
+        {
+          id: "20181109_mountalex_evac_ffdi75c_grid",
+          name: "20181109 Mountalex evac FFDI75c",
+          description: "",
+          geojson:
+            process.env.VUE_APP_EES_TILES_API +
+            "/phoenix/20181109_mountalex_evac_ffdi75c_grid.shp.json"
+        },
+        {
+          id: "20181109_mountalex_evac_ffdi75d_grid",
+          name: "20181109 Mountalex evac FFDI75d",
+          description: "",
+          geojson:
+            process.env.VUE_APP_EES_TILES_API +
+            "/phoenix/20181109_mountalex_evac_ffdi75d_grid.shp.json"
+        },
+        {
+          id: "20181109_mountalex_evac_ffdi100b_grid",
+          name: "20181109 Mountalex evac FFDI100b",
+          description: "",
+          geojson:
+            process.env.VUE_APP_EES_TILES_API +
+            "/phoenix/20181109_mountalex_evac_ffdi100b_grid.shp.json"
+        },
+        {
+          id: "20181109_mountalex_evac_ffdi100c_grid",
+          name: "20181109 Mountalex evac FFDI100c",
+          description: "",
+          geojson:
+            process.env.VUE_APP_EES_TILES_API +
+            "/phoenix/20181109_mountalex_evac_ffdi100c_grid.shp.json"
+        },
+        {
+          id: "20181109_mountalex_evac_ffdi100d_grid",
+          name: "20181109 Mountalex evac FFDI100d",
+          description: "",
+          geojson:
+            process.env.VUE_APP_EES_TILES_API +
+            "/phoenix/20181109_mountalex_evac_ffdi100d_grid.shp.json"
+        },
       ]
     },
     {
