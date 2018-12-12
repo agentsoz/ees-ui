@@ -138,6 +138,7 @@ const actions = {
   },
   fetchFire({ dispatch, commit, getters, rootGetters }, url) {
     const map = rootGetters.mapInstance;
+    commit(CLEAR_FIRE, map);
     commit(START_LOADING);
 
     // download and pre-process the geojson for better performance while rendering
