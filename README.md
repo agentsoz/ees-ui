@@ -74,7 +74,8 @@ Region and fire data is stored in the Vuex store module `src/store/modules/confi
           name: "Fire Evac Grid",
           description: "12:00 point fire ignition",
           geojson:
-            "evac_grid.json"
+            process.env.VUE_APP_EES_TILES_API +
+            "phoenix/evac_grid.json"
         }
       ]
     }
