@@ -51,3 +51,35 @@ npm run test:e2e
 ```
 npm run test:unit
 ```
+
+## MATSim Regions
+The Mapbox UI relies on a tile server hosting the matsim network for that region.
+The UI allows only one active MATSim region at a time.
+
+#### Adding regions and fires
+Region and fire data is stored in the Vuex store module `src/store/modules/config.js`:
+```
+    {
+      id: "Surf_Coast_Shire",
+      name: "Surf Coast Shire",
+      center: [144.326271, -38.332386], // Torquay Esplanade
+      matsimNetworkLayer: "surf_coast_shire_networkP",
+      matsimNetworkTiles:
+        process.env.VUE_APP_EES_TILES_API +
+        "/matsim-tiles/surf-coast-shire/{z}/{x}/{y}.pbf",
+      phoenixRuns: [
+        {
+          id:
+            "fire_evac_grid",
+          name: "Fire Evac Grid",
+          description: "12:00 point fire ignition",
+          geojson:
+            "evac_grid.json"
+        }
+      ]
+    }
+```
+
+IMPORTANT: The `matsimNetworkLayer` attribute must match the filename of the original GeoJSON
+file used in the tippecanoe conversion to mbtiles (e.g. `surf_coast_shire_networkP` refers to
+`surf_coast_shire_networkP.json`).
