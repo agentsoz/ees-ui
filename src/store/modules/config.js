@@ -150,7 +150,9 @@ const state = {
       ]
     }
   ],
-  savedSettingsJson: null
+  savedSettingsJson: null,
+  simulationName: null,
+  saveSimIsOpen: false,
 };
 
 const getters = {
@@ -190,6 +192,12 @@ const mutations = {
         }
       });
 
+  },
+  setSimulationName(state, value){
+    state.simulationName = value;
+  },
+  setSaveSimIsOpen(state, value){
+    state.saveSimIsOpen = value;
   }
 };
 const actions = {};
