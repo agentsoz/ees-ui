@@ -30,5 +30,10 @@ export const PHOENIX_ADD_LAYER = "PHOENIX_ADD_LAYER";
 export const PHOENIX_SET_OPACITY = "PHOENIX_SET_OPACITY";
 export const PHOENIX_TIME_STEP = "PHOENIX_TIME_STEP";
 
+export const EMBER_ADD_SOURCE = "EMBER_ADD_SOURCE";
+export const EMBER_ADD_LAYER = "EMBER_ADD_LAYER";
+export const EMBER_SET_OPACITY = "EMBER_SET_OPACITY";
+export const EMBER_TIME_STEP = "EMBER_TIME_STEP";
+
 // used to trigger pitch change, and 3D fire
 export const TOGGLE_3D = "TOGGLE_3D";
