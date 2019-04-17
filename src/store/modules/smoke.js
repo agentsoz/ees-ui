@@ -10,7 +10,6 @@ import {
     EMBER_SET_OPACITY,
     EMBER_TIME_STEP,
     CLEAR_SMOKE,
-    TOGGLE_3D,
     SHOW_SMOKE
 } from "@/store/mutation-types";
 
@@ -20,7 +19,6 @@ const state = {
     loadedSmokeLayers: [],
     loadedSmokeSources: [],
     visibleSmokeStep: null,
-    smoke3DHeight: false,
     smokeSliderTicks: true,
     smokeOpacity: 0.4,
     showSmoke: false,
@@ -55,45 +53,22 @@ const mutations = {
     [EMBER_ADD_LAYER](state, payload) {
         var smokeSlice = payload.smokeSlice;
         var layer;
-        if (state.smoke3DHeight) {
-            layer = {
-                id: smokeSlice.layerName,
-                type: "fill-extrusion",
-                source: smokeSlice.sourceName,
-                filter: ["has", "SMOKE_HT"],
-                layout: {
-                    visibility: "none"
+        layer = {
+            id: smokeSlice.layerName,
+            type: "fill",
+            source: smokeSlice.sourceName,
+            layout: {
+                visibility: "none"
+            },
+            paint: {
+                "fill-color": {
+                    property: "E_INTSTY",
+                    stops: state.smokeIntensityLevels
                 },
-                paint: {
-                    "fill-extrusion-color": {
-                        property: "E_INTSTY",
-                        stops: state.smokeIntensityLevels
-                    },
-                    "fill-extrusion-height": {
-                        property: "SMOKE_HT",
-                        stops: [[0, 1], [300, 1000]]
-                    },
-                    "fill-extrusion-base": 0,
-                    "fill-extrusion-opacity": state.smokeOpacity
-                }
-            };
-        } else {
-            layer = {
-                id: smokeSlice.layerName,
-                type: "fill",
-                source: smokeSlice.sourceName,
-                layout: {
-                    visibility: "none"
-                },
-                paint: {
-                    "fill-color": {
-                        property: "E_INTSTY",
-                        stops: state.smokeIntensityLevels
-                    },
-                    "fill-opacity": state.smokeOpacity
-                }
-            };
-        }
+                "fill-opacity": state.smokeOpacity
+            }
+        };
+
         payload.map.addLayer(layer, payload.beforeLayer);
         state.loadedSmokeLayers.push(smokeSlice.layerName);
     },
@@ -102,9 +77,6 @@ const mutations = {
     },
     [SHOW_SMOKE](state, value) {
         state.showSmoke = value;
-    },
-    [TOGGLE_3D](state, value) {
-        state.smoke3DHeight = value;
     },
     [CLEAR_SMOKE](state, map) {
         // remove layers
@@ -248,10 +220,6 @@ const actions = {
             });
         }
         dispatch("filterSmoke", getters.visibleSmokeStep);
-    },
-    toggleSmokeIn3D({ dispatch, state, commit }) {
-        commit(TOGGLE_3D, !state.smoke3DHeight);
-        dispatch("resetSmokeLayers");
     }
 };
 
