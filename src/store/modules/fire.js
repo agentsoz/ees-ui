@@ -140,7 +140,7 @@ const actions = {
     dispatch("fetchFire", !fireData ? "" : fireData.geojson);
 
     if (!!fireData.smokeGeojson)
-      dispatch("fetchSmoke", !fireData ? "" : fireData.smokeGeojson);
+      dispatch("selectSmoke", !fireData ? "" : fireData.smokeGeojson);
   },
   fetchFire({ dispatch, commit, getters, rootGetters }, url) {
     const map = rootGetters.mapInstance;
