@@ -87,6 +87,18 @@
             </b-collapse>
             <div class="card-text">Test</div>
           </b-card>
+          <b-card header="Timing" no-body class="mb-1">
+            <div class="p-1" role="tab">
+              <b-col md="4">
+                <label>Evac start (24hr)</label>
+                <b-form-input v-model="text" placeholder="12:00"></b-form-input>
+              </b-col>
+              <b-col md="7">
+                <label>Evac peak (mins)</label>
+                <b-form-input v-model="value" type="range" min="0" max="180" step="30"></b-form-input>
+              </b-col>
+            </div>
+          </b-card>
           <b-card header="Impacted Links" no-body class="mb-1">
             <div class="p-1" role="tab">
               <div block href="#" v-b-toggle.map-link-accordion variant="info">
