@@ -95,7 +95,21 @@
               </b-col>
               <b-col md="7">
                 <label>Evac peak (mins)</label>
-                <b-form-input v-model="value" type="range" min="0" max="180" step="30"></b-form-input>
+                  <div>
+    <VueSlideBar
+      v-model="slider.value"
+      :data="slider.data"
+      :range="slider.range"
+      :labelStyles="{ color: '#4a4a4a', backgroundColor: '#4a4a4a' }"
+      :processStyle="{ backgroundColor: '#d8d8d8' }"
+      @callbackRange="callbackRange">
+      <template slot="tooltip" slot-scope="tooltip">
+        <img src="static/images/rectangle-slider.svg">
+      </template>
+    </VueSlideBar>
+    <h2>Value: {{slider.value}}</h2>
+    <h2>Label: {{rangeValue.label}}</h2>
+  </div>
               </b-col>
             </div>
           </b-card>
@@ -134,6 +148,7 @@
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
 import MapAffectedLink from "@/components/MapAffectedLink.vue";
+import VueSlideBar from 'vue-slide-bar'
 
 export default {
   name: "mapSetup",
@@ -142,7 +157,46 @@ export default {
     return {
       isHidden: false,
       styles: this.$store.state.config.styles,
-      regions: this.$store.state.config.regions
+      regions: this.$store.state.config.regions,
+      rangeValue: {},
+      slider: {
+        value: 0,
+        data: [
+          0,
+          30,
+          60,
+          90,
+          120,
+          150,
+          180
+        ],
+        range: [
+          {
+            label: '0'
+          },
+          {
+            label: '|',
+            isHide: true
+          },
+          {
+            label: '60'
+          },
+          {
+            label: '|',
+            isHide: true
+          },
+          {
+            label: '120'
+          },
+          {
+            label: '|',
+            isHide: true
+          },
+          {
+            label: '180'
+          }
+        ]
+      }
     };
   },
   computed: {
@@ -158,13 +212,14 @@ export default {
     }
   },
   components: {
-    mapAffectedLink: MapAffectedLink
+    mapAffectedLink: MapAffectedLink,
+    VueSlideBar
   },
   methods: {
     ...mapActions([
       "selectRegion",
       "changeMapboxStyle",
-      "selectFire"
+      "selectFire",
     ]),
     setStyle: function(event) {
       this.changeMapboxStyle(event.target.dataset.mapStyle);
@@ -181,6 +236,9 @@ export default {
     },
     toggle() {
       this.isHidden = !this.isHidden;
+    },
+    callbackRange (val) {
+      this.rangeValue = val
     }
   }
 };
