@@ -89,28 +89,28 @@
           </b-card>
           <b-card header="Timing" no-body class="mb-1">
             <div class="p-1" role="tab">
-              <b-col md="4">
-                <label>Evac start (24hr)</label>
-                <b-form-input v-model="text" placeholder="12:00"></b-form-input>
-              </b-col>
-              <b-col md="7">
-                <label>Evac peak (mins)</label>
+              <b-row>
+                <b-col md="4" sm="4" xs="4">
+                  <label>Evac start (24hr)</label>
+                  <b-form-input v-model="text" placeholder="12:00"></b-form-input>
+                </b-col>
+                <b-col md="7" sm="7" xs="7">
+                  <label>Evac peak (mins)</label>
                   <div>
-    <VueSlideBar
-      v-model="slider.value"
-      :data="slider.data"
-      :range="slider.range"
-      :labelStyles="{ color: '#4a4a4a', backgroundColor: '#4a4a4a' }"
-      :processStyle="{ backgroundColor: '#d8d8d8' }"
-      @callbackRange="callbackRange">
-      <template slot="tooltip" slot-scope="tooltip">
-        <img src="static/images/rectangle-slider.svg">
-      </template>
-    </VueSlideBar>
-    <h2>Value: {{slider.value}}</h2>
-    <h2>Label: {{rangeValue.label}}</h2>
-  </div>
-              </b-col>
+                  <VueSlideBar
+                    v-model="slider.value"
+                    :data="slider.data"
+                    :range="slider.range"
+                    :labelStyles="{ color: '#4a4a4a', backgroundColor: '#4a4a4a' }"
+                    :processStyle="{ backgroundColor: '#d8d8d8' }"
+                    @callbackRange="callbackRange">
+                    <template slot="tooltip" slot-scope="tooltip">
+                      <img src="static/images/rectangle-slider.svg">
+                    </template>
+                  </VueSlideBar>
+                </div>
+                </b-col>
+              </b-row>
             </div>
           </b-card>
           <b-card header="Impacted Links" no-body class="mb-1">
