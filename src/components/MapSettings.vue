@@ -23,7 +23,7 @@
         <option value="no-region" disabled></option>
         <option v-for="region in regions" :key="region.id" :value="region.id" :disabled="selectedRegion==region.id">{{ region.name }}</option>
       </select>
-      <label for="map-fire">Phoenix Fire:</label>
+      <label for="map-fire">Emergency Incident:</label>
       <select id="map-fire" v-model="selectedFire">
         <option value="no-fire" disabled></option>
         <option v-for="fire in firesInSelectedRegion" :key="fire.id" :value="fire.id" :disabled="selectedFire==fire.id">{{ fire.name }}</option>
