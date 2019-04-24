@@ -27,50 +27,30 @@
         </button>
       </div>
     </div>
-    <div class="map-overlay" v-show="isOpen">
-      <div class="map-settings-panel" v-on:keydown.esc.capture="toggle()">
-        <label for="map-style">Map style:</label>
-        <select id="map-style" v-model="mapboxStyle">
-          <option
-            v-for="style in styles"
-            :key="style.id"
-            :value="style.id"
-            :disabled="mapboxStyle == style.id"
-            >{{ style.name }}</option
-          >
-        </select>
-        <label for="map-region">Region:</label>
-        <select id="map-region" v-model="selectedRegion">
-          <option value="no-region" disabled></option>
-          <option
-            v-for="region in regions"
-            :key="region.id"
-            :value="region.id"
-            :disabled="selectedRegion == region.id"
-            >{{ region.name }}</option
-          >
-        </select>
-        <label for="map-fire">Phoenix Fire:</label>
-        <select id="map-fire" v-model="selectedFire">
-          <option value="no-fire" disabled></option>
-          <option
-            v-for="fire in firesInSelectedRegion"
-            :key="fire.id"
-            :value="fire.id"
-            :disabled="selectedFire == fire.id"
-            >{{ fire.name }}</option
-          >
-        </select>
-        <label for="map-fire-opacity">Fire Opacity:</label>
-        <input
-          id="map-fire-opacity"
-          type="number"
-          min="0"
-          max="1"
-          step="0.01"
-          v-model="fireOpacity"
-        />
-      </div>
+    
+    <div class='map-overlay' v-show="isOpen">
+    <div class='map-settings-panel' v-on:keydown.esc.capture="toggle()">
+      <h3>Map Settings</h3>
+      <label for="map-style">Map Style:</label>
+      <select id="map-style" v-model="mapboxStyle">
+        <option v-for="style in styles" :key="style.id" :value="style.id" :disabled="mapboxStyle==style.id">{{ style.name }}</option>
+      </select>
+      <label for="map-region">Region:</label>
+      <select id="map-region" v-model="selectedRegion">
+        <option value="no-region" disabled></option>
+        <option v-for="region in regions" :key="region.id" :value="region.id" :disabled="selectedRegion==region.id">{{ region.name }}</option>
+      </select>
+      <label for="map-fire">Emergency Incident:</label>
+      <select id="map-fire" v-model="selectedFire">
+        <option value="no-fire" disabled></option>
+        <option v-for="fire in firesInSelectedRegion" :key="fire.id" :value="fire.id" :disabled="selectedFire==fire.id">{{ fire.name }}</option>
+      </select>
+      <label for="map-fire-opacity">Fire Opacity:</label>
+      <input id="map-fire-opacity" type="number" min="0" max="1" step="0.01" v-model="fireOpacity" />
+      <br><br>
+      <button style="width: 100% !important" class="btn btn-success" v-on:keydown.esc="toggle()" @click='toggle()'>Done</button>
+    </div>
+>>>>>>> feature/nav-items
     </div>
           <b-modal v-model="modalShow" centered title="BootstrapVue">
       <p style="position:absolute; background: blue;" class="my-4">Hello from modal!</p>
@@ -82,6 +62,8 @@
 <script>
 import { mapActions } from "vuex";
 import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
+import Dropdown from 'vue-simple-search-dropdown';
+
 
 export default {
   name: "mapSettings",
@@ -170,15 +152,23 @@ export default {
 </script>
 
 <style>
-.map-settings-panel select {
+.map-settings-panel{
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.map-settings-panel select, .map-settings-panel select option, .map-settings-panel input {
   text-align: center;
+  width: 100% !important;
+}
+
+.map-settings-panel select, .map-settings-panel option{
+  padding: 10px !important;
+  text-align: center !important;
 }
 
 .map-settings-button-container {
   padding-top: 150px;
-}
-
-.map-settings-panel {
 }
 
 .map-overlay {
@@ -196,14 +186,14 @@ export default {
   z-index: 100;
 }
 
-.map-overlay label {
+.map-overlay label, .map-overlay h3 {
   display: block;
   margin: 10px 0 0 0;
 }
 
 .map-overlay input {
   display: inline-block;
-  width: 100%;
+  width: 80%;
   position: relative;
   margin: 0;
 }
