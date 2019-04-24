@@ -1,13 +1,13 @@
 <template>
   <b-container fluid class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container">
     <b-row no-gutters class="h-100">
-      <b-col lg="4" md="4" sm="12" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col" :class="{ hidden: isHidden }">
+    <b-col lg="4" md="4" sm="12" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col" :class="{ hidden: isHidden }">
         <div id="nav">
           <h5>Emergency Evacuation Simulator</h5>
           <router-link to="/">Home</router-link> |
           <router-link to="/about">About</router-link>
-          <b-button style="position:absolute;bottom:2px;right:5px;" size="sm" variant="secondary" @click="toggle()">Hide</b-button>
         </div>
+        <b-button style="position:absolute;bottom:2px;right:5px;" size="sm" variant="secondary" @click="toggle()">Hide</b-button>
         <div class="h-100 map-accordion-container">
           <b-card header="Map Style" no-body class="mb-1">
             <div class="p-1" role="tab">
@@ -69,24 +69,19 @@
               </ul>
             </b-collapse>
           </b-card>
-          <b-card header="Vehicle Configuration" no-body class="mb-1">
-            <div class="p-1" role="tab">
-              <div block href="#" v-b-toggle.map-vehicle-accordion variant="info">
-                Vehicle Configuration
-                <div class="icon caret-down" style="float:right"></div>
-              </div>
-            </div>
-            <b-collapse id="map-vehicle-accordion" accordion="map-accordion" role="tabpanel">
-              <ul>
-                <li v-for="square in populationSquares" :key="square.id">
-                  <div>
-                    {{ square.id }}
-                  </div>
-                </li>
-              </ul>
-            </b-collapse>
-            <div class="card-text">Test</div>
-          </b-card>
+          <b-card header="Timing" no-body class="mb-1">
+           <div class="p-1" role="tab">
+             <b-col md="4">
+               <label>Evac start (24hr)</label>
+               <b-form-input v-model="text" placeholder="12:00"></b-form-input>
+             </b-col>
+             <b-col md="7">
+               <label>Evac peak (mins)</label>
+               <b-form-input v-model="value" type="range" min="0" max="180" step="30"></b-form-input>
+
+             </b-col>
+           </div>
+         </b-card>
           <b-card header="Impacted Links" no-body class="mb-1">
             <div class="p-1" role="tab">
               <div block href="#" v-b-toggle.map-link-accordion variant="info">
