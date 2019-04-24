@@ -13,8 +13,7 @@
         <button
           class="icon grid"
           type="button"
-
-          @click="modalShow = !modalShow"
+          @click="drawRectangle()"
         ></button>
       </div>
       <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
@@ -50,11 +49,7 @@
       <br><br>
       <button style="width: 100% !important" class="btn btn-success" v-on:keydown.esc="toggle()" @click='toggle()'>Done</button>
     </div>
->>>>>>> feature/nav-items
     </div>
-          <b-modal v-model="modalShow" centered title="BootstrapVue">
-      <p style="position:absolute; background: blue;" class="my-4">Hello from modal!</p>
-    </b-modal>
   </div>
 
 </template>
@@ -62,15 +57,13 @@
 <script>
 import { mapActions } from "vuex";
 import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
-import Dropdown from 'vue-simple-search-dropdown';
-
+//import Dropdown from 'vue-simple-search-dropdown';
 
 export default {
   name: "mapSettings",
   props: {},
   data: function() {
     return {
-      modalShow: false,
       styles: this.$store.state.config.styles,
       regions: this.$store.state.config.regions
     };

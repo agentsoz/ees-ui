@@ -4,66 +4,24 @@
     class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container"
   >
     <b-row no-gutters class="h-100">
-<<<<<<< HEAD
-      <b-col
-        lg="4"
-        md="4"
-        sm="12"
-        class="h-100 m-0 mapboxgl-ctrl map-sidebar-col"
-        :class="{ hidden: isHidden }"
-      >
-=======
     <b-col lg="4" md="4" sm="12" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col" :class="{ hidden: isHidden }">
->>>>>>> feature/nav-items
         <div id="nav">
           <h5>Emergency Evacuation Simulator</h5>
           <router-link to="/">Home</router-link> |
           <router-link to="/about">About</router-link>
-<<<<<<< HEAD
-          <b-button
-            style="position:absolute;bottom:2px;right:5px;"
-            size="sm"
-            variant="secondary"
-            @click="toggle()"
-            >Hide</b-button
-          >
-=======
->>>>>>> feature/nav-items
         </div>
         <b-button style="position:absolute;bottom:2px;right:5px;" size="sm" variant="secondary" @click="toggle()">Hide</b-button>
         <div class="h-100 map-accordion-container">
-          <b-card header="Map Style" no-body class="mb-1">
-            <div class="p-1" role="tab">
-              <div block href="#" v-b-toggle.map-style-accordion variant="info">
-                {{ selectedStyle.name }}
-                <div class="icon caret-down" style="float:right"></div>
-              </div>
-            </div>
-            <b-collapse
-              id="map-style-accordion"
-              accordion="map-accordion"
-              role="tabpanel"
-            >
-              <ul>
-                <li
-                  v-for="style in styles"
-                  :key="style.id"
-                  :disabled="selectedStyle.id == style.id"
-                >
-                  <div
-                    @click="setStyle"
-                    :data-map-style="style.id"
-                    v-if="selectedStyle.id != style.id"
-                  >
-                    {{ style.name }}
-                  </div>
-                </li>
-              </ul>
-            </b-collapse>
+
+          <b-card header="Map Style" no-body class="mb-1">           
+            <select id="map-style" v-model="mapboxStyle">
+              <option v-for="style in styles" :key="style.id" :value="style.id" :disabled="mapboxStyle.id == style.id">{{ style.name }}</option>
+            </select>
           </b-card>
 
           <b-card header="Region" no-body class="mb-1">
-            <div class="p-1" role="tab">
+            
+            <!--<div class="p-1" role="tab">
               <div
                 block
                 href="#"
@@ -98,7 +56,13 @@
                   </div>
                 </li>
               </ul>
-            </b-collapse>
+            </b-collapse>-->
+
+            <select id="map-region" v-model="selectedRegion">
+              <option value="no-region" disabled></option>
+              <option v-for="region in regions" :key="region.id" :value="region.id" :disabled="selectedRegion==region.id">{{ region.name }}</option>
+            </select>
+
           </b-card>
 
           <b-card no-body class="mb-1">
@@ -151,7 +115,6 @@
             </b-col>
             </b-row>
           </b-card>
-<<<<<<< HEAD
 
           <b-card no-body class="mb-1">
             <b-card-header>
@@ -220,7 +183,6 @@
             </VueSlideBar>
           </b-card>
 
-
           <b-card header="Impacted Links" no-body class="mb-1">
             <div class="p-1" role="tab">
               <div block href="#" v-b-toggle.map-link-accordion variant="info">
@@ -242,12 +204,7 @@
               </ul>
             </b-collapse>
             <div class="p-1" role="tab">
-              <div
-                block
-                href="#"
-                v-b-toggle.add-map-link-accordion
-                variant="info"
-              >
+              <div block href="#" v-b-toggle.add-map-link-accordion variant="info">
                 Create New Link
                 <a href="#" class="icon plus" style="float:right"></a>
               </div>
@@ -267,7 +224,6 @@
   <b-modal v-model="modalShow" centered title="BootstrapVue">
       <p style="position:absolute; background: blue;" class="my-4">Hello from modal!</p>
     </b-modal>
-    
   </b-container>
 
 </template>
@@ -304,68 +260,26 @@ export default {
         value: 0,
         traffic_data: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
         traffic_range: [
-          {
-            label: "|",
-            isHide: true
-          },
-          {
-            label: "20%"
-          },
-          {
-            label: "|",
-            isHide: true
-          },
-          {
-            label: "40%"
-          },
-          {
-            label: "|",
-            isHide: true
-          },
-          {
-            label: "60%"
-          },
-          {
-            label: "|",
-            isHide: true
-          },
-          {
-            label: "80%"
-          },
-          {
-            label: "|",
-            isHide: true
-          },
-          {
-            label: "100%"
-          },
+          {label: "|", isHide: true},
+          {label: "20%"},
+          {label: "|", isHide: true},
+          {label: "40%"},
+          {label: "|", isHide: true},
+          {label: "60%"},
+          {label: "|", isHide: true},
+          {label: "80%"},
+          {label: "|", isHide: true},
+          {label: "100%"},
         ],
         timer_data: [0, 30, 60, 90, 120, 150, 180],
         timer_range: [
-          {
-            label: "0"
-          },
-          {
-            label: "|",
-            isHide: true
-          },
-          {
-            label: "60"
-          },
-          {
-            label: "|",
-            isHide: true
-          },
-          {
-            label: "120"
-          },
-          {
-            label: "|",
-            isHide: true
-          },
-          {
-            label: "180"
-          }
+          {label: "0"},
+          {label: "|", isHide: true},
+          {label: "60"},
+          {label: "|", isHide: true},
+          {label: "120"},
+          {label: "|", isHide: true},
+          {label: "180"}
         ]
       },
       dest_selected: null,
@@ -388,7 +302,26 @@ export default {
       return !this.$store.getters.firesInSelectedRegion
         ? []
         : this.$store.getters.firesInSelectedRegion;
-    }
+    },
+    mapboxStyle: {
+      get() {
+        return this.$store.state.map.mapboxStyle;
+      },
+      set(value) {
+        this.changeMapboxStyle(value);
+      }
+    },
+    selectedRegion: {
+      get() {
+        return !this.$store.state.map.selectedRegion
+          ? "no-region"
+          : this.$store.state.map.selectedRegion;
+      },
+      set(value) {
+        // set the selected region in state
+        this.selectRegion(value);
+      }
+    },
   },
   components: {
     mapAffectedLink: MapAffectedLink,
