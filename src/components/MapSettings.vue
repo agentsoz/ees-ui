@@ -13,7 +13,8 @@
         <button
           class="icon grid"
           type="button"
-          @click="drawRectangle()"
+
+          @click="modalShow = !modalShow"
         ></button>
       </div>
       <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
@@ -71,7 +72,11 @@
         />
       </div>
     </div>
+          <b-modal v-model="modalShow" centered title="BootstrapVue">
+      <p style="position:absolute; background: blue;" class="my-4">Hello from modal!</p>
+    </b-modal>
   </div>
+
 </template>
 
 <script>
@@ -83,6 +88,7 @@ export default {
   props: {},
   data: function() {
     return {
+      modalShow: false,
       styles: this.$store.state.config.styles,
       regions: this.$store.state.config.regions
     };

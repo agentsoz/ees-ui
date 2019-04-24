@@ -96,7 +96,7 @@
           <b-card no-body class="mb-1">
             <b-card-header>
               Emergency Incident
-              <span class="helper-icons"><font-awesome-icon icon="info-circle" /></span>
+              <span class="helper-icons"><font-awesome-icon icon="info-circle" @click="modalShow = !modalShow"/></span>
             </b-card-header>
             <b-row>
               <b-col xs="8">
@@ -254,7 +254,12 @@
         </div>
       </b-col>
     </b-row>
+  <b-modal v-model="modalShow" centered title="BootstrapVue">
+      <p style="position:absolute; background: blue;" class="my-4">Hello from modal!</p>
+    </b-modal>
+    
   </b-container>
+
 </template>
 
 <script>
@@ -278,6 +283,7 @@ export default {
       isHidden: false,
       styles: this.$store.state.config.styles,
       regions: this.$store.state.config.regions,
+      modalShow: false,
       incident_selected: ['fire'], // Must be an array reference!
       incident_options: [
           { text: 'Show on map', value: 'fire' },
