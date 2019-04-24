@@ -13,7 +13,7 @@
     </div>
     <div class='map-overlay' v-show="isOpen">
     <div class='map-settings-panel' v-on:keydown.esc.capture="toggle()">
-      <label for="map-style">Map style:</label>
+      <label for="map-style">Map Style:</label>
       <select id="map-style" v-model="mapboxStyle">
         <option v-for="style in styles" :key="style.id" :value="style.id" :disabled="mapboxStyle==style.id">{{ style.name }}</option>
       </select>
@@ -29,6 +29,8 @@
       </select>
       <label for="map-fire-opacity">Fire Opacity:</label>
       <input id="map-fire-opacity" type="number" min="0" max="1" step="0.01" v-model="fireOpacity" />
+      <br><br>
+      <button style="width: 100% !important" class="btn btn-success" v-on:keydown.esc="toggle()" @click='toggle()'>Done</button>
     </div>
     </div>
 </div>
@@ -37,6 +39,8 @@
 <script>
 import { mapActions } from "vuex";
 import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
+import Dropdown from 'vue-simple-search-dropdown';
+
 
 export default {
   name: "mapSettings",
@@ -125,15 +129,23 @@ export default {
 
 
 <style>
-.map-settings-panel select {
+.map-settings-panel{
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.map-settings-panel select, .map-settings-panel select option, .map-settings-panel input {
   text-align: center;
+  width: 100% !important;
+}
+
+.map-settings-panel select, .map-settings-panel option{
+  padding: 10px !important;
+  text-align: center !important;
 }
 
 .map-settings-button-container {
   padding-top: 150px;
-}
-
-.map-settings-panel {
 }
 
 .map-overlay {
@@ -158,7 +170,7 @@ export default {
 
 .map-overlay input {
   display: inline-block;
-  width: 100%;
+  width: 80%;
   position: relative;
   margin: 0;
 }
