@@ -59,25 +59,25 @@ const getters = {
 };
 
 const mutations = {
-  [START_LOADING] (state) {
+  [START_LOADING](state) {
     state.isLoading++;
   },
-  [DONE_LOADING] (state) {
+  [DONE_LOADING](state) {
     if (state.isLoading > 0) state.isLoading--;
   },
-  [SET_MAP_INSTANCE] (state, newMap) {
+  [SET_MAP_INSTANCE](state, newMap) {
     state.mapInstance = newMap;
   },
-  [SET_DRAW_INSTANCE] (state, newDraw) {
+  [SET_DRAW_INSTANCE](state, newDraw) {
     state.drawInstance = newDraw;
   },
-  [SET_MAPBOX_STYLE] (state, newStyle) {
+  [SET_MAPBOX_STYLE](state, newStyle) {
     state.mapboxStyle = newStyle;
     state.mapInstance.setStyle(
       "mapbox://styles/mapbox/" + state.mapboxStyle + "-v9"
     );
   },
-  [SETTINGS_VISIBILITY] (state, newVal) {
+  [SETTINGS_VISIBILITY](state, newVal) {
     state.mapSettingsIsOpen = newVal;
   },
   [SELECT_REGION](state, newVal) {

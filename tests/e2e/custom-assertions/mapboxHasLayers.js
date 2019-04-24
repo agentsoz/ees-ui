@@ -13,11 +13,11 @@ exports.assertion = function mapboxHasLayers(match, count) {
   this.pass = val => val === count;
   this.value = res => res.value;
   function evaluator(_match) {
-    var actionTags = document.querySelectorAll('a')
+    var actionTags = document.querySelectorAll("a");
     var vueLinkedElem = null;
     // not every element has a vue attribute, lets find the navbar 'a' tag
-    for( var tag of actionTags ) {
-      if ( tag.__vue__ ) {
+    for (var tag of actionTags) {
+      if (tag.__vue__) {
         vueLinkedElem = tag;
         break;
       }

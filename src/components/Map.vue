@@ -29,7 +29,6 @@ import {
   MATSIM_SELECT_LINK,
   MATSIM_DESELECT_LINK
 } from "@/store/mutation-types";
-import Vue from "vue";
 import { mapState } from "vuex";
 
 export default {
@@ -122,7 +121,6 @@ export default {
         store.commit(MATSIM_DESELECT_LINK, id);
       }
       this.mapInstance.setFilter(this.highlightMATSimLayer, filter);
-
     }
   }
 };

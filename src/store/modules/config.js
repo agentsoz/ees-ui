@@ -127,7 +127,7 @@ const state = {
           geojson:
             process.env.VUE_APP_EES_TILES_API +
             "/phoenix/20181109_mountalex_evac_ffdi100d_grid.shp.json"
-        },
+        }
       ]
     },
     {
@@ -152,7 +152,7 @@ const state = {
   ],
   savedSettingsJson: null,
   simulationName: null,
-  saveSimIsOpen: false,
+  saveSimIsOpen: false
 };
 
 const getters = {
@@ -183,20 +183,17 @@ const mutations = {
       .then(result => {
         if (result.details) {
           // there was an error...
-          const error = result.details
-            .map(detail => detail.message)
-            .join(". ");
-            console.log(error);
+          const error = result.details.map(detail => detail.message).join(". ");
+          console.log(error);
         } else {
           console.log(result);
         }
       });
-
   },
-  setSimulationName(state, value){
+  setSimulationName(state, value) {
     state.simulationName = value;
   },
-  setSaveSimIsOpen(state, value){
+  setSaveSimIsOpen(state, value) {
     state.saveSimIsOpen = value;
   }
 };

@@ -16,7 +16,9 @@ module.exports = {
       .assert.mapboxHasLayers("surf_coast_shire_networkP", 2)
       .click(".map-settings-button-container button")
       .waitForElementVisible(".map-settings-panel", 1000)
-      .click("#map-fire option[value=Anglesea_evac_test_ffdi104_phx5_2016data_minsup_fh2017_grid_WSG84]")
+      .click(
+        "#map-fire option[value=Anglesea_evac_test_ffdi104_phx5_2016data_minsup_fh2017_grid_WSG84]"
+      )
       .waitForElementNotPresent(".load-spinner-overlay", 30000)
       .assert.mapboxHasLayers("phoenix", 60)
       .pause("6000")
