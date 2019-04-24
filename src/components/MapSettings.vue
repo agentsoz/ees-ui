@@ -13,6 +13,7 @@
     </div>
     <div class='map-overlay' v-show="isOpen">
     <div class='map-settings-panel' v-on:keydown.esc.capture="toggle()">
+      <h3>Map Settings</h3>
       <label for="map-style">Map Style:</label>
       <select id="map-style" v-model="mapboxStyle">
         <option v-for="style in styles" :key="style.id" :value="style.id" :disabled="mapboxStyle==style.id">{{ style.name }}</option>
@@ -163,7 +164,7 @@ export default {
   z-index: 100;
 }
 
-.map-overlay label {
+.map-overlay label, .map-overlay h3 {
   display: block;
   margin: 10px 0 0 0;
 }
