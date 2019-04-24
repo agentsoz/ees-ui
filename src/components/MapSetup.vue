@@ -98,6 +98,8 @@
               Emergency Incident
               <span class="helper-icons"><font-awesome-icon icon="info-circle" /></span>
             </b-card-header>
+            <b-row>
+              <b-col xs="8">
             <div class="p-1" role="tab">
               <div block href="#" v-b-toggle.map-fire-accordion variant="info">
                 {{ selectedFire ? selectedFire.name : "Phoenix Fire" }}
@@ -128,6 +130,18 @@
                 </li>
               </ul>
             </b-collapse>
+            </b-col>
+            <b-col xs="4">
+              <b-form-group>
+                <b-form-checkbox-group
+                  id="incident_checkbox_group"
+                  v-model="incident_selected"
+                  :options="incident_options"
+                  name="incident"
+                ></b-form-checkbox-group>
+              </b-form-group>
+            </b-col>
+            </b-row>
           </b-card>
 
           <b-card no-body class="mb-1">
@@ -166,6 +180,16 @@
               Destinations and safe lines
               <span class="helper-icons"><font-awesome-icon icon="info-circle" /></span>
             </b-card-header>
+            <b-row>
+            <div>
+              <b-col xs="6">
+              <b-form-select v-model="dest_selected" :options="dest_options"></b-form-select>
+              </b-col>
+              <b-col xs="5">
+                <b-button disabled size="sm" variant="success"><font-awesome-icon icon="plus-circle" />Draw safe line</b-button>
+              </b-col>
+            </div>
+            </b-row>
           </b-card>
 
           <b-card no-body class="mb-1">
@@ -239,10 +263,10 @@ import MapAffectedLink from "@/components/MapAffectedLink.vue";
 import VueSlideBar from "vue-slide-bar";
 import Vue from "vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faMapMarker, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faMapMarker, faInfoCircle, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faMapMarker, faInfoCircle);
+library.add(faMapMarker, faInfoCircle, faPlusCircle);
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.config.productionTip = false;
 
@@ -254,6 +278,11 @@ export default {
       isHidden: false,
       styles: this.$store.state.config.styles,
       regions: this.$store.state.config.regions,
+      incident_selected: ['fire'], // Must be an array reference!
+      incident_options: [
+          { text: 'Show on map', value: 'fire' },
+          { text: 'Toggle smoke', value: 'smoke' }
+        ],
       rangeValue: {},
       slider: {
         value: 0,
@@ -322,7 +351,15 @@ export default {
             label: "180"
           }
         ]
-      }
+      },
+      dest_selected: null,
+      dest_options: [
+        { value: null, text: 'Please select an option' },
+        { value: 'a', text: 'This is First option' },
+        { value: 'b', text: 'Selected Option' },
+        { value: { C: '3PO' }, text: 'This is an option with object value' },
+        { value: 'd', text: 'This one is disabled', disabled: true }
+      ]
     };
   },
   computed: {
