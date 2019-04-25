@@ -4,13 +4,14 @@
     class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container"
   >
     <b-row no-gutters class="h-100">
-    <b-col lg="4" md="4" sm="12" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col" :class="{ hidden: isHidden }">
+    <b-col sm="5" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col" >
         <div id="nav">
           <h5>Emergency Evacuation Simulator</h5>
           <router-link to="/">Home</router-link> |
           <router-link to="/about">About</router-link>
+          <b-button v-b-toggle.collapse-side style="position:absolute;bottom:2px;right:5px;" size="sm" variant="secondary">Hide</b-button>
         </div>
-        <b-button style="position:absolute;bottom:2px;right:5px;" size="sm" variant="secondary" @click="toggle()">Hide</b-button>
+        <b-collapse visible id="collapse-side" class="mt-2">
         <div class="h-100 map-accordion-container">
 
           <b-card header="Map Style" no-body class="mb-1">           
@@ -20,49 +21,10 @@
           </b-card>
 
           <b-card header="Region" no-body class="mb-1">
-            
-            <!--<div class="p-1" role="tab">
-              <div
-                block
-                href="#"
-                v-b-toggle.map-region-accordion
-                variant="info"
-              >
-                {{ selectedRegion ? selectedRegion.name : "Region" }}
-                <div class="icon caret-down" style="float:right"></div>
-              </div>
-            </div>
-            <b-collapse
-              id="map-region-accordion"
-              visible
-              accordion="map-accordion"
-              role="tabpanel"
-            >
-              <ul>
-                <li
-                  v-for="region in regions"
-                  :key="region.id"
-                  :disabled="selectedRegion && selectedRegion.id == region.id"
-                >
-                  <div
-                    @click="setRegion"
-                    :data-region="region.id"
-                    v-if="
-                      !selectedRegion ||
-                        (selectedRegion && selectedRegion.id != region.id)
-                    "
-                  >
-                    {{ region.name }}
-                  </div>
-                </li>
-              </ul>
-            </b-collapse>-->
-
             <select id="map-region" v-model="selectedRegion">
               <option value="no-region" disabled></option>
               <option v-for="region in regions" :key="region.id" :value="region.id" :disabled="selectedRegion==region.id">{{ region.name }}</option>
             </select>
-
           </b-card>
 
           <b-card no-body class="mb-1">
@@ -72,37 +34,12 @@
             </b-card-header>
             <b-row>
               <b-col xs="8">
-            <div class="p-1" role="tab">
-              <div block href="#" v-b-toggle.map-fire-accordion variant="info">
-                {{ selectedFire ? selectedFire.name : "Phoenix Fire" }}
-                <div class="icon caret-down" style="float:right"></div>
-              </div>
-            </div>
-            <b-collapse
-              id="map-fire-accordion"
-              accordion="map-accordion"
-              role="tabpanel"
-            >
-              <ul>
-                <li
-                  v-for="fire in firesInSelectedRegion"
-                  :key="fire.id"
-                  :disabled="selectedFire && selectedFire.id == fire.id"
-                >
-                  <div
-                    @click="setFire"
-                    :data-fire="fire.id"
-                    v-if="
-                      !selectedFire ||
-                        (selectedFire && selectedFire.id != fire.id)
-                    "
-                  >
-                    {{ fire.name }}
-                  </div>
-                </li>
-              </ul>
-            </b-collapse>
+                <select id="map-fire" v-model="selectedFire">
+                  <option value="no-fire" disabled></option>
+                  <option v-for="fire in firesInSelectedRegion" :key="fire.id" :value="fire.id" :disabled="selectedFire==fire.id">{{ fire.name }}</option>
+                </select>
             </b-col>
+
             <b-col xs="4">
               <b-form-group>
                 <b-form-checkbox-group
@@ -131,7 +68,7 @@
                   <label>Evac peak (mins)</label>
                   <div>
                   <VueSlideBar
-                    v-model="slider.value"
+                    v-model="slider.timer_value"
                     :data="slider.timer_data"
                     :range="slider.timer_range"
                     :labelStyles="{ color: '#4a4a4a', backgroundColor: '#4a4a4a' }"
@@ -171,7 +108,7 @@
               <span class="helper-icons"><font-awesome-icon icon="info-circle" /></span>
             </label>
             <VueSlideBar
-              v-model="slider.value"
+              v-model="slider.traffic_value"
               :data="slider.traffic_data"
               :range="slider.traffic_range"
               :labelStyles="{ color: '#4a4a4a', backgroundColor: '#4a4a4a' }"
@@ -219,6 +156,7 @@
           </b-card>
 
         </div>
+         </b-collapse>
       </b-col>
     </b-row>
   <b-modal v-model="modalShow" centered title="BootstrapVue">
@@ -257,7 +195,7 @@ export default {
         ],
       rangeValue: {},
       slider: {
-        value: 0,
+        traffic_value: 0,
         traffic_data: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
         traffic_range: [
           {label: "|", isHide: true},
@@ -271,6 +209,7 @@ export default {
           {label: "|", isHide: true},
           {label: "100%"},
         ],
+        timer_value: 0,
         timer_data: [0, 30, 60, 90, 120, 150, 180],
         timer_range: [
           {label: "0"},
@@ -322,6 +261,16 @@ export default {
         this.selectRegion(value);
       }
     },
+    selectedFire: {
+      get() {
+        return !this.$store.state.fire.selectedFire
+          ? "no-fire"
+          : this.$store.state.fire.selectedFire;
+      },
+      set(value) {
+        this.selectFire(value);
+      }
+    },
   },
   components: {
     mapAffectedLink: MapAffectedLink,
@@ -364,7 +313,6 @@ export default {
   text-align: left;
   padding: 80px 20px;
 }
-
 .map-sidebar-container .map-sidebar-col {
   background-color: rgba(255, 255, 255, 0.8);
   overflow-y: auto;
