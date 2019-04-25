@@ -1,24 +1,21 @@
 <template>
-  <b-container
-    fluid
-    class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container"
-  >
-    <b-row no-gutters class="h-100">
-    <b-col sm="5" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col" >
-        <div id="nav">
-          <h5>Emergency Evacuation Simulator</h5>
-          <router-link to="/">Home</router-link> |
-          <router-link to="/about">About</router-link>
-          <b-button v-b-toggle.collapse-side-panel style="position:absolute;bottom:2px;right:5px;" size="sm" variant="secondary">Hide</b-button>
-        </div>
-        <b-collapse visible id="collapse-side-panel" class="mt-2">
+  <b-container fluid class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container">
+    <b-row no-gutters>
+    <b-col sm="5" class="m-0 mapboxgl-ctrl map-sidebar-col" >
+      <div id="h-100 nav">
+        <h5>Emergency Evacuation Simulator</h5>
+        <router-link to="/">Home</router-link> |
+        <router-link to="/about">About</router-link>
+        <b-button v-b-toggle.collapse-side-panel size="sm" variant="secondary">Hide</b-button>
+      </div>
+      <b-collapse visible id="collapse-side-panel" class="h-100">
         <div class="h-100 map-accordion-container">
 
           <b-card no-body class="mb-1">
             <b-card-header v-b-toggle.collapse-map-style>
               Map Style 
             </b-card-header>
-            <b-collapse visible id="collapse-map-style" class="mt-2">           
+            <b-collapse visible id="collapse-map-style">           
               <select id="map-style" v-model="mapboxStyle">
                 <option v-for="style in styles" :key="style.id" :value="style.id" :disabled="mapboxStyle.id == style.id">{{ style.name }}</option>
               </select>
@@ -29,7 +26,7 @@
             <b-card-header v-b-toggle.collapse-region>
               Region
             </b-card-header>
-            <b-collapse visible id="collapse-region" class="mt-2">
+            <b-collapse visible id="collapse-region">
             <select id="map-region" v-model="selectedRegion">
               <option value="no-region" disabled></option>
               <option v-for="region in regions" :key="region.id" :value="region.id" :disabled="selectedRegion==region.id">{{ region.name }}</option>
@@ -42,7 +39,7 @@
               Emergency Incident
               <span class="helper-icons"><font-awesome-icon icon="info-circle" @click="modalShow = !modalShow"/></span>
             </b-card-header>
-            <b-collapse visible id="collapse-incident" class="mt-2">
+            <b-collapse visible id="collapse-incident">
             <b-row>
               <b-col xs="8">
                 <select id="map-fire" v-model="selectedFire">
@@ -70,7 +67,7 @@
               Timing
               <span class="helper-icons"><font-awesome-icon icon="info-circle" /></span>
             </b-card-header>
-           <b-collapse visible id="collapse-timing" class="mt-2">
+            <b-collapse visible id="collapse-timing">
               <b-row>
                 <b-col md="4" sm="4" xs="4">
                   <label>Evac start (24hr)</label>
@@ -101,7 +98,7 @@
               Destinations and safe lines
               <span class="helper-icons"><font-awesome-icon icon="info-circle" /></span>
             </b-card-header>
-            <b-collapse visible id="collapse-dest" class="mt-2">
+            <b-collapse visible id="collapse-dest">
             <b-row>
             <div>
               <b-col xs="6">
@@ -119,7 +116,7 @@
             <b-card-header v-b-toggle.collapse-traffic>
               Traffic Behaviour Setup
             </b-card-header>
-            <b-collapse visible id="collapse-traffic" class="mt-2">
+            <b-collapse visible id="collapse-traffic">
             <label>
               Maximum speed on roads (as % of speed limits)
               <span class="helper-icons"><font-awesome-icon icon="info-circle" /></span>
@@ -174,14 +171,15 @@
           </b-card>
 -->
         </div>
-         </b-collapse>
-      </b-col>
+      </b-collapse>
+    </b-col>
     </b-row>
-  <b-modal v-model="modalShow" centered title="BootstrapVue">
+
+    <b-modal v-model="modalShow" centered title="BootstrapVue">
       <p style="position:absolute; background: blue;" class="my-4">Hello from modal!</p>
     </b-modal>
-  </b-container>
 
+  </b-container>
 </template>
 
 <script>
@@ -329,7 +327,7 @@ export default {
 }
 .map-accordion-container {
   text-align: left;
-  padding: 80px 20px;
+  padding: 20px;
 }
 .map-sidebar-container .map-sidebar-col {
   background-color: rgba(255, 255, 255, 0.8);
