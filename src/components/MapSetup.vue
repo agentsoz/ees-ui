@@ -9,29 +9,40 @@
           <h5>Emergency Evacuation Simulator</h5>
           <router-link to="/">Home</router-link> |
           <router-link to="/about">About</router-link>
-          <b-button v-b-toggle.collapse-side style="position:absolute;bottom:2px;right:5px;" size="sm" variant="secondary">Hide</b-button>
+          <b-button v-b-toggle.collapse-side-panel style="position:absolute;bottom:2px;right:5px;" size="sm" variant="secondary">Hide</b-button>
         </div>
-        <b-collapse visible id="collapse-side" class="mt-2">
+        <b-collapse visible id="collapse-side-panel" class="mt-2">
         <div class="h-100 map-accordion-container">
 
-          <b-card header="Map Style" no-body class="mb-1">           
-            <select id="map-style" v-model="mapboxStyle">
-              <option v-for="style in styles" :key="style.id" :value="style.id" :disabled="mapboxStyle.id == style.id">{{ style.name }}</option>
-            </select>
+          <b-card no-body class="mb-1">
+            <b-card-header v-b-toggle.collapse-map-style>
+              Map Style 
+            </b-card-header>
+            <b-collapse visible id="collapse-map-style" class="mt-2">           
+              <select id="map-style" v-model="mapboxStyle">
+                <option v-for="style in styles" :key="style.id" :value="style.id" :disabled="mapboxStyle.id == style.id">{{ style.name }}</option>
+              </select>
+            </b-collapse>
           </b-card>
 
-          <b-card header="Region" no-body class="mb-1">
+          <b-card no-body class="mb-1">
+            <b-card-header v-b-toggle.collapse-region>
+              Region
+            </b-card-header>
+            <b-collapse visible id="collapse-region" class="mt-2">
             <select id="map-region" v-model="selectedRegion">
               <option value="no-region" disabled></option>
               <option v-for="region in regions" :key="region.id" :value="region.id" :disabled="selectedRegion==region.id">{{ region.name }}</option>
             </select>
+            </b-collapse>
           </b-card>
 
           <b-card no-body class="mb-1">
-            <b-card-header>
+            <b-card-header v-b-toggle.collapse-incident>
               Emergency Incident
               <span class="helper-icons"><font-awesome-icon icon="info-circle" @click="modalShow = !modalShow"/></span>
             </b-card-header>
+            <b-collapse visible id="collapse-incident" class="mt-2">
             <b-row>
               <b-col xs="8">
                 <select id="map-fire" v-model="selectedFire">
@@ -51,14 +62,15 @@
               </b-form-group>
             </b-col>
             </b-row>
+            </b-collapse>
           </b-card>
 
           <b-card no-body class="mb-1">
-            <b-card-header>
+            <b-card-header v-b-toggle.collapse-timing>
               Timing
               <span class="helper-icons"><font-awesome-icon icon="info-circle" /></span>
             </b-card-header>
-            <div class="p-1" role="tab">
+           <b-collapse visible id="collapse-timing" class="mt-2">
               <b-row>
                 <b-col md="4" sm="4" xs="4">
                   <label>Evac start (24hr)</label>
@@ -81,14 +93,15 @@
                 </div>
                 </b-col>
               </b-row>
-            </div>
+            </b-collapse>
           </b-card>
 
           <b-card no-body class="mb-1">
-            <b-card-header>
+            <b-card-header v-b-toggle.collapse-dest>
               Destinations and safe lines
               <span class="helper-icons"><font-awesome-icon icon="info-circle" /></span>
             </b-card-header>
+            <b-collapse visible id="collapse-dest" class="mt-2">
             <b-row>
             <div>
               <b-col xs="6">
@@ -99,10 +112,14 @@
               </b-col>
             </div>
             </b-row>
+            </b-collapse>
           </b-card>
 
           <b-card no-body class="mb-1">
-            <b-card-header>Traffic Behaviour Setup</b-card-header>
+            <b-card-header v-b-toggle.collapse-traffic>
+              Traffic Behaviour Setup
+            </b-card-header>
+            <b-collapse visible id="collapse-traffic" class="mt-2">
             <label>
               Maximum speed on roads (as % of speed limits)
               <span class="helper-icons"><font-awesome-icon icon="info-circle" /></span>
@@ -118,8 +135,9 @@
                 <font-awesome-icon icon="map-marker" />
               </template>
             </VueSlideBar>
+            </b-collapse>
           </b-card>
-
+<!--
           <b-card header="Impacted Links" no-body class="mb-1">
             <div class="p-1" role="tab">
               <div block href="#" v-b-toggle.map-link-accordion variant="info">
@@ -154,7 +172,7 @@
               <mapAffectedLink :linkId="selectedMATSimLink" />
             </b-collapse>
           </b-card>
-
+-->
         </div>
          </b-collapse>
       </b-col>
@@ -317,9 +335,9 @@ export default {
   background-color: rgba(255, 255, 255, 0.8);
   overflow-y: auto;
 }
-
 .helper-icons{
   position:relative;
   left: 5px;
 }
+
 </style>
