@@ -134,42 +134,7 @@
             </VueSlideBar>
             </b-collapse>
           </b-card>
-<!--
-          <b-card header="Impacted Links" no-body class="mb-1">
-            <div class="p-1" role="tab">
-              <div block href="#" v-b-toggle.map-link-accordion variant="info">
-                Provisioned Links
-                <div class="icon caret-down" style="float:right"></div>
-              </div>
-            </div>
-            <b-collapse
-              id="map-link-accordion"
-              accordion="map-accordion"
-              role="tabpanel"
-            >
-              <ul>
-                <li v-for="link in []" :key="link.id">
-                  <div>
-                    link
-                  </div>
-                </li>
-              </ul>
-            </b-collapse>
-            <div class="p-1" role="tab">
-              <div block href="#" v-b-toggle.add-map-link-accordion variant="info">
-                Create New Link
-                <a href="#" class="icon plus" style="float:right"></a>
-              </div>
-            </div>
-            <b-collapse
-              id="add-map-link-accordion"
-              accordion="map-accordion"
-              role="tabpanel"
-            >
-              <mapAffectedLink :linkId="selectedMATSimLink" />
-            </b-collapse>
-          </b-card>
--->
+
         </div>
       </b-collapse>
     </b-col>
