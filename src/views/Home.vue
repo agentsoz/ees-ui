@@ -1,12 +1,12 @@
 <template>
   <div v-on:keydown.esc.capture="toggleSettingsVis()">
-    <maplayer/>
-    <slider/>
-    <spinner/>
-    <population/>
-    <setup/>
-    <settings/>
-    <savesettings/>
+    <maplayer />
+    <slider />
+    <spinner />
+    <population />
+    <setup />
+    <settings />
+    <savesettings />
   </div>
 </template>
 

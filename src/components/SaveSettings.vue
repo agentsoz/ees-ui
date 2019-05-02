@@ -1,15 +1,29 @@
 <template>
-<div class="save-map-settings-container">
-  <b-button variant="outline-primary" id="save-map-settings-toggle" v-on:click="SaveSimulationToggle">Save</b-button>
-  <b-button variant="outline-primary" id="create-simulation">Create</b-button>
+  <div class="save-map-settings-container">
+    <b-button
+      variant="outline-primary"
+      id="save-map-settings-toggle"
+      v-on:click="SaveSimulationToggle"
+      >Save</b-button
+    >
+    <b-button variant="outline-primary" id="create-simulation">Create</b-button>
 
-    <div class='map-overlay' v-show="saveSimIsOpen">
-      <div class='save-simulation-panel'>
+    <div class="map-overlay" v-show="saveSimIsOpen">
+      <div class="save-simulation-panel">
         <label for="simulation-name">Simulation Name:</label>
         <input id="simulation-name" type="text" v-model="simulationName" />
-        <b-button variant="outline-primary" id="save-map-settings" v-on:click="SaveSimulationConfig">Save</b-button>
-        <b-button variant="outline-primary" id="cancel-map-settings" v-on:click="SaveSimulationToggle">Cancel</b-button>
-
+        <b-button
+          variant="outline-primary"
+          id="save-map-settings"
+          v-on:click="SaveSimulationConfig"
+          >Save</b-button
+        >
+        <b-button
+          variant="outline-primary"
+          id="cancel-map-settings"
+          v-on:click="SaveSimulationToggle"
+          >Cancel</b-button
+        >
       </div>
     </div>
   </div>
@@ -27,12 +41,11 @@ export default {
     }
   },
   data: function() {
-    return {
-    };
+    return {};
   },
-  computed:{
+  computed: {
     ...mapState({
-      populationSquares: state => state.map.populationSquares,
+      populationSquares: state => state.map.populationSquares
     }),
     ...mapGetters(["selectedRegion", "selectedFire"]),
     simulationName: {
@@ -57,110 +70,117 @@ export default {
       this.saveSimIsOpen = !this.saveSimIsOpen;
     },
     SaveSimulationConfig() {
-        var outputTemplate =
-        {
-          "simulationName": this.simulationName,
-          "config":{
-            "ees": [
-              {
-                "global" : [
-                  {
-                    "randomSeed": "1234",
-                    "crs": "EPSG:28355", 
-                    "startHHMM": "00:00"
-                  } 
-                ],
-
-                "bdi" : [ 
-                  { 
-                    "jPlanSelectionPolicy": "FIRST",
-                    "jAgents": "",
-                    "jLogLevel": "WARN",
-                    "jLogFile": "test/output/io/github/agentsoz/ees/TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/jill.log",
-                    "jOutFile": "test/output/io/github/agentsoz/ees//TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/jill.out"
-                  }
-                ],
-
-                "matsim" : [
-                  {
-                    "outputDir": "test/output/io/github/agentsoz/ees//TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/matsim",
-                    "configXml": "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_matsim_main.xml",
-                    "maxDistanceForFireVisual": "1000",
-                    "maxDistanceForSmokeVisual": "5000",
-                    "fireAvoidanceBufferForVehicles": "5000",
-                    "fireAvoidanceBufferForEmergencyVehicles": "1000",
-                    "congestionEvaluationInterval": "180",
-                    "congestionToleranceThreshold": "0.33",
-                    "congestionReactionProbability": "0.0"
-                  } 
-                ],
-
-                "phoenix" : [ 
-                  { 
-                    "ignitionHHMM": "00:00",
-                    "fireGeoJson": this.selectedFire.geojson,
-                    "smokeGeoJson": ""
-                  }
-                ],
-
-                "disruption" : [
-                  {
-                    "fileJson": "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_disruptions.json"
-                  }
-                ],
-
-                "messaging" : [
-                  {
-                    "fileJson": "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_messages.json"
-                  }
-                ]
-                
-              }
-            ],
-            "scenario_main": [
+      var outputTemplate = {
+        simulationName: this.simulationName,
+        config: {
+          ees: [
+            {
+              global: [
                 {
-                "matsimfile" : "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_matsim_main.xml",
-            
-                "firefile" : [
-                  {
-                    "name": "",
-                    "coordinates": "",
-                    "format": ""
-                  }
-                ],
-
-                "geographyfile" : [
-                  {
-                    "geo_name": "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_geography.xml"
-                  }
-                ],
-
-                "trafficBehaviour" : [
-                  {
-                    "proportion": "0.0",
-                    "radiusInMtrs": "0"
-                  }
-                ],
-
-                "evacuationTiming" : [
-                  {
-                    "start": "00:00",
-                    "peak": "00"
-                  }
-                ],
-
-                "bdiagents" : "bdiagents" 
+                  randomSeed: "1234",
+                  crs: "EPSG:28355",
+                  startHHMM: "00:00"
                 }
-            ]
-          }
+              ],
+
+              bdi: [
+                {
+                  jPlanSelectionPolicy: "FIRST",
+                  jAgents: "",
+                  jLogLevel: "WARN",
+                  jLogFile:
+                    "test/output/io/github/agentsoz/ees/TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/jill.log",
+                  jOutFile:
+                    "test/output/io/github/agentsoz/ees//TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/jill.out"
+                }
+              ],
+
+              matsim: [
+                {
+                  outputDir:
+                    "test/output/io/github/agentsoz/ees//TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/matsim",
+                  configXml:
+                    "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_matsim_main.xml",
+                  maxDistanceForFireVisual: "1000",
+                  maxDistanceForSmokeVisual: "5000",
+                  fireAvoidanceBufferForVehicles: "5000",
+                  fireAvoidanceBufferForEmergencyVehicles: "1000",
+                  congestionEvaluationInterval: "180",
+                  congestionToleranceThreshold: "0.33",
+                  congestionReactionProbability: "0.0"
+                }
+              ],
+
+              phoenix: [
+                {
+                  ignitionHHMM: "00:00",
+                  fireGeoJson: this.selectedFire.geojson,
+                  smokeGeoJson: ""
+                }
+              ],
+
+              disruption: [
+                {
+                  fileJson:
+                    "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_disruptions.json"
+                }
+              ],
+
+              messaging: [
+                {
+                  fileJson:
+                    "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_messages.json"
+                }
+              ]
+            }
+          ],
+          scenario_main: [
+            {
+              matsimfile:
+                "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_matsim_main.xml",
+
+              firefile: [
+                {
+                  name: "",
+                  coordinates: "",
+                  format: ""
+                }
+              ],
+
+              geographyfile: [
+                {
+                  geo_name:
+                    "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_geography.xml"
+                }
+              ],
+
+              trafficBehaviour: [
+                {
+                  proportion: "0.0",
+                  radiusInMtrs: "0"
+                }
+              ],
+
+              evacuationTiming: [
+                {
+                  start: "00:00",
+                  peak: "00"
+                }
+              ],
+
+              bdiagents: "bdiagents"
+            }
+          ]
         }
+      };
 
-        this.$store.commit(
+      this.$store.commit(
         "setSavedSettingsJson",
-        outputTemplate, this.simulationName
-        );
+        outputTemplate,
+        this.simulationName
+      );
 
-        this.SaveSimulationToggle();
+      this.SaveSimulationToggle();
     }
   }
 };
@@ -208,11 +228,11 @@ export default {
   margin: 0;
 }
 
-#save-map-settings{
-    margin: 10px 0 0 0;
+#save-map-settings {
+  margin: 10px 0 0 0;
 }
 
-#cancel-map-settings{
-    margin: 10px 0 0 20px;
+#cancel-map-settings {
+  margin: 10px 0 0 20px;
 }
 </style>

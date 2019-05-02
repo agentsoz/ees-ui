@@ -1,15 +1,26 @@
 <template>
-    <div v-if="visibleFireStep || visibleFireStep === 0" class='time-slider-overlay'>
-      <div class='time-slider-overlay-inner'>
-        <vue-slider ref="fireslider" id="custom-tootip" v-bind="sliderConfig" @callback="updateFilter">
-          <template slot="label" slot-scope="{ label, active }">
-            <span :class="['custom-label', { active }]" v-if="renderLabelTick(label)">
-              {{ stepToLabel(label) }}
-            </span>
-          </template>
-        </vue-slider>
-      </div>
+  <div
+    v-if="visibleFireStep || visibleFireStep === 0"
+    class="time-slider-overlay"
+  >
+    <div class="time-slider-overlay-inner">
+      <vue-slider
+        ref="fireslider"
+        id="custom-tootip"
+        v-bind="sliderConfig"
+        @callback="updateFilter"
+      >
+        <template slot="label" slot-scope="{ label, active }">
+          <span
+            :class="['custom-label', { active }]"
+            v-if="renderLabelTick(label)"
+          >
+            {{ stepToLabel(label) }}
+          </span>
+        </template>
+      </vue-slider>
     </div>
+  </div>
 </template>
 
 <script>
@@ -78,7 +89,6 @@ export default {
 };
 </script>
 
-
 <style>
 .time-slider-overlay {
   position: absolute;
@@ -128,7 +138,10 @@ export default {
   background-color: #2980b9;
   width: 2px;
 }
-.time-slider-overlay-inner .vue-slider-component .vue-slider-dot .vue-slider-dot-handle {
+.time-slider-overlay-inner
+  .vue-slider-component
+  .vue-slider-dot
+  .vue-slider-dot-handle {
   width: 0;
   height: 0;
   border: 20px solid transparent;

@@ -1,127 +1,220 @@
 <template>
-  <b-container fluid class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container">
-    <b-row no-gutters class="h-100">
-      <b-col lg="4" md="4" sm="12" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col" :class="{ hidden: isHidden }">
-        <div id="nav">
+  <b-container
+    fluid
+    class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container"
+  >
+    <b-row no-gutters>
+      <b-col sm="5" class="m-0 mapboxgl-ctrl map-sidebar-col">
+        <div id="h-100 nav">
           <h5>Emergency Evacuation Simulator</h5>
           <router-link to="/">Home</router-link> |
           <router-link to="/about">About</router-link>
-          <b-button style="position:absolute;bottom:2px;right:5px;" size="sm" variant="secondary" @click="toggle()">Hide</b-button>
+          <b-button
+            v-b-toggle.collapse-side-panel
+            size="sm"
+            variant="secondary"
+          >
+            Hide
+          </b-button>
         </div>
-        <div class="h-100 map-accordion-container">
-          <b-card header="Map Style" no-body class="mb-1">
-            <div class="p-1" role="tab">
-              <div block href="#" v-b-toggle.map-style-accordion variant="info">
-                {{ selectedStyle.name }}
-                <div class="icon caret-down" style="float:right"></div>
-              </div>
-            </div>
-            <b-collapse id="map-style-accordion" accordion="map-accordion" role="tabpanel">
-              <ul>
-                <li v-for="style in styles" :key="style.id" :disabled="selectedStyle.id==style.id">
-                  <div
-                    @click="setStyle"
-                    :data-map-style="style.id"
-                    v-if="selectedStyle.id!=style.id">
+        <b-collapse visible id="collapse-side-panel" class="h-100">
+          <div class="h-100 map-accordion-container">
+            <b-card no-body class="mb-1">
+              <b-card-header v-b-toggle.collapse-map-style>
+                Map Style
+              </b-card-header>
+              <b-collapse visible id="collapse-map-style">
+                <select id="map-style" v-model="mapboxStyle">
+                  <option
+                    v-for="style in styles"
+                    :key="style.id"
+                    :value="style.id"
+                    :disabled="mapboxStyle.id == style.id"
+                  >
                     {{ style.name }}
-                  </div>
-                </li>
-              </ul>
-            </b-collapse>
-          </b-card>
-          <b-card header="Region" no-body class="mb-1">
-            <div class="p-1" role="tab">
-              <div block href="#" v-b-toggle.map-region-accordion variant="info">
-                {{ selectedRegion ? selectedRegion.name : "Region" }}
-                <div class="icon caret-down" style="float:right"></div>
-              </div>
-            </div>
-            <b-collapse id="map-region-accordion" visible accordion="map-accordion" role="tabpanel">
-              <ul>
-                <li v-for="region in regions" :key="region.id" :disabled="selectedRegion && selectedRegion.id==region.id">
-                  <div
-                    @click="setRegion"
-                    :data-region="region.id"
-                    v-if="!selectedRegion || (selectedRegion && selectedRegion.id!=region.id)">
+                  </option>
+                </select>
+              </b-collapse>
+            </b-card>
+            <b-card no-body class="mb-1">
+              <b-card-header v-b-toggle.collapse-region>
+                Region
+              </b-card-header>
+              <b-collapse visible id="collapse-region">
+                <select id="map-region" v-model="selectedRegion">
+                  <option value="no-region" disabled></option>
+                  <option
+                    v-for="region in regions"
+                    :key="region.id"
+                    :value="region.id"
+                    :disabled="selectedRegion == region.id"
+                  >
                     {{ region.name }}
-                  </div>
-                </li>
-              </ul>
-            </b-collapse>
-          </b-card>
-          <b-card header="Emergency Incident" no-body class="mb-1">
-            <div class="p-1" role="tab">
-              <div block href="#" v-b-toggle.map-fire-accordion variant="info">
-                {{ selectedFire ? selectedFire.name : "Phoenix Fire" }}
-                <div class="icon caret-down" style="float:right"></div>
-              </div>
-            </div>
-            <b-collapse id="map-fire-accordion" accordion="map-accordion" role="tabpanel">
-              <ul>
-                <li v-for="fire in firesInSelectedRegion" :key="fire.id" :disabled="selectedFire && selectedFire.id==fire.id">
-                  <div
-                    @click="setFire"
-                    :data-fire="fire.id"
-                    v-if="!selectedFire || (selectedFire && selectedFire.id!=fire.id)">
-                    {{ fire.name }}
-                  </div>
-                </li>
-              </ul>
-            </b-collapse>
-          </b-card>
-          <b-card header="Vehicle Configuration" no-body class="mb-1">
-            <div class="p-1" role="tab">
-              <div block href="#" v-b-toggle.map-vehicle-accordion variant="info">
-                Vehicle Configuration
-                <div class="icon caret-down" style="float:right"></div>
-              </div>
-            </div>
-            <b-collapse id="map-vehicle-accordion" accordion="map-accordion" role="tabpanel">
-              <ul>
-                <li v-for="square in populationSquares" :key="square.id">
+                  </option>
+                </select>
+              </b-collapse>
+            </b-card>
+            <b-card no-body class="mb-1">
+              <b-card-header v-b-toggle.collapse-incident>
+                Emergency Incident
+                <span class="helper-icons">
+                  <font-awesome-icon
+                    icon="info-circle"
+                    @click="modalShow = !modalShow"
+                  />
+                </span>
+              </b-card-header>
+              <b-collapse visible id="collapse-incident">
+                <b-row>
+                  <b-col xs="8">
+                    <select id="map-fire" v-model="selectedFire">
+                      <option value="no-fire" disabled></option>
+                      <option
+                        v-for="fire in firesInSelectedRegion"
+                        :key="fire.id"
+                        :value="fire.id"
+                        :disabled="selectedFire == fire.id"
+                      >
+                        {{ fire.name }}
+                      </option>
+                    </select>
+                  </b-col>
+                  <b-col xs="4">
+                    <b-form-group>
+                      <b-form-checkbox-group
+                        id="incident_checkbox_group"
+                        v-model="incident_selected"
+                        :options="incident_options"
+                        name="incident"
+                      ></b-form-checkbox-group>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-collapse>
+            </b-card>
+            <b-card no-body class="mb-1">
+              <b-card-header v-b-toggle.collapse-timing>
+                Timing
+                <span class="helper-icons">
+                  <font-awesome-icon icon="info-circle" />
+                </span>
+              </b-card-header>
+              <b-collapse visible id="collapse-timing">
+                <b-row>
+                  <b-col md="4" sm="4" xs="4">
+                    <label>Evac start (24hr)</label>
+                    <b-form-input
+                      v-model="evacTimepicker"
+                      v-text="max_time_length"
+                    >
+                    </b-form-input>
+                  </b-col>
+                  <b-col md="7" sm="7" xs="7">
+                    <label>Evac peak (mins)</label>
+                    <div>
+                      <VueSlideBar
+                        v-model="slider.timer_value"
+                        :data="slider.timer_data"
+                        :range="slider.timer_range"
+                        :labelStyles="{
+                          color: '#4a4a4a',
+                          backgroundColor: '#4a4a4a'
+                        }"
+                        :processStyle="{ backgroundColor: '#d8d8d8' }"
+                        @callbackRange="callbackRange"
+                      >
+                        <template slot="tooltip" slot-scope="tooltip">
+                          <font-awesome-icon icon="map-marker" />
+                        </template>
+                      </VueSlideBar>
+                    </div>
+                  </b-col>
+                </b-row>
+              </b-collapse>
+            </b-card>
+            <b-card no-body class="mb-1">
+              <b-card-header v-b-toggle.collapse-dest>
+                Destinations and safe lines
+                <span class="helper-icons">
+                  <font-awesome-icon icon="info-circle" />
+                </span>
+              </b-card-header>
+              <b-collapse visible id="collapse-dest">
+                <b-row>
                   <div>
-                    {{ square.id }}
+                    <b-col xs="6">
+                      <b-form-select
+                        v-model="dest_selected"
+                        :options="dest_options"
+                      >
+                      </b-form-select>
+                    </b-col>
+                    <b-col xs="5">
+                      <b-button disabled size="sm" variant="success">
+                        <font-awesome-icon icon="plus-circle" />
+                        Draw safe line
+                      </b-button>
+                    </b-col>
                   </div>
-                </li>
-              </ul>
-            </b-collapse>
-            <div class="card-text">Test</div>
-          </b-card>
-          <b-card header="Impacted Links" no-body class="mb-1">
-            <div class="p-1" role="tab">
-              <div block href="#" v-b-toggle.map-link-accordion variant="info">
-                Provisioned Links
-                <div class="icon caret-down" style="float:right"></div>
-              </div>
-            </div>
-            <b-collapse id="map-link-accordion" accordion="map-accordion" role="tabpanel">
-              <ul>
-                <li v-for="link in []" :key="link.id">
-                  <div>
-                    link
-                  </div>
-                </li>
-              </ul>
-            </b-collapse>
-            <div class="p-1" role="tab">
-              <div block href="#" v-b-toggle.add-map-link-accordion variant="info">
-                Create New Link
-                <a href="#" class="icon plus" style="float:right"></a>
-              </div>
-            </div>
-            <b-collapse id="add-map-link-accordion" accordion="map-accordion" role="tabpanel">
-              <mapAffectedLink :linkId=selectedMATSimLink />
-            </b-collapse>
-          </b-card>
-        </div>
+                </b-row>
+              </b-collapse>
+            </b-card>
+            <b-card no-body class="mb-1">
+              <b-card-header v-b-toggle.collapse-traffic>
+                Traffic Behaviour Setup
+              </b-card-header>
+              <b-collapse visible id="collapse-traffic">
+                <label>
+                  Maximum speed on roads (as % of speed limits)
+                  <span class="helper-icons">
+                    <font-awesome-icon icon="info-circle" />
+                  </span>
+                </label>
+                <VueSlideBar
+                  v-model="slider.traffic_value"
+                  :data="slider.traffic_data"
+                  :range="slider.traffic_range"
+                  :labelStyles="{
+                    color: '#4a4a4a',
+                    backgroundColor: '#4a4a4a'
+                  }"
+                  :processStyle="{ backgroundColor: '#d8d8d8' }"
+                  @callbackRange="callbackRange"
+                >
+                  <template slot="tooltip" slot-scope="tooltip">
+                    <font-awesome-icon icon="map-marker" />
+                  </template>
+                </VueSlideBar>
+              </b-collapse>
+            </b-card>
+          </div>
+        </b-collapse>
       </b-col>
     </b-row>
+    <b-modal v-model="modalShow" centered title="BootstrapVue">
+      <p style="position:absolute; background: blue;" class="my-4">
+        Hello from modal!
+      </p>
+    </b-modal>
   </b-container>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
 import MapAffectedLink from "@/components/MapAffectedLink.vue";
+import VueSlideBar from "vue-slide-bar";
+import Vue from "vue";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faMapMarker,
+  faInfoCircle,
+  faPlusCircle
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+library.add(faMapMarker, faInfoCircle, faPlusCircle);
+Vue.component("font-awesome-icon", FontAwesomeIcon);
+Vue.config.productionTip = false;
 
 export default {
   name: "mapSetup",
@@ -130,7 +223,52 @@ export default {
     return {
       isHidden: false,
       styles: this.$store.state.config.styles,
-      regions: this.$store.state.config.regions
+      regions: this.$store.state.config.regions,
+      modalShow: false,
+      incident_selected: ["fire"], // Must be an array reference!
+      incident_options: [
+        { text: "Show on map", value: "fire" },
+        { text: "Toggle smoke", value: "smoke" }
+      ],
+      rangeValue: {},
+      slider: {
+        traffic_value: 0,
+        traffic_data: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+        traffic_range: [
+          { label: "|", isHide: true },
+          { label: "20%" },
+          { label: "|", isHide: true },
+          { label: "40%" },
+          { label: "|", isHide: true },
+          { label: "60%" },
+          { label: "|", isHide: true },
+          { label: "80%" },
+          { label: "|", isHide: true },
+          { label: "100%" }
+        ],
+        timer_value: 0,
+        timer_data: [0, 30, 60, 90, 120, 150, 180],
+        timer_range: [
+          { label: "0" },
+          { label: "|", isHide: true },
+          { label: "60" },
+          { label: "|", isHide: true },
+          { label: "120" },
+          { label: "|", isHide: true },
+          { label: "180" }
+        ]
+      },
+      dest_selected: null,
+      dest_options: [
+        { value: null, text: "Please select an option" },
+        { value: "a", text: "This is First option" },
+        { value: "b", text: "Selected Option" },
+        { value: { C: "3PO" }, text: "This is an option with object value" },
+        { value: "d", text: "This one is disabled", disabled: true }
+      ],
+      evac_time: "12:00",
+      evac_peak_mins: 60,
+      max_time_length: 5
     };
   },
   computed: {
@@ -143,17 +281,51 @@ export default {
       return !this.$store.getters.firesInSelectedRegion
         ? []
         : this.$store.getters.firesInSelectedRegion;
+    },
+    mapboxStyle: {
+      get() {
+        return this.$store.state.map.mapboxStyle;
+      },
+      set(value) {
+        this.changeMapboxStyle(value);
+      }
+    },
+    selectedRegion: {
+      get() {
+        return !this.$store.state.map.selectedRegion
+          ? "no-region"
+          : this.$store.state.map.selectedRegion;
+      },
+      set(value) {
+        // set the selected region in state
+        this.selectRegion(value);
+      }
+    },
+    selectedFire: {
+      get() {
+        return !this.$store.state.fire.selectedFire
+          ? "no-fire"
+          : this.$store.state.fire.selectedFire;
+      },
+      set(value) {
+        this.selectFire(value);
+      }
+    },
+    evacTimepicker: {
+      get() {
+        return this.evac_time;
+      },
+      set(value) {
+        this.changeTime(value);
+      }
     }
   },
   components: {
-    mapAffectedLink: MapAffectedLink
+    mapAffectedLink: MapAffectedLink,
+    VueSlideBar
   },
   methods: {
-    ...mapActions([
-      "selectRegion",
-      "changeMapboxStyle",
-      "selectFire"
-    ]),
+    ...mapActions(["selectRegion", "changeMapboxStyle", "selectFire"]),
     setStyle: function(event) {
       this.changeMapboxStyle(event.target.dataset.mapStyle);
     },
@@ -169,6 +341,24 @@ export default {
     },
     toggle() {
       this.isHidden = !this.isHidden;
+    },
+    callbackRange(val) {
+      this.rangeValue = val;
+    },
+    changeTime(val) {
+      if (val.length == 4) {
+        if (val.charAt(2) == ":") {
+          var temp = new Array();
+          temp = val.split(":");
+          if (temp[0] <= 12) {
+            if (temp[1] <= 59) {
+              this.evac_time = temp[0] + ":" + temp[1];
+            }
+          }
+        }
+      } else {
+        this.evac_time = "0:00";
+      }
     }
   }
 };
@@ -184,11 +374,14 @@ export default {
 }
 .map-accordion-container {
   text-align: left;
-  padding: 80px 20px;
+  padding: 20px;
 }
-
 .map-sidebar-container .map-sidebar-col {
   background-color: rgba(255, 255, 255, 0.8);
   overflow-y: auto;
+}
+.helper-icons {
+  position: relative;
+  left: 5px;
 }
 </style>
