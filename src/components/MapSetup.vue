@@ -24,7 +24,7 @@
                 Map Style
               </b-card-header>
               <b-collapse visible id="collapse-map-style">
-                <select id="map-style" v-model="mapboxStyle">
+                <b-form-select v-model="mapboxStyle">
                   <option
                     v-for="style in styles"
                     :key="style.id"
@@ -33,7 +33,7 @@
                   >
                     {{ style.name }}
                   </option>
-                </select>
+                </b-form-select>
               </b-collapse>
             </b-card>
             <b-card no-body class="mb-1">
@@ -41,7 +41,9 @@
                 Region
               </b-card-header>
               <b-collapse visible id="collapse-region">
-                <select id="map-region" v-model="selectedRegion">
+                <b-form-select
+                  id="map-region"
+                  v-model="selectedRegion">
                   <option value="no-region" disabled></option>
                   <option
                     v-for="region in regions"
@@ -51,7 +53,7 @@
                   >
                     {{ region.name }}
                   </option>
-                </select>
+                </b-form-select>
               </b-collapse>
             </b-card>
             <b-card no-body class="mb-1">
@@ -66,8 +68,10 @@
               </b-card-header>
               <b-collapse visible id="collapse-incident">
                 <b-row>
-                  <b-col xs="8">
-                    <select id="map-fire" v-model="selectedFire">
+                  <b-col md="8" sm="8" xs="8">
+                    <b-form-select
+                      id="map-fire"
+                      v-model="selectedFire">
                       <option value="no-fire" disabled></option>
                       <option
                         v-for="fire in firesInSelectedRegion"
@@ -77,9 +81,9 @@
                       >
                         {{ fire.name }}
                       </option>
-                    </select>
+                    </b-form-select>
                   </b-col>
-                  <b-col xs="4">
+                  <b-col md="4" sm="4" xs="4">
                     <b-form-group>
                       <b-form-checkbox-group
                         id="incident_checkbox_group"
@@ -103,13 +107,25 @@
                 <b-row>
                   <b-col md="4" sm="4" xs="4">
                     <label>Evac start (24hr)</label>
-                    <b-form-input
-                      v-model="evacTimepicker"
-                      v-text="max_time_length"
-                    >
-                    </b-form-input>
+                    <b-row>
+                      <b-col>
+                        <b-form-select
+                            v-model="hr_selected"
+                            :options="evac_hr_options"
+                          >
+                        </b-form-select>
+                      </b-col>
+                      :
+                      <b-col>
+                        <b-form-select
+                            v-model="min_selected"
+                            :options="evac_min_options"
+                          >
+                        </b-form-select>
+                      </b-col>
+                    </b-row>
                   </b-col>
-                  <b-col md="7" sm="7" xs="7">
+                  <b-col md="8" sm="8" xs="8">
                     <label>Evac peak (mins)</label>
                     <div>
                       <VueSlideBar
@@ -232,6 +248,7 @@ export default {
       ],
       rangeValue: {},
       slider: {
+         // Traffic Behaviour Setup
         traffic_value: 0,
         traffic_data: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
         traffic_range: [
@@ -246,6 +263,7 @@ export default {
           { label: "|", isHide: true },
           { label: "100%" }
         ],
+        // Tim - Evac Peak (mins)
         timer_value: 0,
         timer_data: [0, 30, 60, 90, 120, 150, 180],
         timer_range: [
@@ -267,6 +285,40 @@ export default {
         { value: "d", text: "This one is disabled", disabled: true }
       ],
       evac_time: "12:00",
+      hr_selected: "12",
+      evac_hr_options: [
+        { value: 1, text: "01" },
+        { value: 2, text: "02" },
+        { value: 3, text: "03" },
+        { value: 4, text: "04" },
+        { value: 5, text: "05" },
+        { value: 6, text: "06" },
+        { value: 7, text: "07" },
+        { value: 8, text: "08" },
+        { value: 9, text: "09" },
+        { value: 10, text: "10" },
+        { value: 11, text: "11" },
+        { value: 12, text: "12" },
+        { value: 13, text: "13" },
+        { value: 14, text: "14" },
+        { value: 15, text: "15" },
+        { value: 16, text: "16" },
+        { value: 17, text: "17" },
+        { value: 18, text: "18" },
+        { value: 19, text: "19" },
+        { value: 20, text: "20" },
+        { value: 21, text: "21" },
+        { value: 22, text: "22" },
+        { value: 23, text: "23" },
+        { value: 24, text: "24" }
+      ],
+      min_selected: "00",
+      evac_min_options: [
+        { value: 0, text: "00" },
+        { value: 15, text: "15" },
+        { value: 30, text: "30" },
+        { value: 45, text: "45" }
+      ],
       evac_peak_mins: 60,
       max_time_length: 5
     };
@@ -309,6 +361,15 @@ export default {
       },
       set(value) {
         this.selectFire(value);
+      }
+    },
+
+    selectedHr: {
+      get() {
+        return this.selected_hr;
+      },
+      set(value) {
+        this.selected_hr(value);
       }
     },
     evacTimepicker: {
@@ -383,5 +444,8 @@ export default {
 .helper-icons {
   position: relative;
   left: 5px;
+}
+.custom-select {
+  width: 50% @important;
 }
 </style>
