@@ -46,8 +46,12 @@
       </select>
       <label for="map-fire-opacity">Fire Opacity:</label>
       <input id="map-fire-opacity" type="number" min="0" max="1" step="0.01" v-model="fireOpacity" />
-      <br><br>
-      <button style="width: 100% !important" class="btn btn-success" v-on:keydown.esc="toggle()" @click='toggle()'>Done</button>
+
+      <label for="map-smoke-opacity">Show Smoke:</label>
+      <input id="map-smoke-opacity" type="checkbox" v-model="showSmoke" />
+
+      <label for="map-smoke-opacity">Smoke Opacity:</label>
+      <input id="map-smoke-opacity" type="number" min="0" max="1" step="0.01" v-model="smokeOpacity" :disabled="!showSmoke"/>
     </div>
     </div>
   </div>
@@ -57,7 +61,8 @@
 <script>
 import { mapActions } from "vuex";
 import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
-//import Dropdown from 'vue-simple-search-dropdown';
+import { EMBER_SET_OPACITY } from "@/store/mutation-types";
+import { SHOW_SMOKE } from "@/store/mutation-types";
 
 export default {
   name: "mapSettings",
@@ -121,6 +126,26 @@ export default {
 
         this.$store.commit(PHOENIX_SET_OPACITY, parseFloat(value));
         this.$store.dispatch("resetFireLayers");
+      }
+    },
+    smokeOpacity: {
+      get() {
+        return this.$store.state.smoke.smokeOpacity;
+      },
+      set(value) {
+        var decimal = /^[-+]?[0-9]+\.[0-9]+$/;
+        if (!value.match(decimal)) return;
+
+        this.$store.commit(EMBER_SET_OPACITY, parseFloat(value));
+        this.$store.dispatch("resetSmokeLayers");
+      }
+    },
+    showSmoke: {
+      get() {
+        return this.$store.state.smoke.showSmoke;
+      },
+      set(value) {
+        this.$store.dispatch("showSmoke", value);
       }
     },
     renderFireIn3D: {

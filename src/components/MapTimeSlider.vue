@@ -83,6 +83,7 @@ export default {
     },
     updateFilter(val) {
       this.$store.dispatch("filterFire", val);
+      this.$store.dispatch("filterSmoke", val);
     }
   }
 };
