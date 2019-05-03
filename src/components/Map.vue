@@ -40,7 +40,8 @@ export default {
       mapCenter: state => state.map.mapCenter,
       mapInstance: state => state.map.mapInstance,
       baseMATSimLayer: state => state.map.baseMATSimLayer,
-      highlightMATSimLayer: state => state.map.highlightMATSimLayer
+      highlightMATSimLayer: state => state.map.highlightMATSimLayer,
+      disruptionMATSimLayer: state => state.map.disruptionMATSimLayer
     }),
     mapOpts() {
       var opts = {
@@ -89,6 +90,12 @@ export default {
       store.commit("addPopulationSquare", feature);
     },
     mapOnClick(e) {
+            //List of Links
+      var idList =
+        store.state.map.selectedMATSimLink == ""
+          ? []
+          : store.state.map.selectedMATSimLink;
+
       // set bbox as 5px reactangle area around clicked point
       var bbox = [
         [e.point.x - 5, e.point.y - 5],
@@ -98,9 +105,18 @@ export default {
         layers: [this.baseMATSimLayer]
       });
       var filter;
+
       if (typeof features != "undefined" && features.length !== 0) {
         var coordinates = features[0].geometry.coordinates.slice()[0][0];
         var id = features[0].properties.ID;
+
+        const filteredItems = idList.filter(item => item !== id);
+        if (idList.length != filteredItems.length) {
+          idList = filteredItems;
+        } else {
+          idList.push(id);
+        }
+
         new mapboxgl.Popup()
           .setLngLat(coordinates)
           .setHTML("Link " + id)
@@ -108,19 +124,22 @@ export default {
         //console.log("features:%s\n", JSON.stringify(features));
         filter = features.reduce(
           function(memo, feature) {
-            memo.push(feature.properties.ID);
+            idList.forEach(link => {
+              memo.push(link);
+            });
             return memo;
           },
           ["in", "ID"]
         );
 
         // this is displayed as the current link id in the menu
-        store.commit(MATSIM_SELECT_LINK, id);
+        store.commit(MATSIM_SELECT_LINK, idList);
       } else {
         filter = ["in", "ID", ""];
-        store.commit(MATSIM_DESELECT_LINK, id);
+        store.commit(MATSIM_DESELECT_LINK, idList);
       }
       this.mapInstance.setFilter(this.highlightMATSimLayer, filter);
+
     }
   }
 };

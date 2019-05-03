@@ -25,6 +25,12 @@
           3D
         </button>
       </div>
+            <div
+        class="mapboxgl-ctrl mapboxgl-ctrl-group"
+        v-show="this.$store.state.map.selectedMATSimLink != '' "
+      >
+        <button class="icon bug" type="button" @click="showDisruptionWindow = !showDisruptionWindow"></button>
+      </div>
     </div>
     
     <div class='map-overlay' v-show="isOpen">
@@ -56,6 +62,22 @@
       <button style="width: 100% !important" class="btn btn-success" v-on:keydown.esc="toggle()" @click='toggle()'>Done</button>
     </div>
     </div>
+        <div class="map-overlay" v-show="showDisruptionWindow && this.$store.state.map.selectedMATSimLink != ''">
+      <div class="save-simulation-panel">
+        <h3>Disruptions</h3>
+        <label id="status1" class="form-label">Description</label>
+        <input id="simulation-name" type="text" >
+        <label id="status1" class="form-label">Start</label>
+        <input id="simulation-name" type="text" >
+        <label id="status1" class="form-label">End</label>
+        <input id="simulation-name" type="text" >
+                <label id="status1" class="form-label">Speed</label>
+        <input id="simulation-name" type="text" >
+                <label id="status1" class="form-label">Links</label>
+        <input id="simulation-name" type="text" :value=this.$store.state.map.selectedMATSimLink>
+      <button style="width: 100% !important" class="btn btn-success" >Save</button>
+      </div>
+    </div>
   </div>
 
 </template>
@@ -71,6 +93,7 @@ export default {
   props: {},
   data: function() {
     return {
+      showDisruptionWindow: false,
       styles: this.$store.state.config.styles,
       regions: this.$store.state.config.regions
     };

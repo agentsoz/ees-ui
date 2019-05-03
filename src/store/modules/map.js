@@ -15,6 +15,7 @@ import {
   MATSIM_ADD_LAYER,
   MATSIM_SET_BASE_LAYER,
   MATSIM_SET_HIGHLIGHT_LAYER,
+  MATSIM_SET_DISRUPTION_LAYER,
   MATSIM_SELECT_LINK,
   MATSIM_DESELECT_LINK,
   TOGGLE_3D
@@ -88,6 +89,9 @@ const mutations = {
   },
   [MATSIM_SET_HIGHLIGHT_LAYER](state, newVal) {
     state.highlightMATSimLayer = newVal;
+  },
+  [MATSIM_SET_DISRUPTION_LAYER](state, newVal) {
+    state.disruptionMATSimLayer = newVal;
   },
   [FLY_TO](state, target) {
     state.mapInstance.flyTo({
@@ -262,6 +266,19 @@ const actions = {
     });
     commit(MATSIM_ADD_LAYER, matsimNetworkHighlighted);
     commit(MATSIM_SET_HIGHLIGHT_LAYER, matsimNetworkHighlighted.layerName);
+    //Disruptions layer
+    var matsimNetworkHighlightedDisruptions = JSON.parse(JSON.stringify(matsimNetwork));
+    matsimNetworkHighlightedDisruptions = Object.assign(matsimNetworkHighlightedDisruptions, {
+      layerName: matsimNetwork.layerName + "-highlightedDisruptions",
+      paint: {
+        "line-color": "#FF0000",
+        "line-width": 1.5
+      },
+      filter: ["in", "ID", ""]
+    });
+    commit(MATSIM_ADD_LAYER, matsimNetworkHighlightedDisruptions);
+    commit(MATSIM_SET_DISRUPTION_LAYER, matsimNetworkHighlightedDisruptions.layerName);
+
   }
 };
 
