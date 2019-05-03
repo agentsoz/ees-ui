@@ -41,9 +41,7 @@
                 Region
               </b-card-header>
               <b-collapse visible id="collapse-region">
-                <b-form-select
-                  id="map-region"
-                  v-model="selectedRegion">
+                <b-form-select id="map-region" v-model="selectedRegion">
                   <option value="no-region" disabled></option>
                   <option
                     v-for="region in regions"
@@ -69,9 +67,7 @@
               <b-collapse visible id="collapse-incident">
                 <b-row>
                   <b-col md="8" sm="8" xs="8">
-                    <b-form-select
-                      id="map-fire"
-                      v-model="selectedFire">
+                    <b-form-select id="map-fire" v-model="selectedFire">
                       <option value="no-fire" disabled></option>
                       <option
                         v-for="fire in firesInSelectedRegion"
@@ -110,17 +106,17 @@
                     <b-row>
                       <b-col>
                         <b-form-select
-                            v-model="hr_selected"
-                            :options="evac_hr_options"
-                          >
+                          v-model="hr_selected"
+                          :options="evac_hr_options"
+                        >
                         </b-form-select>
                       </b-col>
                       :
                       <b-col>
                         <b-form-select
-                            v-model="min_selected"
-                            :options="evac_min_options"
-                          >
+                          v-model="min_selected"
+                          :options="evac_min_options"
+                        >
                         </b-form-select>
                       </b-col>
                     </b-row>
@@ -248,7 +244,7 @@ export default {
       ],
       rangeValue: {},
       slider: {
-         // Traffic Behaviour Setup
+        // Traffic Behaviour Setup
         traffic_value: 0,
         traffic_data: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
         traffic_range: [
@@ -284,7 +280,6 @@ export default {
         { value: { C: "3PO" }, text: "This is an option with object value" },
         { value: "d", text: "This one is disabled", disabled: true }
       ],
-      evac_time: "12:00",
       hr_selected: "12",
       evac_hr_options: [
         { value: 1, text: "01" },
@@ -318,9 +313,7 @@ export default {
         { value: 15, text: "15" },
         { value: 30, text: "30" },
         { value: 45, text: "45" }
-      ],
-      evac_peak_mins: 60,
-      max_time_length: 5
+      ]
     };
   },
   computed: {
@@ -363,7 +356,6 @@ export default {
         this.selectFire(value);
       }
     },
-
     selectedHr: {
       get() {
         return this.selected_hr;
@@ -372,14 +364,14 @@ export default {
         this.selected_hr(value);
       }
     },
-    evacTimepicker: {
+    selectedMin: {
       get() {
-        return this.evac_time;
+        return this.selected_min;
       },
       set(value) {
-        this.changeTime(value);
+        this.selected_min(value);
       }
-    }
+    }    
   },
   components: {
     mapAffectedLink: MapAffectedLink,
