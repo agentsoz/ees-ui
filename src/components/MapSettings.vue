@@ -16,7 +16,7 @@
       </div>
       <div
         class="mapboxgl-ctrl mapboxgl-ctrl-group"
-        v-show="this.$store.state.map.selectedMATSimLink != '' "
+        v-show="this.$store.state.map.selectedMATSimLink != '' || this.showDisruptionWindow"
       >
         <button
           class="icon bug"
@@ -91,12 +91,10 @@
         >Done</button>
       </div>
     </div>
-    <div
-      class="map-overlay"
-      v-show="showDisruptionWindow && this.$store.state.map.selectedMATSimLink != ''"
-    >
-      <div class="save-simulation-panel">
+    <div class="map-overlay" v-show="showDisruptionWindow ">
+      <div v-if="!isLinkDisrupted()" class="save-simulation-panel">
         <h3>Disruption</h3>
+
         <label id="status1" class="form-label">Description</label>
         <input ref="description" id="simulation-name" placeholder type="text">
 
@@ -106,6 +104,7 @@
             <div class="col">
               Start Time
               <input
+                ref="startTime"
                 class="form-control"
                 type="time"
                 value="00:00:00"
@@ -115,6 +114,7 @@
             <div class="col">
               End Time
               <input
+                ref="endTime"
                 class="form-control"
                 type="time"
                 value="00:00:00"
@@ -125,6 +125,7 @@
               Speed
               <div class="input-group">
                 <input
+                  ref="speed"
                   style="text-align: right;"
                   type="number"
                   class="form-control"
@@ -158,10 +159,26 @@
           style="margin-bottom: 10px;"
         >
         <button
+          v-if="this.$store.state.map.selectedMATSimLink != ''"
           style="width: 100% !important"
           class="btn btn-success"
           @click="saveDisruption()"
         >Save</button>
+        <button
+          v-else
+          style="width: 100% !important"
+          class="btn btn-success"
+          disabled
+          @click="saveDisruption()"
+        >Save</button>
+      </div>
+      <div v-else class="save-simulation-panel">
+        <h3>Disruption</h3>
+        <button
+          style="width: 100% !important"
+          class="btn btn-danger"
+          @click="deleteDisruption()"
+        >Delete</button>
       </div>
     </div>
   </div>
@@ -283,9 +300,11 @@ export default {
 
       var disruption = {
         affectedLinks: store.state.map.selectedMATSimLink,
-        start: 0,
-        end: 0,
-        description: this.$refs.description.value
+        start: this.$refs.startTime.value,
+        end: this.$refs.endTime.value,
+        description: this.$refs.description.value,
+        speed: this.$refs.speed.value,
+        absoluteSpeed: this.absoluteSpeed
       };
 
       var filter = ["in", "ID"];
@@ -305,6 +324,56 @@ export default {
       this.showDisruptionWindow = false;
       store.state.map.selectedMATSimLink = "";
     },
+    isLinkDisrupted() {
+      var selectedLink = this.$store.state.map.selectedMATSimLink;
+      var disruptions = this.$store.state.map.disruptions;
+      var result = false;
+      disruptions.forEach(disruption => {
+        disruption.affectedLinks.forEach(link => {
+          if (link == selectedLink) {
+            result = true;
+          }
+        });
+      });
+      return result;
+    },
+    deleteDisruption() {
+      var selectedLink = this.$store.state.map.selectedMATSimLink;
+      var disruptions = this.$store.state.map.disruptions;
+      var store = this.$store;
+      var result = false;
+      var filter = ["in", "ID"];
+      
+      this.showDisruptionWindow = false;
+
+      disruptions.forEach(function(disruption, i) {
+        disruption.affectedLinks.forEach(link => {
+          if (link == selectedLink) {
+            delete disruptions[i];
+          }
+        });
+
+        store.state.map.mapInstance.setFilter(
+          store.state.map.selectedDisruptionMATSimLayer,
+          filter
+        );
+        // this.showDisruptionWindow = false;
+        store.state.map.selectedMATSimLink = "";
+        
+        //Add each disrupted link to filter to display on disruption layer.
+        disruptions.forEach(disruption => {
+          disruption.affectedLinks.forEach(link => {
+            filter.push(link);
+          });
+        });
+
+        //render layer
+        store.state.map.mapInstance.setFilter(
+          store.state.map.disruptionMATSimLayer,
+          filter
+        );
+      });
+    }
   }
 };
 </script>

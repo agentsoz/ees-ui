@@ -118,7 +118,7 @@ export default {
           linkList.push(id);
         }
         var selectedDisruptionLinks = [];
-        var popupText = "Link " + id;
+        var popupText = "<strong>Link</strong>: " + id;
         var linksIsDisrupted = false;
         linkList.forEach(link => {
           store.state.map.disruptions.forEach(disruption => {
@@ -129,11 +129,14 @@ export default {
 
             //If not disrupted add disruption text to popup
             if (linksIsDisrupted && disruption.affectedLinks.includes(link)) {
+              var speedUnit = disruption.absoluteSpeed ? " km/h" : "% Slower" 
               popupText +=
-                "<br>" +
+                "<br><strong>Description</strong>: " +
                 disruption.description +
-                "<br>" +
-                "Affected Links:<br>";
+                "<br><strong>Time</strong>: " +
+                disruption.start + "-" + disruption.end + 
+                "<br><strong>Speed</strong>: " + disruption.speed + speedUnit + 
+                "<br><strong>Affected Links: </strong>:<br>";
               disruption.affectedLinks.forEach(link => {
                 popupText += link + "<br>";
                 selectedDisruptionLinks.push(link);
