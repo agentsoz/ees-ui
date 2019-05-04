@@ -16,8 +16,10 @@ import {
   MATSIM_SET_BASE_LAYER,
   MATSIM_SET_HIGHLIGHT_LAYER,
   MATSIM_SET_DISRUPTION_LAYER,
+  MATSIM_SET_SELECTED_DISRUPTION_LAYER,
   MATSIM_SELECT_LINK,
   MATSIM_DESELECT_LINK,
+  MATSIM_ADD_DISRUPTION,
   TOGGLE_3D
 } from "@/store/mutation-types";
 
@@ -34,10 +36,12 @@ const state = {
   populationSquares: [],
   squarePopulationIsOpen: false,
   selectedMATSimLink: "",
+  disruptions: [],
   affectedLinkIsOpen: false,
   mapInstance: null, // MapboxGL object
   drawInstance: null, // MapboxDraw object
   mapCenter: [144.968447, -37.818232] // Federeation Square Melbourne
+
 };
 
 const getters = {
@@ -93,6 +97,12 @@ const mutations = {
   [MATSIM_SET_DISRUPTION_LAYER](state, newVal) {
     state.disruptionMATSimLayer = newVal;
   },
+  [MATSIM_SET_SELECTED_DISRUPTION_LAYER](state, newVal) {
+    state.selectedDisruptionMATSimLayer = newVal;
+  },
+  [MATSIM_ADD_DISRUPTION](state, newVal) {
+    state.disruptions.push(newVal);
+  },
   [FLY_TO](state, target) {
     state.mapInstance.flyTo({
       // These options control the ending camera position: centered at
@@ -108,7 +118,7 @@ const mutations = {
 
       // This can be any easing function: it takes a number between
       // 0 and 1 and returns another number between 0 and 1.
-      easing: function(t) {
+      easing: function (t) {
         return t;
       }
     });
@@ -243,7 +253,7 @@ const actions = {
   loadMATSimNetwork({ commit }, matsimNetwork) {
     // wake the server and give an indication of loading (experimental)
     commit(START_LOADING);
-    fetch(process.env.VUE_APP_EES_TILES_API + "/wake/please").then(function() {
+    fetch(process.env.VUE_APP_EES_TILES_API + "/wake/please").then(function () {
       commit(DONE_LOADING); // dont care about the response
     });
 
@@ -266,6 +276,7 @@ const actions = {
     });
     commit(MATSIM_ADD_LAYER, matsimNetworkHighlighted);
     commit(MATSIM_SET_HIGHLIGHT_LAYER, matsimNetworkHighlighted.layerName);
+
     //Disruptions layer
     var matsimNetworkHighlightedDisruptions = JSON.parse(JSON.stringify(matsimNetwork));
     matsimNetworkHighlightedDisruptions = Object.assign(matsimNetworkHighlightedDisruptions, {
@@ -279,6 +290,18 @@ const actions = {
     commit(MATSIM_ADD_LAYER, matsimNetworkHighlightedDisruptions);
     commit(MATSIM_SET_DISRUPTION_LAYER, matsimNetworkHighlightedDisruptions.layerName);
 
+    //Selected disruption layer
+    var matsimNetworkSelectedDisruptions = JSON.parse(JSON.stringify(matsimNetwork));
+    matsimNetworkSelectedDisruptions = Object.assign(matsimNetworkSelectedDisruptions, {
+      layerName: matsimNetwork.layerName + "-selectedDisruptions",
+      paint: {
+        "line-color": "#00bfff",
+        "line-width": 1.5
+      },
+      filter: ["in", "ID", ""]
+    });
+    commit(MATSIM_ADD_LAYER, matsimNetworkSelectedDisruptions);
+    commit(MATSIM_SET_SELECTED_DISRUPTION_LAYER, matsimNetworkSelectedDisruptions.layerName);
   }
 };
 

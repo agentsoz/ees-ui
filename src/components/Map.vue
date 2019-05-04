@@ -11,8 +11,7 @@
       position: 'bottom-left'
     }"
     @map-load="storeMapInstance"
-  >
-  </mapbox>
+  ></mapbox>
 </template>
 
 <script>
@@ -41,7 +40,9 @@ export default {
       mapInstance: state => state.map.mapInstance,
       baseMATSimLayer: state => state.map.baseMATSimLayer,
       highlightMATSimLayer: state => state.map.highlightMATSimLayer,
-      disruptionMATSimLayer: state => state.map.disruptionMATSimLayer
+      disruptionMATSimLayer: state => state.map.disruptionMATSimLayer,
+      selectedDisruptionMATSimLayer: state =>
+        state.map.selectedDisruptionMATSimLayer
     }),
     mapOpts() {
       var opts = {
@@ -90,12 +91,11 @@ export default {
       store.commit("addPopulationSquare", feature);
     },
     mapOnClick(e) {
-            //List of Links
-      var idList =
+      //List of Links
+      var linkList =
         store.state.map.selectedMATSimLink == ""
           ? []
           : store.state.map.selectedMATSimLink;
-
       // set bbox as 5px reactangle area around clicked point
       var bbox = [
         [e.point.x - 5, e.point.y - 5],
@@ -104,42 +104,82 @@ export default {
       var features = this.mapInstance.queryRenderedFeatures(bbox, {
         layers: [this.baseMATSimLayer]
       });
+
       var filter;
 
       if (typeof features != "undefined" && features.length !== 0) {
         var coordinates = features[0].geometry.coordinates.slice()[0][0];
         var id = features[0].properties.ID;
 
-        const filteredItems = idList.filter(item => item !== id);
-        if (idList.length != filteredItems.length) {
-          idList = filteredItems;
+        const filteredItems = linkList.filter(item => item !== id);
+        if (linkList.length != filteredItems.length) {
+          linkList = filteredItems;
         } else {
-          idList.push(id);
+          linkList.push(id);
         }
+        var selectedDisruptionLinks = [];
+        var popupText = "Link " + id;
+        var linksIsDisrupted = false;
+        linkList.forEach(link => {
+          store.state.map.disruptions.forEach(disruption => {
+            //Check if selected link is disrupted.
+            if (disruption.affectedLinks.includes(id)) {
+              linksIsDisrupted = true;
+            }
 
-        new mapboxgl.Popup()
-          .setLngLat(coordinates)
-          .setHTML("Link " + id)
-          .addTo(this.mapInstance);
+            //If not disrupted add disruption text to popup
+            if (linksIsDisrupted && disruption.affectedLinks.includes(link)) {
+              popupText +=
+                "<br>" +
+                disruption.description +
+                "<br>" +
+                "Affected Links:<br>";
+              disruption.affectedLinks.forEach(link => {
+                popupText += link + "<br>";
+                selectedDisruptionLinks.push(link);
+              });
+            }
+          });
+        });
+
         //console.log("features:%s\n", JSON.stringify(features));
         filter = features.reduce(
           function(memo, feature) {
-            idList.forEach(link => {
-              memo.push(link);
-            });
+            if (!linksIsDisrupted) {
+              linkList.forEach(link => {
+                memo.push(link);
+              });
+            } else {
+              selectedDisruptionLinks.forEach(link => {
+                memo.push(link);
+              });
+            }
             return memo;
           },
           ["in", "ID"]
         );
 
+        new mapboxgl.Popup()
+          .setLngLat(coordinates)
+          .setHTML(popupText)
+          .addTo(this.mapInstance);
+
         // this is displayed as the current link id in the menu
-        store.commit(MATSIM_SELECT_LINK, idList);
+        store.commit(MATSIM_SELECT_LINK, linkList);
       } else {
         filter = ["in", "ID", ""];
-        store.commit(MATSIM_DESELECT_LINK, idList);
+        store.commit(MATSIM_DESELECT_LINK, linkList);
       }
-      this.mapInstance.setFilter(this.highlightMATSimLayer, filter);
-
+      var disruptedFilter = ["in", "ID", ""];
+      var highlightFilter = ["in", "ID", ""];
+      linksIsDisrupted
+        ? (disruptedFilter = filter)
+        : (highlightFilter = filter);
+      this.mapInstance.setFilter(
+        this.selectedDisruptionMATSimLayer,
+        disruptedFilter
+      );
+      this.mapInstance.setFilter(this.highlightMATSimLayer, highlightFilter);
     }
   }
 };
