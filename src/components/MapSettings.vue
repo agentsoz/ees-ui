@@ -96,17 +96,67 @@
       v-show="showDisruptionWindow && this.$store.state.map.selectedMATSimLink != ''"
     >
       <div class="save-simulation-panel">
-        <h3>Disruptions</h3>
+        <h3>Disruption</h3>
         <label id="status1" class="form-label">Description</label>
-        <input ref="description" id="simulation-name" type="text">
-        <label id="status1" class="form-label">Start</label>
-        <input id="simulation-name" type="text">
-        <label id="status1" class="form-label">End</label>
-        <input id="simulation-name" type="text">
-        <label id="status1" class="form-label">Speed</label>
-        <input id="simulation-name" type="text">
-        <label id="status1" class="form-label">Links</label>
-        <input id="simulation-name" type="text" :value="this.$store.state.map.selectedMATSimLink">
+        <input ref="description" id="simulation-name" placeholder type="text">
+
+        <div class="container">
+          <div class="row">
+            <div class="col"/>
+            <div class="col">
+              Start Time
+              <input
+                class="form-control"
+                type="time"
+                value="00:00:00"
+                id="example-time-input"
+              >
+            </div>
+            <div class="col">
+              End Time
+              <input
+                class="form-control"
+                type="time"
+                value="00:00:00"
+                id="example-time-input"
+              >
+            </div>
+            <div class="col-4">
+              Speed
+              <div class="input-group">
+                <input
+                  style="text-align: right;"
+                  type="number"
+                  class="form-control"
+                  placeholder="Speed"
+                  aria-label="Recipient's username"
+                  aria-describedby="basic-addon2"
+                >
+                <div class="input-group-append">
+                  <button
+                    :class="!absoluteSpeed ? 'btn btn-secondary' : 'btn btn-primary'"
+                    type="button"
+                    @click="absoluteSpeed = true"
+                  >KM/H</button>
+                  <button
+                    :class="absoluteSpeed ? 'btn btn-secondary' : 'btn btn-primary'"
+                    type="button"
+                    @click="absoluteSpeed = false"
+                  >%</button>
+                </div>
+              </div>
+            </div>
+            <div class="col"/>
+          </div>
+        </div>
+
+        <label id="status1" class="form-label">Affected Links</label>
+        <input
+          id="simulation-name"
+          type="text"
+          :value="this.$store.state.map.selectedMATSimLink"
+          style="margin-bottom: 10px;"
+        >
         <button
           style="width: 100% !important"
           class="btn btn-success"
@@ -123,12 +173,16 @@ import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
 import { EMBER_SET_OPACITY } from "@/store/mutation-types";
 import { MATSIM_ADD_DISRUPTION } from "@/store/mutation-types";
 import { SHOW_SMOKE } from "@/store/mutation-types";
+import { ToggleButton } from "vue-js-toggle-button";
+import Vue from "vue";
+Vue.component("ToggleButton", ToggleButton);
 
 export default {
   name: "mapSettings",
   props: {},
   data: function() {
     return {
+      absoluteSpeed: true,
       showDisruptionWindow: false,
       styles: this.$store.state.config.styles,
       regions: this.$store.state.config.regions
@@ -250,12 +304,12 @@ export default {
       });
 
       //render layer
-      console.log(this.showDisruptionWindow)
-
       mapInstance.setFilter(store.state.map.disruptionMATSimLayer, filter);
       this.showDisruptionWindow = false;
       store.state.map.selectedMATSimLink = "";
-      console.log(this.showDisruptionWindow)
+    },
+    test() {
+      this.absoluteSpeed = !this.absoluteSpeed;
     }
   }
 };
