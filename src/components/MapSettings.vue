@@ -173,9 +173,6 @@ import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
 import { EMBER_SET_OPACITY } from "@/store/mutation-types";
 import { MATSIM_ADD_DISRUPTION } from "@/store/mutation-types";
 import { SHOW_SMOKE } from "@/store/mutation-types";
-import { ToggleButton } from "vue-js-toggle-button";
-import Vue from "vue";
-Vue.component("ToggleButton", ToggleButton);
 
 export default {
   name: "mapSettings",
@@ -308,9 +305,6 @@ export default {
       this.showDisruptionWindow = false;
       store.state.map.selectedMATSimLink = "";
     },
-    test() {
-      this.absoluteSpeed = !this.absoluteSpeed;
-    }
   }
 };
 </script>
