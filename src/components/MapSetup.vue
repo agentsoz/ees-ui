@@ -42,7 +42,7 @@
               </b-card-header>
               <b-collapse visible id="collapse-region">
                 <b-form-select id="map-region" v-model="selectedRegion">
-                  <option value="no-region" disabled></option>
+                  <option value="no-region" text="no-region" disabled></option>
                   <option
                     v-for="region in regions"
                     :key="region.id"
@@ -159,21 +159,19 @@
               </b-card-header>
               <b-collapse visible id="collapse-dest">
                 <b-row>
-                  <div>
-                    <b-col xs="6">
-                      <b-form-select
-                        v-model="dest_selected"
-                        :options="dest_options"
-                      >
-                      </b-form-select>
-                    </b-col>
-                    <b-col xs="5">
-                      <b-button disabled size="sm" variant="success">
-                        <font-awesome-icon icon="plus-circle" />
-                        Draw safe line
-                      </b-button>
-                    </b-col>
-                  </div>
+                  <b-col md="6" sm="6" xs="6">
+                    <b-form-select
+                      v-model="dest_selected"
+                      :options="dest_options"
+                    >
+                    </b-form-select>
+                  </b-col>
+                  <b-col md="5" sm="5" xs="5">
+                    <b-button disabled size="sm" variant="success">
+                      <font-awesome-icon icon="plus-circle" />
+                      Draw safe line
+                    </b-button>
+                  </b-col>
                 </b-row>
               </b-collapse>
             </b-card>
@@ -319,9 +317,9 @@ export default {
         { value: 45, text: "45" }
       ],
       helperOptions: [
-        { value: 0, text: "If the location chosen has fire models, choose which one to use. Select whether to show visually on map. Evacuation can proceed without fire model, in which case No incident should be selected. If a fire model is selected, key attributes are displayed."},
+        { value: 0, text: "If the location chosen has fire models, choose which one to use. Select whether to show visually on map.\nEvacuation can proceed without fire model, in which case No incident should be selected. If a fire model is selected, key attributes are displayed."},
         { value: 1, text: "Evac start is the time at which evacuation starts (announcement is made).\nIf there is a fire model, this should be some time after fire ignition attribute of chosen fire.\nEvac peak is the length of time after the start, at which the largest number of people are starting to leave.\nEvacuations are dispersed around the peak point."},
-        { value: 2, text: "Potential destinations are indicated in location file. These provide direction of evacuation. If multiple destinations are given, evacuation is split between these (currently an equal split - future work will allow user specification). The safe line is a line beyond which evacuees can be considered out of danger. Safe lines should be sufficiently long to cut all possible roads that could be used to a given destination. Only one safe line is allowed per destination. To draw line, click start point, release, click end point."},
+        { value: 2, text: "Potential destinations are indicated in location file. These provide direction of evacuation. If multiple destinations are given, evacuation is split between these (currently an equal split - future work will allow user specification).\nThe safe line is a line beyond which evacuees can be considered out of danger. Safe lines should be sufficiently long to cut all possible roads that could be used to a given destination. Only one safe line is allowed per destination. To draw line, click start point, release, click end point."},
         { value: 3, text: "The simulator will modify speeds based on congestion. However in a bushfire additional factors (e.g. smoke) may affect possible speed. This allows that to be specified as a % of the normal speed. The setting will affect all roads in the network, not only those near the fire." }
       ]
     };
