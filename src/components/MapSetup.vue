@@ -60,7 +60,7 @@
                 <span class="helper-icons">
                   <font-awesome-icon
                     icon="info-circle"
-                    @click="modalShow = !modalShow"
+                    v-b-popover.hover="helperOptions[0].text"
                   />
                 </span>
               </b-card-header>
@@ -96,7 +96,10 @@
               <b-card-header v-b-toggle.collapse-timing>
                 Timing
                 <span class="helper-icons">
-                  <font-awesome-icon icon="info-circle" />
+                  <font-awesome-icon
+                    icon="info-circle"
+                    v-b-popover.hover="helperOptions[1].text"
+                  />
                 </span>
               </b-card-header>
               <b-collapse visible id="collapse-timing">
@@ -148,7 +151,10 @@
               <b-card-header v-b-toggle.collapse-dest>
                 Destinations and safe lines
                 <span class="helper-icons">
-                  <font-awesome-icon icon="info-circle" />
+                  <font-awesome-icon
+                    icon="info-circle"
+                    v-b-popover.hover="helperOptions[2].text"
+                  />
                 </span>
               </b-card-header>
               <b-collapse visible id="collapse-dest">
@@ -179,7 +185,10 @@
                 <label>
                   Maximum speed on roads (as % of speed limits)
                   <span class="helper-icons">
-                    <font-awesome-icon icon="info-circle" />
+                    <font-awesome-icon
+                      icon="info-circle"
+                      v-b-popover.hover="helperOptions[3].text"
+                    />
                   </span>
                 </label>
                 <VueSlideBar
@@ -203,11 +212,6 @@
         </b-collapse>
       </b-col>
     </b-row>
-    <b-modal v-model="modalShow" centered title="BootstrapVue">
-      <p style="position:absolute; background: blue;" class="my-4">
-        Hello from modal!
-      </p>
-    </b-modal>
   </b-container>
 </template>
 
@@ -259,7 +263,7 @@ export default {
           { label: "|", isHide: true },
           { label: "100%" }
         ],
-        // Tim - Evac Peak (mins)
+        // Time - Evac Peak (mins)
         timer_value: 0,
         timer_data: [0, 30, 60, 90, 120, 150, 180],
         timer_range: [
@@ -313,6 +317,12 @@ export default {
         { value: 15, text: "15" },
         { value: 30, text: "30" },
         { value: 45, text: "45" }
+      ],
+      helperOptions: [
+        { value: 0, text: "If the location chosen has fire models, choose which one to use. Select whether to show visually on map. Evacuation can proceed without fire model, in which case No incident should be selected. If a fire model is selected, key attributes are displayed."},
+        { value: 1, text: "Evac start is the time at which evacuation starts (announcement is made).\nIf there is a fire model, this should be some time after fire ignition attribute of chosen fire.\nEvac peak is the length of time after the start, at which the largest number of people are starting to leave.\nEvacuations are dispersed around the peak point."},
+        { value: 2, text: "Potential destinations are indicated in location file. These provide direction of evacuation. If multiple destinations are given, evacuation is split between these (currently an equal split - future work will allow user specification). The safe line is a line beyond which evacuees can be considered out of danger. Safe lines should be sufficiently long to cut all possible roads that could be used to a given destination. Only one safe line is allowed per destination. To draw line, click start point, release, click end point."},
+        { value: 3, text: "The simulator will modify speeds based on congestion. However in a bushfire additional factors (e.g. smoke) may affect possible speed. This allows that to be specified as a % of the normal speed. The setting will affect all roads in the network, not only those near the fire." }
       ]
     };
   },
@@ -371,7 +381,7 @@ export default {
       set(value) {
         this.selected_min(value);
       }
-    }    
+    }
   },
   components: {
     mapAffectedLink: MapAffectedLink,
