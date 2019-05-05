@@ -82,10 +82,9 @@
                   <b-col md="4" sm="4" xs="4">
                     <b-form-group>
                       <b-form-checkbox-group
-                        id="incident_checkbox_group"
-                        v-model="incident_selected"
+                        id="emergency_incident_checkbox"
+                        v-model="selectedIncident"
                         :options="incident_options"
-                        name="incident"
                       ></b-form-checkbox-group>
                     </b-form-group>
                   </b-col>
@@ -239,7 +238,7 @@ export default {
       styles: this.$store.state.config.styles,
       regions: this.$store.state.config.regions,
       modalShow: false,
-      incident_selected: ["fire"], // Must be an array reference!
+      //incident_selected: ["fire"], // Must be an array reference!
       incident_options: [
         { text: "Show on map", value: "fire" },
         { text: "Toggle smoke", value: "smoke" }
@@ -364,6 +363,11 @@ export default {
         this.selectFire(value);
       }
     },
+    selectedIncident: {
+      get() {
+        return ["fire"];
+      }
+    },
     selectedHr: {
       get() {
         return this.selected_hr;
@@ -447,5 +451,9 @@ export default {
 }
 .custom-select {
   width: 50% @important;
+}
+.vue-slide-bar-component[data-v-68863e48] {
+  padding-left: 5% !important;
+  padding-right: 5% !important;
 }
 </style>
