@@ -22,6 +22,7 @@
           class="icon bug"
           type="button"
           @click="showDisruptionWindow = !showDisruptionWindow"
+          :style="this.showDisruptionWindow ? 'background-color: lightskyblue;' : '' "
         ></button>
       </div>
     </div>
@@ -157,6 +158,7 @@
           type="text"
           :value="this.$store.state.map.selectedMATSimLink"
           style="margin-bottom: 10px;"
+          disabled
         >
         <button
           v-if="this.$store.state.map.selectedMATSimLink != ''"

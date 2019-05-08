@@ -139,7 +139,7 @@ export default {
               store.commit(MATSIM_SELECT_LINK, [id]);
               linkList = store.state.map.selectedMATSimLink;
             }
-
+            this.disruptionSelected = false;
             //If not disrupted add disruption text to popup
             if (linksIsDisrupted && disruption.affectedLinks.includes(link)) {
               var speedUnit = disruption.absoluteSpeed ? " km/h" : "% Slower";
