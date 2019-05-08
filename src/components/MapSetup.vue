@@ -1,5 +1,6 @@
 <template>
   <b-container
+    v-show="this.$store.state.map.mapSettingsIsOpen"
     fluid
     class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container"
   >
@@ -7,22 +8,13 @@
       <b-col sm="5" class="m-0 mapboxgl-ctrl map-sidebar-col">
         <div id="h-100 nav">
           <h5>Emergency Evacuation Simulator</h5>
-          <router-link to="/">Home</router-link> |
+          <router-link to="/">Home</router-link>|
           <router-link to="/about">About</router-link>
-          <b-button
-            v-b-toggle.collapse-side-panel
-            size="sm"
-            variant="secondary"
-          >
-            Hide
-          </b-button>
         </div>
         <b-collapse visible id="collapse-side-panel" class="h-100">
           <div class="h-100 map-accordion-container">
             <b-card no-body class="mb-1">
-              <b-card-header v-b-toggle.collapse-map-style>
-                Map Style
-              </b-card-header>
+              <b-card-header v-b-toggle.collapse-map-style>Map Style</b-card-header>
               <b-collapse visible id="collapse-map-style">
                 <b-form-select v-model="mapboxStyle">
                   <option
@@ -30,16 +22,19 @@
                     :key="style.id"
                     :value="style.id"
                     :disabled="mapboxStyle.id == style.id"
+<<<<<<< HEAD
                   >
                     {{ style.name }}
                   </option>
                 </b-form-select>
+=======
+                  >{{ style.name }}</option>
+                </select>
+>>>>>>> origin/master
               </b-collapse>
             </b-card>
             <b-card no-body class="mb-1">
-              <b-card-header v-b-toggle.collapse-region>
-                Region
-              </b-card-header>
+              <b-card-header v-b-toggle.collapse-region>Region</b-card-header>
               <b-collapse visible id="collapse-region">
                 <b-form-select id="map-region" v-model="selectedRegion">
                   <option value="no-region" text="no-region" disabled></option>
@@ -48,20 +43,29 @@
                     :key="region.id"
                     :value="region.id"
                     :disabled="selectedRegion == region.id"
+<<<<<<< HEAD
                   >
                     {{ region.name }}
                   </option>
                 </b-form-select>
+=======
+                  >{{ region.name }}</option>
+                </select>
+>>>>>>> origin/master
               </b-collapse>
             </b-card>
             <b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-incident>
                 Emergency Incident
                 <span class="helper-icons">
+<<<<<<< HEAD
                   <font-awesome-icon
                     icon="info-circle"
                     v-b-popover.hover="helperOptions[0].text"
                   />
+=======
+                  <font-awesome-icon icon="info-circle" @click="modalShow = !modalShow"/>
+>>>>>>> origin/master
                 </span>
               </b-card-header>
               <b-collapse visible id="collapse-incident">
@@ -74,37 +78,75 @@
                         :key="fire.id"
                         :value="fire.id"
                         :disabled="selectedFire == fire.id"
+<<<<<<< HEAD
                       >
                         {{ fire.name }}
                       </option>
                     </b-form-select>
+=======
+                      >{{ fire.name }}</option>
+                    </select>
+>>>>>>> origin/master
                   </b-col>
                   <b-col md="4" sm="4" xs="4">
                     <b-form-group>
+<<<<<<< HEAD
                       <b-form-checkbox-group
                         id="emergency_incident_checkbox"
                         v-model="selectedIncident"
                         :options="incident_options"
                       ></b-form-checkbox-group>
+=======
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="inlineCheckbox1"
+                          value="option1"
+                          v-model="showSmoke"
+                          :disabled="this.$store.state.fire.selectedFire == null" 
+                        >
+                        <label class="form-check-label" for="inlineCheckbox1">Smoke</label>
+                      </div>
+                      
+>>>>>>> origin/master
                     </b-form-group>
                   </b-col>
                 </b-row>
+                <div class="container">
+                  <div class="row">
+                    <div class="col-sm">
+                      Fire Opactiy
+                      <input class="form-control" type="number" value="0.7" step="0.1" v-model="fireOpacity" :disabled="this.$store.state.fire.selectedFire == null" >
+                    </div>
+                    <div class="col-sm">
+                      Smoke Opactiy
+                      <input class="form-control" type="number" value="0.5" step="0.1" v-model="smokeOpacity" :disabled="this.$store.state.fire.selectedFire == null" >
+                    </div>
+                  </div>
+                </div>
+                
               </b-collapse>
             </b-card>
             <b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-timing>
                 Timing
                 <span class="helper-icons">
+<<<<<<< HEAD
                   <font-awesome-icon
                     icon="info-circle"
                     v-b-popover.hover="helperOptions[1].text"
                   />
+=======
+                  <font-awesome-icon icon="info-circle"/>
+>>>>>>> origin/master
                 </span>
               </b-card-header>
               <b-collapse visible id="collapse-timing">
                 <b-row>
                   <b-col md="4" sm="4" xs="4">
                     <label>Evac start (24hr)</label>
+<<<<<<< HEAD
                     <b-row>
                       <b-col>
                         <b-form-select
@@ -122,6 +164,9 @@
                         </b-form-select>
                       </b-col>
                     </b-row>
+=======
+                    <b-form-input v-model="evacTimepicker" v-text="max_time_length"></b-form-input>
+>>>>>>> origin/master
                   </b-col>
                   <b-col md="8" sm="8" xs="8">
                     <label>Evac peak (mins)</label>
@@ -138,7 +183,7 @@
                         @callbackRange="callbackRange"
                       >
                         <template slot="tooltip" slot-scope="tooltip">
-                          <font-awesome-icon icon="map-marker" />
+                          <font-awesome-icon icon="map-marker"/>
                         </template>
                       </VueSlideBar>
                     </div>
@@ -150,14 +195,19 @@
               <b-card-header v-b-toggle.collapse-dest>
                 Destinations and safe lines
                 <span class="helper-icons">
+<<<<<<< HEAD
                   <font-awesome-icon
                     icon="info-circle"
                     v-b-popover.hover="helperOptions[2].text"
                   />
+=======
+                  <font-awesome-icon icon="info-circle"/>
+>>>>>>> origin/master
                 </span>
               </b-card-header>
               <b-collapse visible id="collapse-dest">
                 <b-row>
+<<<<<<< HEAD
                   <b-col md="6" sm="6" xs="6">
                     <b-form-select
                       v-model="dest_selected"
@@ -171,21 +221,35 @@
                       Draw safe line
                     </b-button>
                   </b-col>
+=======
+                  <div>
+                    <b-col xs="6">
+                      <b-form-select v-model="dest_selected" :options="dest_options"></b-form-select>
+                    </b-col>
+                    <b-col xs="5">
+                      <b-button disabled size="sm" variant="success">
+                        <font-awesome-icon icon="plus-circle"/>Draw safe line
+                      </b-button>
+                    </b-col>
+                  </div>
+>>>>>>> origin/master
                 </b-row>
               </b-collapse>
             </b-card>
             <b-card no-body class="mb-1">
-              <b-card-header v-b-toggle.collapse-traffic>
-                Traffic Behaviour Setup
-              </b-card-header>
+              <b-card-header v-b-toggle.collapse-traffic>Traffic Behaviour Setup</b-card-header>
               <b-collapse visible id="collapse-traffic">
                 <label>
                   Maximum speed on roads (as % of speed limits)
                   <span class="helper-icons">
+<<<<<<< HEAD
                     <font-awesome-icon
                       icon="info-circle"
                       v-b-popover.hover="helperOptions[3].text"
                     />
+=======
+                    <font-awesome-icon icon="info-circle"/>
+>>>>>>> origin/master
                   </span>
                 </label>
                 <VueSlideBar
@@ -200,7 +264,7 @@
                   @callbackRange="callbackRange"
                 >
                   <template slot="tooltip" slot-scope="tooltip">
-                    <font-awesome-icon icon="map-marker" />
+                    <font-awesome-icon icon="map-marker"/>
                   </template>
                 </VueSlideBar>
               </b-collapse>
@@ -209,11 +273,20 @@
         </b-collapse>
       </b-col>
     </b-row>
+<<<<<<< HEAD
+=======
+    <b-modal v-model="modalShow" centered title="BootstrapVue">
+      <p style="position:absolute; background: blue;" class="my-4">Hello from modal!</p>
+    </b-modal>
+>>>>>>> origin/master
   </b-container>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
+import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
+import { EMBER_SET_OPACITY } from "@/store/mutation-types";
+import { SHOW_SMOKE } from "@/store/mutation-types";
 import MapAffectedLink from "@/components/MapAffectedLink.vue";
 import VueSlideBar from "vue-slide-bar";
 import Vue from "vue";
@@ -241,7 +314,7 @@ export default {
       //incident_selected: ["fire"], // Must be an array reference!
       incident_options: [
         { text: "Show on map", value: "fire" },
-        { text: "Toggle smoke", value: "smoke" }
+        { text: "Toggle smoker", value: "smoke" }
       ],
       rangeValue: {},
       slider: {
@@ -383,8 +456,41 @@ export default {
       set(value) {
         this.selected_min(value);
       }
+    },
+    showSmoke: {
+      get() {
+        return this.$store.state.smoke.showSmoke;
+      },
+      set(value) {
+        this.$store.dispatch("showSmoke", value);
+      }
+    },
+    fireOpacity: {
+      get() {
+        return this.$store.state.fire.fireOpacity;
+      },
+      set(value) {
+        var decimal = /^[-+]?[0-9]+\.[0-9]+$/;
+        if (!value.match(decimal)) return;
+
+        this.$store.commit(PHOENIX_SET_OPACITY, parseFloat(value));
+        this.$store.dispatch("resetFireLayers");
+      }
+    },
+    smokeOpacity: {
+      get() {
+        return this.$store.state.smoke.smokeOpacity;
+      },
+      set(value) {
+        var decimal = /^[-+]?[0-9]+\.[0-9]+$/;
+        if (!value.match(decimal)) return;
+
+        this.$store.commit(EMBER_SET_OPACITY, parseFloat(value));
+        this.$store.dispatch("resetSmokeLayers");
+      }
     }
   },
+
   components: {
     mapAffectedLink: MapAffectedLink,
     VueSlideBar
