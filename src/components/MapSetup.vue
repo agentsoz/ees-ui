@@ -22,15 +22,10 @@
                     :key="style.id"
                     :value="style.id"
                     :disabled="mapboxStyle.id == style.id"
-<<<<<<< HEAD
                   >
                     {{ style.name }}
                   </option>
                 </b-form-select>
-=======
-                  >{{ style.name }}</option>
-                </select>
->>>>>>> origin/master
               </b-collapse>
             </b-card>
             <b-card no-body class="mb-1">
@@ -43,29 +38,20 @@
                     :key="region.id"
                     :value="region.id"
                     :disabled="selectedRegion == region.id"
-<<<<<<< HEAD
                   >
                     {{ region.name }}
                   </option>
                 </b-form-select>
-=======
-                  >{{ region.name }}</option>
-                </select>
->>>>>>> origin/master
               </b-collapse>
             </b-card>
             <b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-incident>
                 Emergency Incident
                 <span class="helper-icons">
-<<<<<<< HEAD
                   <font-awesome-icon
                     icon="info-circle"
                     v-b-popover.hover="helperOptions[0].text"
                   />
-=======
-                  <font-awesome-icon icon="info-circle" @click="modalShow = !modalShow"/>
->>>>>>> origin/master
                 </span>
               </b-card-header>
               <b-collapse visible id="collapse-incident">
@@ -78,25 +64,13 @@
                         :key="fire.id"
                         :value="fire.id"
                         :disabled="selectedFire == fire.id"
-<<<<<<< HEAD
                       >
                         {{ fire.name }}
                       </option>
                     </b-form-select>
-=======
-                      >{{ fire.name }}</option>
-                    </select>
->>>>>>> origin/master
                   </b-col>
                   <b-col md="4" sm="4" xs="4">
                     <b-form-group>
-<<<<<<< HEAD
-                      <b-form-checkbox-group
-                        id="emergency_incident_checkbox"
-                        v-model="selectedIncident"
-                        :options="incident_options"
-                      ></b-form-checkbox-group>
-=======
                       <div class="form-check form-check-inline">
                         <input
                           class="form-check-input"
@@ -109,7 +83,6 @@
                         <label class="form-check-label" for="inlineCheckbox1">Smoke</label>
                       </div>
                       
->>>>>>> origin/master
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -132,21 +105,16 @@
               <b-card-header v-b-toggle.collapse-timing>
                 Timing
                 <span class="helper-icons">
-<<<<<<< HEAD
                   <font-awesome-icon
                     icon="info-circle"
                     v-b-popover.hover="helperOptions[1].text"
                   />
-=======
-                  <font-awesome-icon icon="info-circle"/>
->>>>>>> origin/master
                 </span>
               </b-card-header>
               <b-collapse visible id="collapse-timing">
                 <b-row>
                   <b-col md="4" sm="4" xs="4">
                     <label>Evac start (24hr)</label>
-<<<<<<< HEAD
                     <b-row>
                       <b-col>
                         <b-form-select
@@ -164,9 +132,6 @@
                         </b-form-select>
                       </b-col>
                     </b-row>
-=======
-                    <b-form-input v-model="evacTimepicker" v-text="max_time_length"></b-form-input>
->>>>>>> origin/master
                   </b-col>
                   <b-col md="8" sm="8" xs="8">
                     <label>Evac peak (mins)</label>
@@ -195,19 +160,14 @@
               <b-card-header v-b-toggle.collapse-dest>
                 Destinations and safe lines
                 <span class="helper-icons">
-<<<<<<< HEAD
                   <font-awesome-icon
                     icon="info-circle"
                     v-b-popover.hover="helperOptions[2].text"
                   />
-=======
-                  <font-awesome-icon icon="info-circle"/>
->>>>>>> origin/master
                 </span>
               </b-card-header>
               <b-collapse visible id="collapse-dest">
                 <b-row>
-<<<<<<< HEAD
                   <b-col md="6" sm="6" xs="6">
                     <b-form-select
                       v-model="dest_selected"
@@ -221,18 +181,6 @@
                       Draw safe line
                     </b-button>
                   </b-col>
-=======
-                  <div>
-                    <b-col xs="6">
-                      <b-form-select v-model="dest_selected" :options="dest_options"></b-form-select>
-                    </b-col>
-                    <b-col xs="5">
-                      <b-button disabled size="sm" variant="success">
-                        <font-awesome-icon icon="plus-circle"/>Draw safe line
-                      </b-button>
-                    </b-col>
-                  </div>
->>>>>>> origin/master
                 </b-row>
               </b-collapse>
             </b-card>
@@ -242,14 +190,10 @@
                 <label>
                   Maximum speed on roads (as % of speed limits)
                   <span class="helper-icons">
-<<<<<<< HEAD
                     <font-awesome-icon
                       icon="info-circle"
                       v-b-popover.hover="helperOptions[3].text"
                     />
-=======
-                    <font-awesome-icon icon="info-circle"/>
->>>>>>> origin/master
                   </span>
                 </label>
                 <VueSlideBar
@@ -273,12 +217,6 @@
         </b-collapse>
       </b-col>
     </b-row>
-<<<<<<< HEAD
-=======
-    <b-modal v-model="modalShow" centered title="BootstrapVue">
-      <p style="position:absolute; background: blue;" class="my-4">Hello from modal!</p>
-    </b-modal>
->>>>>>> origin/master
   </b-container>
 </template>
 
