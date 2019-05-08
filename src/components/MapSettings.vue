@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <div class="map-overlay" v-show="isOpen">
+    <div class="map-overlay" v-show="false">
       <div class="map-settings-panel" v-on:keydown.esc.capture="toggle()">
         <h3>Map Settings</h3>
         <label for="map-style">Map Style:</label>

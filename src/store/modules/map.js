@@ -27,7 +27,7 @@ const state = {
   isLoading: 0,
   mapboxStyle: "dark",
   firstSymbolLayer: null,
-  mapSettingsIsOpen: false,
+  mapSettingsIsOpen: true,
   baseMATSimLayer: null,
   highlightMATSimLayer: null,
   loadedMATSimLayers: [],
