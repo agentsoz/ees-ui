@@ -204,7 +204,7 @@ const mutations = {
     state.selectedMATSimLink = value;
   },
   [MATSIM_DESELECT_LINK](state) {
-    state.selectedMATSimLink = "";
+    state.selectedMATSimLink = [];
   },
   setAffectedLinkIsOpen(state, value) {
     state.affectedLinkIsOpen = value;

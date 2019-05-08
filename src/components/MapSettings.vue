@@ -189,6 +189,7 @@ import { mapActions } from "vuex";
 import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
 import { EMBER_SET_OPACITY } from "@/store/mutation-types";
 import { MATSIM_ADD_DISRUPTION } from "@/store/mutation-types";
+import { MATSIM_DESELECT_LINK } from "@/store/mutation-types";
 import { SHOW_SMOKE } from "@/store/mutation-types";
 
 export default {
@@ -343,7 +344,7 @@ export default {
       var store = this.$store;
       var result = false;
       var filter = ["in", "ID"];
-      
+
       this.showDisruptionWindow = false;
 
       disruptions.forEach(function(disruption, i) {
@@ -352,27 +353,27 @@ export default {
             delete disruptions[i];
           }
         });
-
-        store.state.map.mapInstance.setFilter(
-          store.state.map.selectedDisruptionMATSimLayer,
-          filter
-        );
-        // this.showDisruptionWindow = false;
-        store.state.map.selectedMATSimLink = "";
-        
-        //Add each disrupted link to filter to display on disruption layer.
-        disruptions.forEach(disruption => {
-          disruption.affectedLinks.forEach(link => {
-            filter.push(link);
-          });
-        });
-
-        //render layer
-        store.state.map.mapInstance.setFilter(
-          store.state.map.disruptionMATSimLayer,
-          filter
-        );
       });
+
+      store.state.map.mapInstance.setFilter(
+        store.state.map.selectedDisruptionMATSimLayer,
+        filter
+      );
+
+      // this.showDisruptionWindow = false;
+
+      // Add each disrupted link to filter to display on disruption layer.
+      disruptions.forEach(disruption => {
+        disruption.affectedLinks.forEach(link => {
+          filter.push(link);
+        });
+      });
+      //render layer
+      store.state.map.mapInstance.setFilter(
+        store.state.map.disruptionMATSimLayer,
+        filter
+      );
+      store.commit(MATSIM_DESELECT_LINK, null);
     }
   }
 };
