@@ -125,8 +125,7 @@ export default {
         var selectedDisruptionLinks = [];
         var popupText = "<strong>Link</strong>: " + id;
         var linksIsDisrupted = false;
-        var select = null;
-        var selectedDisruption = null;
+
         linkList.forEach(link => {
           store.state.map.disruptions.forEach(disruption => {
             //Check if selected link is disrupted.
@@ -135,7 +134,6 @@ export default {
               store.commit(MATSIM_SELECT_LINK, [id]);
               linkList = store.state.map.selectedMATSimLink;
               this.disruptionSelected = true;
-              selectedDisruption = disruption;
               if (linksIsDisrupted) {
                 var speedUnit = disruption.absoluteSpeed ? " km/h" : "% Slower";
                 popupText +=
