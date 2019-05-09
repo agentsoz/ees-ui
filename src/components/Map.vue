@@ -149,7 +149,7 @@ export default {
                   disruption.speed +
                   speedUnit +
                   "<br><strong>Affected Links: </strong>:<br>";
-                  selectedDisruptionLinks = disruption.affectedLinks
+                selectedDisruptionLinks = disruption.affectedLinks;
                 disruption.affectedLinks.forEach(link => {
                   popupText += link + "<br>";
                 });
@@ -198,7 +198,7 @@ export default {
       linksIsDisrupted
         ? (disruptedFilter = filter)
         : (highlightFilter = filter);
-      console.log("link is disrupted", disruptedFilter);
+
       this.mapInstance.setFilter(
         this.selectedDisruptionMATSimLayer,
         disruptedFilter
