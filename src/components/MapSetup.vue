@@ -101,61 +101,7 @@
                 
               </b-collapse>
             </b-card>
-            <b-card no-body class="mb-1">
-              <b-card-header v-b-toggle.collapse-timing>
-                Timing
-                <span class="helper-icons">
-                  <font-awesome-icon
-                    icon="info-circle"
-                    v-b-popover.hover="helperOptions[1].text"
-                  />
-                </span>
-              </b-card-header>
-              <b-collapse visible id="collapse-timing">
-                <b-row>
-                  <b-col md="4" sm="4" xs="4">
-                    <label>Evac start (24hr)</label>
-                    <b-row>
-                      <b-col>
-                        <b-form-select
-                          v-model="hr_selected"
-                          :options="evac_hr_options"
-                        >
-                        </b-form-select>
-                      </b-col>
-                      :
-                      <b-col>
-                        <b-form-select
-                          v-model="min_selected"
-                          :options="evac_min_options"
-                        >
-                        </b-form-select>
-                      </b-col>
-                    </b-row>
-                  </b-col>
-                  <b-col md="8" sm="8" xs="8">
-                    <label>Evac peak (mins)</label>
-                    <div>
-                      <VueSlideBar
-                        v-model="slider.timer_value"
-                        :data="slider.timer_data"
-                        :range="slider.timer_range"
-                        :labelStyles="{
-                          color: '#4a4a4a',
-                          backgroundColor: '#4a4a4a'
-                        }"
-                        :processStyle="{ backgroundColor: '#d8d8d8' }"
-                        @callbackRange="callbackRange"
-                      >
-                        <template slot="tooltip" slot-scope="tooltip">
-                          <font-awesome-icon icon="map-marker"/>
-                        </template>
-                      </VueSlideBar>
-                    </div>
-                  </b-col>
-                </b-row>
-              </b-collapse>
-            </b-card>
+            <!--
             <b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-dest>
                 Destinations and safe lines
@@ -184,6 +130,7 @@
                 </b-row>
               </b-collapse>
             </b-card>
+            -->
             <b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-traffic>Traffic Behaviour Setup</b-card-header>
               <b-collapse visible id="collapse-traffic">
@@ -208,7 +155,7 @@
                   @callbackRange="callbackRange"
                 >
                   <template slot="tooltip" slot-scope="tooltip">
-                    <font-awesome-icon icon="map-marker"/>
+                    <img src="../assets/rectangle-slider.png">
                   </template>
                 </VueSlideBar>
               </b-collapse>
@@ -271,18 +218,6 @@ export default {
           { label: "|", isHide: true },
           { label: "100%" }
         ],
-        // Time - Evac Peak (mins)
-        timer_value: 0,
-        timer_data: [0, 30, 60, 90, 120, 150, 180],
-        timer_range: [
-          { label: "0" },
-          { label: "|", isHide: true },
-          { label: "60" },
-          { label: "|", isHide: true },
-          { label: "120" },
-          { label: "|", isHide: true },
-          { label: "180" }
-        ]
       },
       dest_selected: null,
       dest_options: [
@@ -291,40 +226,6 @@ export default {
         { value: "b", text: "Selected Option" },
         { value: { C: "3PO" }, text: "This is an option with object value" },
         { value: "d", text: "This one is disabled", disabled: true }
-      ],
-      hr_selected: "12",
-      evac_hr_options: [
-        { value: 1, text: "01" },
-        { value: 2, text: "02" },
-        { value: 3, text: "03" },
-        { value: 4, text: "04" },
-        { value: 5, text: "05" },
-        { value: 6, text: "06" },
-        { value: 7, text: "07" },
-        { value: 8, text: "08" },
-        { value: 9, text: "09" },
-        { value: 10, text: "10" },
-        { value: 11, text: "11" },
-        { value: 12, text: "12" },
-        { value: 13, text: "13" },
-        { value: 14, text: "14" },
-        { value: 15, text: "15" },
-        { value: 16, text: "16" },
-        { value: 17, text: "17" },
-        { value: 18, text: "18" },
-        { value: 19, text: "19" },
-        { value: 20, text: "20" },
-        { value: 21, text: "21" },
-        { value: 22, text: "22" },
-        { value: 23, text: "23" },
-        { value: 24, text: "24" }
-      ],
-      min_selected: "00",
-      evac_min_options: [
-        { value: 0, text: "00" },
-        { value: 15, text: "15" },
-        { value: 30, text: "30" },
-        { value: 45, text: "45" }
       ],
       helperOptions: [
         { value: 0, text: "If the location chosen has fire models, choose which one to use. Select whether to show visually on map.\nEvacuation can proceed without fire model, in which case No incident should be selected. If a fire model is selected, key attributes are displayed."},
@@ -495,9 +396,9 @@ export default {
 }
 .custom-select {
   width: 50% @important;
-}
+}/*
 .vue-slide-bar-component[data-v-68863e48] {
   padding-left: 5% !important;
   padding-right: 5% !important;
-}
+}*/
 </style>
