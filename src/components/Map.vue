@@ -95,7 +95,7 @@ export default {
       var feature = e.features[0];
       store.commit("addPopulationSquare", feature);
     },
-    mapOnClick(e) { 
+    mapOnClick(e) {
       //List of Links
       var linkList =
         store.state.map.selectedMATSimLink == ""
@@ -125,6 +125,7 @@ export default {
         var selectedDisruptionLinks = [];
         var popupText = "<strong>Link</strong>: " + id;
         var linksIsDisrupted = false;
+
         linkList.forEach(link => {
           store.state.map.disruptions.forEach(disruption => {
             //Check if selected link is disrupted.
@@ -132,34 +133,33 @@ export default {
               linksIsDisrupted = true;
               store.commit(MATSIM_SELECT_LINK, [id]);
               linkList = store.state.map.selectedMATSimLink;
-              this.disruptionSelected = true
-            }
-
-            if (this.disruptionSelected && linksIsDisrupted == false) {
-              store.commit(MATSIM_SELECT_LINK, [id]);
-              linkList = store.state.map.selectedMATSimLink;
-            }
-            this.disruptionSelected = false;
-            //If not disrupted add disruption text to popup
-            if (linksIsDisrupted && disruption.affectedLinks.includes(link)) {
-              var speedUnit = disruption.absoluteSpeed ? " km/h" : "% Slower";
-              popupText +=
-                "<br><strong>Description</strong>: " +
-                disruption.description +
-                "<br><strong>Time</strong>: " +
-                disruption.start +
-                "-" +
-                disruption.end +
-                "<br><strong>Speed</strong>: " +
-                disruption.speed +
-                speedUnit +
-                "<br><strong>Affected Links: </strong>:<br>";
-              disruption.affectedLinks.forEach(link => {
-                popupText += link + "<br>";
-                selectedDisruptionLinks.push(link);
-              });
+              this.disruptionSelected = true;
+              if (linksIsDisrupted) {
+                var speedUnit = disruption.absoluteSpeed ? " km/h" : "% Slower";
+                popupText +=
+                  "<br><strong>Description</strong>: " +
+                  disruption.description +
+                  "<br><strong>Time</strong>: " +
+                  disruption.start +
+                  "-" +
+                  disruption.end +
+                  "<br><strong>Speed</strong>: " +
+                  disruption.speed +
+                  speedUnit +
+                  "<br><strong>Affected Links: </strong>:<br>";
+                selectedDisruptionLinks = disruption.affectedLinks;
+                disruption.affectedLinks.forEach(link => {
+                  popupText += link + "<br>";
+                });
+              }
             }
           });
+
+          if (this.disruptionSelected && linksIsDisrupted == false) {
+            store.commit(MATSIM_SELECT_LINK, [id]);
+            linkList = store.state.map.selectedMATSimLink;
+            this.disruptionSelected = false;
+          }
         });
 
         //console.log("features:%s\n", JSON.stringify(features));
@@ -190,11 +190,13 @@ export default {
         filter = ["in", "ID", ""];
         store.commit(MATSIM_DESELECT_LINK, linkList);
       }
+
       var disruptedFilter = ["in", "ID", ""];
       var highlightFilter = ["in", "ID", ""];
       linksIsDisrupted
         ? (disruptedFilter = filter)
         : (highlightFilter = filter);
+
       this.mapInstance.setFilter(
         this.selectedDisruptionMATSimLayer,
         disruptedFilter
