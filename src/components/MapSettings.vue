@@ -36,8 +36,10 @@
             v-for="style in styles"
             :key="style.id"
             :value="style.id"
-            :disabled="mapboxStyle==style.id"
-          >{{ style.name }}</option>
+            :disabled="mapboxStyle == style.id"
+          >
+            {{ style.name }}
+          </option>
         </select>
         <label for="map-region">Region:</label>
         <select id="map-region" v-model="selectedRegion">
@@ -46,8 +48,10 @@
             v-for="region in regions"
             :key="region.id"
             :value="region.id"
-            :disabled="selectedRegion==region.id"
-          >{{ region.name }}</option>
+            :disabled="selectedRegion == region.id"
+          >
+            {{ region.name }}
+          </option>
         </select>
         <label for="map-fire">Emergency Incident:</label>
         <select id="map-fire" v-model="selectedFire">
@@ -56,8 +60,10 @@
             v-for="fire in firesInSelectedRegion"
             :key="fire.id"
             :value="fire.id"
-            :disabled="selectedFire==fire.id"
-          >{{ fire.name }}</option>
+            :disabled="selectedFire == fire.id"
+          >
+            {{ fire.name }}
+          </option>
         </select>
         <label for="map-fire-opacity">Fire Opacity:</label>
         <input
@@ -67,11 +73,9 @@
           max="1"
           step="0.01"
           v-model="fireOpacity"
-        >
-
+        />
         <label for="map-smoke-opacity">Show Smoke:</label>
-        <input id="map-smoke-opacity" type="checkbox" v-model="showSmoke">
-
+        <input id="map-smoke-opacity" type="checkbox" v-model="showSmoke" />
         <label for="map-smoke-opacity">Smoke Opacity:</label>
         <input
           id="map-smoke-opacity"
