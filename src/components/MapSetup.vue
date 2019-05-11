@@ -4,8 +4,8 @@
     fluid
     class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container"
   >
-    <b-row no-gutters>
-      <b-col sm="5" class="m-0 mapboxgl-ctrl map-sidebar-col">
+    <b-row no-gutters class="h-100">
+      <b-col sm="5" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col">
         <div id="h-100 nav">
           <h5>Emergency Evacuation Simulator</h5>
           <router-link to="/">Home</router-link>|
@@ -82,27 +82,36 @@
                         >
                         <label class="form-check-label" for="inlineCheckbox1">Smoke</label>
                       </div>
-                      
                     </b-form-group>
                   </b-col>
                 </b-row>
-                <div class="container">
-                  <div class="row">
-                    <div class="col-sm">
-                      Fire Opactiy
-                      <input class="form-control" type="number" value="0.7" step="0.1" v-model="fireOpacity" :disabled="this.$store.state.fire.selectedFire == null" >
-                    </div>
-                    <div class="col-sm">
-                      Smoke Opactiy
-                      <input class="form-control" type="number" value="0.5" step="0.1" v-model="smokeOpacity" :disabled="this.$store.state.fire.selectedFire == null" >
-                    </div>
-                  </div>
-                </div>
-                
+                <b-row>
+                  <b-col>
+                    <label>Fire Opacity</label>
+
+                    <input class="form-control"
+                      type="number"
+                      value="0.7"
+                      step="0.1"
+                      v-model="fireOpacity"
+                      :disabled="this.$store.state.fire.selectedFire == null"
+                    >
+                  </b-col>
+                  <b-col>
+                    <label>Smoke Opacity</label>
+  
+                    <input class="form-control"
+                      type="number"
+                      value="0.5"
+                      step="0.1"
+                      v-model="smokeOpacity"
+                      :disabled="this.$store.state.fire.selectedFire == null"
+                    >
+                  </b-col>
+                </b-row>
               </b-collapse>
             </b-card>
-            <!--
-            <b-card no-body class="mb-1">
+            <!--<b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-dest>
                 Destinations and safe lines
                 <span class="helper-icons">
@@ -118,6 +127,7 @@
                     <b-form-select
                       v-model="dest_selected"
                       :options="dest_options"
+                      disabled
                     >
                     </b-form-select>
                   </b-col>
@@ -129,8 +139,7 @@
                   </b-col>
                 </b-row>
               </b-collapse>
-            </b-card>
-            -->
+            </b-card>-->
             <b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-traffic>Traffic Behaviour Setup</b-card-header>
               <b-collapse visible id="collapse-traffic">
@@ -154,6 +163,18 @@
                   </template>
                 </VueSlideBar>
               </b-collapse>
+            </b-card>
+            <b-card>
+              <div>1</div>
+              <div>1</div>
+              <div>1</div>
+              <div>1</div>
+              <div>1</div>
+              <div>1</div>
+              <div>1</div>
+              <div>1</div>
+              <div>1</div>
+              <div>1</div>
             </b-card>
           </div>
         </b-collapse>
@@ -187,7 +208,6 @@ export default {
   props: {},
   data: function() {
     return {
-      t_value: 0,
       isHidden: false,
       styles: this.$store.state.config.styles,
       regions: this.$store.state.config.regions,
@@ -217,13 +237,32 @@ export default {
         ],
         rangeValue: {}
       },
+      global: [
+        { text: "startHHMM", value: "00:00" }
+      ],
+      phoenix: [
+        { text: "ignitionHHMM", value: "00:00" },
+        { text: "fireGeoJson", value: "scenarios/surf-coast-shire/test-files/scenario_fire.json" },
+        { text: "smokeGeoJson", value: "" }
+      ],
+      matsim: [
+        { text: "outputDir", value: "test/output/io/github/agentsoz/ees//TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/matsim" },
+        { text: "configXml", value: "scenarios/surf-coast-shire/test-files/scenario_matsim_main.xml" },
+        { text: "maxDistanceForFireVisual", value: "1000" },
+        { text: "maxDistanceForSmokeVisual", value: "5000" },
+        { text: "fireAvoidanceBufferForVehicles", value: "5000" },
+        { text: "fireAvoidanceBufferForEmergencyVehicles", value: "1000" },
+        { text: "congestionEvaluationInterval", value: "180" },
+        { text: "congestionToleranceThreshold", value: "0.33" },
+        { text: "congestionReactionProbability", value: "0.0" }
+      ],
+      trafficBehaviour: [
+        { text: "proportion", value: "0.0" },
+        { text: "radiusInMtrs", value: "0" }
+      ],
       dest_selected: null,
       dest_options: [
         { value: null, text: "Please select an option" },
-        { value: "a", text: "This is First option" },
-        { value: "b", text: "Selected Option" },
-        { value: { C: "3PO" }, text: "This is an option with object value" },
-        { value: "d", text: "This one is disabled", disabled: true }
       ],
       helperOptions: [
         { value: 0, text: "If the location chosen has fire models, choose which one to use. Select whether to show visually on map.\nEvacuation can proceed without fire model, in which case No incident should be selected. If a fire model is selected, key attributes are displayed."},
