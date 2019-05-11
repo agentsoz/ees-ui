@@ -163,19 +163,7 @@
                   </template>
                 </VueSlideBar>
               </b-collapse>
-            </b-card>
-            <b-card>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-              <div>1</div>
-            </b-card>
+            </b-card>s
           </div>
         </b-collapse>
       </b-col>
