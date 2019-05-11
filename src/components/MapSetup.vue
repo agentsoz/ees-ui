@@ -163,7 +163,7 @@
                   </template>
                 </VueSlideBar>
               </b-collapse>
-            </b-card>s
+            </b-card>
           </div>
         </b-collapse>
       </b-col>
@@ -408,9 +408,9 @@ export default {
 }
 .custom-select {
   width: 50% @important;
-}/*
+}
 .vue-slide-bar-component[data-v-68863e48] {
   padding-left: 5% !important;
   padding-right: 5% !important;
-}*/
+}
 </style>
