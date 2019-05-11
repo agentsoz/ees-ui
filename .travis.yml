@@ -4,8 +4,9 @@ node_js:
 cache:
   directories:
   - "$HOME/.npm"
-before_deploy:
+before_install:
 - npm install
+before_deploy:
 - npm run test:unit
 - npm run build
 deploy:
