@@ -144,14 +144,9 @@
                   </span>
                 </label>
                 <VueSlideBar
-                  v-model="slider.traffic_value"
-                  :data="slider.traffic_data"
-                  :range="slider.traffic_range"
-                  :labelStyles="{
-                    color: '#4a4a4a',
-                    backgroundColor: '#4a4a4a'
-                  }"
-                  :processStyle="{ backgroundColor: '#d8d8d8' }"
+                  v-model="trafficSlider.value"
+                  :data="trafficSlider.data"
+                  :range="trafficSlider.range"
                   @callbackRange="callbackRange"
                 >
                   <template slot="tooltip" slot-scope="tooltip">
@@ -192,6 +187,7 @@ export default {
   props: {},
   data: function() {
     return {
+      t_value: 0,
       isHidden: false,
       styles: this.$store.state.config.styles,
       regions: this.$store.state.config.regions,
@@ -202,11 +198,12 @@ export default {
         { text: "Toggle smoker", value: "smoke" }
       ],
       rangeValue: {},
-      slider: {
+      trafficSlider: {
         // Traffic Behaviour Setup
-        traffic_value: 0,
-        traffic_data: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-        traffic_range: [
+        value: 0,
+        data: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+        range: [
+          { label: "0" },
           { label: "|", isHide: true },
           { label: "20%" },
           { label: "|", isHide: true },
@@ -218,6 +215,7 @@ export default {
           { label: "|", isHide: true },
           { label: "100%" }
         ],
+        rangeValue: {}
       },
       dest_selected: null,
       dest_options: [
@@ -280,22 +278,6 @@ export default {
         return ["fire"];
       }
     },
-    selectedHr: {
-      get() {
-        return this.selected_hr;
-      },
-      set(value) {
-        this.selected_hr(value);
-      }
-    },
-    selectedMin: {
-      get() {
-        return this.selected_min;
-      },
-      set(value) {
-        this.selected_min(value);
-      }
-    },
     showSmoke: {
       get() {
         return this.$store.state.smoke.showSmoke;
@@ -327,6 +309,9 @@ export default {
         this.$store.commit(EMBER_SET_OPACITY, parseFloat(value));
         this.$store.dispatch("resetSmokeLayers");
       }
+    },
+    callbackRange (val) {
+      this.trafficSlider.rangeValue = val
     }
   },
 
