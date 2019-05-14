@@ -4,8 +4,8 @@
     fluid
     class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container"
   >
-    <b-row no-gutters>
-      <b-col sm="5" class="m-0 mapboxgl-ctrl map-sidebar-col">
+    <b-row no-gutters class="h-100">
+      <b-col sm="5" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col">
         <div id="h-100 nav">
           <h5>Emergency Evacuation Simulator</h5>
           <router-link to="/">Home</router-link>|
@@ -16,51 +16,60 @@
             <b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-map-style>Map Style</b-card-header>
               <b-collapse visible id="collapse-map-style">
-                <select id="map-style" v-model="mapboxStyle">
+                <b-form-select v-model="mapboxStyle">
                   <option
                     v-for="style in styles"
                     :key="style.id"
                     :value="style.id"
                     :disabled="mapboxStyle.id == style.id"
-                  >{{ style.name }}</option>
-                </select>
+                  >
+                    {{ style.name }}
+                  </option>
+                </b-form-select>
               </b-collapse>
             </b-card>
             <b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-region>Region</b-card-header>
               <b-collapse visible id="collapse-region">
-                <select id="map-region" v-model="selectedRegion">
-                  <option value="no-region" disabled></option>
+                <b-form-select id="map-region" v-model="selectedRegion">
+                  <option value="no-region" text="no-region" disabled></option>
                   <option
                     v-for="region in regions"
                     :key="region.id"
                     :value="region.id"
                     :disabled="selectedRegion == region.id"
-                  >{{ region.name }}</option>
-                </select>
+                  >
+                    {{ region.name }}
+                  </option>
+                </b-form-select>
               </b-collapse>
             </b-card>
             <b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-incident>
                 Emergency Incident
                 <span class="helper-icons">
-                  <font-awesome-icon icon="info-circle" @click="modalShow = !modalShow"/>
+                  <font-awesome-icon
+                    icon="info-circle"
+                    v-b-popover.hover="helperOptions[0].text"
+                  />
                 </span>
               </b-card-header>
               <b-collapse visible id="collapse-incident">
                 <b-row>
-                  <b-col xs="8">
-                    <select id="map-fire" v-model="selectedFire">
+                  <b-col md="8" sm="8" xs="8">
+                    <b-form-select id="map-fire" v-model="selectedFire">
                       <option value="no-fire" disabled></option>
                       <option
                         v-for="fire in firesInSelectedRegion"
                         :key="fire.id"
                         :value="fire.id"
                         :disabled="selectedFire == fire.id"
-                      >{{ fire.name }}</option>
-                    </select>
+                      >
+                        {{ fire.name }}
+                      </option>
+                    </b-form-select>
                   </b-col>
-                  <b-col xs="4">
+                  <b-col md="4" sm="4" xs="4">
                     <b-form-group>
                       <div class="form-check form-check-inline">
                         <input
@@ -73,116 +82,92 @@
                         >
                         <label class="form-check-label" for="inlineCheckbox1">Smoke</label>
                       </div>
-                      
                     </b-form-group>
                   </b-col>
                 </b-row>
-                <div class="container">
-                  <div class="row">
-                    <div class="col-sm">
-                      Fire Opactiy
-                      <input class="form-control" type="number" value="0.7" step="0.1" v-model="fireOpacity" :disabled="this.$store.state.fire.selectedFire == null" >
-                    </div>
-                    <div class="col-sm">
-                      Smoke Opactiy
-                      <input class="form-control" type="number" value="0.5" step="0.1" v-model="smokeOpacity" :disabled="this.$store.state.fire.selectedFire == null" >
-                    </div>
-                  </div>
-                </div>
-                
-              </b-collapse>
-            </b-card>
-            <b-card no-body class="mb-1">
-              <b-card-header v-b-toggle.collapse-timing>
-                Timing
-                <span class="helper-icons">
-                  <font-awesome-icon icon="info-circle"/>
-                </span>
-              </b-card-header>
-              <b-collapse visible id="collapse-timing">
                 <b-row>
-                  <b-col md="4" sm="4" xs="4">
-                    <label>Evac start (24hr)</label>
-                    <b-form-input v-model="evacTimepicker" v-text="max_time_length"></b-form-input>
+                  <b-col>
+                    <label>Fire Opacity</label>
+
+                    <input class="form-control"
+                      type="number"
+                      value="0.7"
+                      step="0.1"
+                      v-model="fireOpacity"
+                      :disabled="this.$store.state.fire.selectedFire == null"
+                    >
                   </b-col>
-                  <b-col md="7" sm="7" xs="7">
-                    <label>Evac peak (mins)</label>
-                    <div>
-                      <VueSlideBar
-                        v-model="slider.timer_value"
-                        :data="slider.timer_data"
-                        :range="slider.timer_range"
-                        :labelStyles="{
-                          color: '#4a4a4a',
-                          backgroundColor: '#4a4a4a'
-                        }"
-                        :processStyle="{ backgroundColor: '#d8d8d8' }"
-                        @callbackRange="callbackRange"
-                      >
-                        <template slot="tooltip" slot-scope="tooltip">
-                          <font-awesome-icon icon="map-marker"/>
-                        </template>
-                      </VueSlideBar>
-                    </div>
+                  <b-col>
+                    <label>Smoke Opacity</label>
+  
+                    <input class="form-control"
+                      type="number"
+                      value="0.5"
+                      step="0.1"
+                      v-model="smokeOpacity"
+                      :disabled="this.$store.state.fire.selectedFire == null"
+                    >
                   </b-col>
                 </b-row>
               </b-collapse>
             </b-card>
-            <b-card no-body class="mb-1">
+            <!--<b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-dest>
                 Destinations and safe lines
                 <span class="helper-icons">
-                  <font-awesome-icon icon="info-circle"/>
+                  <font-awesome-icon
+                    icon="info-circle"
+                    v-b-popover.hover="helperOptions[2].text"
+                  />
                 </span>
               </b-card-header>
               <b-collapse visible id="collapse-dest">
                 <b-row>
-                  <div>
-                    <b-col xs="6">
-                      <b-form-select v-model="dest_selected" :options="dest_options"></b-form-select>
-                    </b-col>
-                    <b-col xs="5">
-                      <b-button disabled size="sm" variant="success">
-                        <font-awesome-icon icon="plus-circle"/>Draw safe line
-                      </b-button>
-                    </b-col>
-                  </div>
+                  <b-col md="6" sm="6" xs="6">
+                    <b-form-select
+                      v-model="dest_selected"
+                      :options="dest_options"
+                      disabled
+                    >
+                    </b-form-select>
+                  </b-col>
+                  <b-col md="5" sm="5" xs="5">
+                    <b-button disabled size="sm" variant="success">
+                      <font-awesome-icon icon="plus-circle" />
+                      Draw safe line
+                    </b-button>
+                  </b-col>
                 </b-row>
               </b-collapse>
-            </b-card>
+            </b-card>-->
             <b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-traffic>Traffic Behaviour Setup</b-card-header>
               <b-collapse visible id="collapse-traffic">
                 <label>
                   Maximum speed on roads (as % of speed limits)
                   <span class="helper-icons">
-                    <font-awesome-icon icon="info-circle"/>
+                    <font-awesome-icon
+                      icon="info-circle"
+                      v-b-popover.hover="helperOptions[3].text"
+                    />
                   </span>
                 </label>
                 <VueSlideBar
-                  v-model="slider.traffic_value"
-                  :data="slider.traffic_data"
-                  :range="slider.traffic_range"
-                  :labelStyles="{
-                    color: '#4a4a4a',
-                    backgroundColor: '#4a4a4a'
-                  }"
-                  :processStyle="{ backgroundColor: '#d8d8d8' }"
+                  v-model="trafficSlider.value"
+                  :data="trafficSlider.data"
+                  :range="trafficSlider.range"
                   @callbackRange="callbackRange"
                 >
                   <template slot="tooltip" slot-scope="tooltip">
-                    <font-awesome-icon icon="map-marker"/>
+                    <img src="../assets/rectangle-slider.png">
                   </template>
                 </VueSlideBar>
               </b-collapse>
-            </b-card>
+            </b-card>s
           </div>
         </b-collapse>
       </b-col>
     </b-row>
-    <b-modal v-model="modalShow" centered title="BootstrapVue">
-      <p style="position:absolute; background: blue;" class="my-4">Hello from modal!</p>
-    </b-modal>
   </b-container>
 </template>
 
@@ -215,16 +200,18 @@ export default {
       styles: this.$store.state.config.styles,
       regions: this.$store.state.config.regions,
       modalShow: false,
-      incident_selected: ["fire"], // Must be an array reference!
+      //incident_selected: ["fire"], // Must be an array reference!
       incident_options: [
         { text: "Show on map", value: "fire" },
         { text: "Toggle smoker", value: "smoke" }
       ],
       rangeValue: {},
-      slider: {
-        traffic_value: 0,
-        traffic_data: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-        traffic_range: [
+      trafficSlider: {
+        // Traffic Behaviour Setup
+        value: 0,
+        data: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+        range: [
+          { label: "0" },
           { label: "|", isHide: true },
           { label: "20%" },
           { label: "|", isHide: true },
@@ -236,29 +223,41 @@ export default {
           { label: "|", isHide: true },
           { label: "100%" }
         ],
-        timer_value: 0,
-        timer_data: [0, 30, 60, 90, 120, 150, 180],
-        timer_range: [
-          { label: "0" },
-          { label: "|", isHide: true },
-          { label: "60" },
-          { label: "|", isHide: true },
-          { label: "120" },
-          { label: "|", isHide: true },
-          { label: "180" }
-        ]
+        rangeValue: {}
       },
+      global: [
+        { text: "startHHMM", value: "00:00" }
+      ],
+      phoenix: [
+        { text: "ignitionHHMM", value: "00:00" },
+        { text: "fireGeoJson", value: "scenarios/surf-coast-shire/test-files/scenario_fire.json" },
+        { text: "smokeGeoJson", value: "" }
+      ],
+      matsim: [
+        { text: "outputDir", value: "test/output/io/github/agentsoz/ees//TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/matsim" },
+        { text: "configXml", value: "scenarios/surf-coast-shire/test-files/scenario_matsim_main.xml" },
+        { text: "maxDistanceForFireVisual", value: "1000" },
+        { text: "maxDistanceForSmokeVisual", value: "5000" },
+        { text: "fireAvoidanceBufferForVehicles", value: "5000" },
+        { text: "fireAvoidanceBufferForEmergencyVehicles", value: "1000" },
+        { text: "congestionEvaluationInterval", value: "180" },
+        { text: "congestionToleranceThreshold", value: "0.33" },
+        { text: "congestionReactionProbability", value: "0.0" }
+      ],
+      trafficBehaviour: [
+        { text: "proportion", value: "0.0" },
+        { text: "radiusInMtrs", value: "0" }
+      ],
       dest_selected: null,
       dest_options: [
         { value: null, text: "Please select an option" },
-        { value: "a", text: "This is First option" },
-        { value: "b", text: "Selected Option" },
-        { value: { C: "3PO" }, text: "This is an option with object value" },
-        { value: "d", text: "This one is disabled", disabled: true }
       ],
-      evac_time: "12:00",
-      evac_peak_mins: 60,
-      max_time_length: 5
+      helperOptions: [
+        { value: 0, text: "If the location chosen has fire models, choose which one to use. Select whether to show visually on map.\nEvacuation can proceed without fire model, in which case No incident should be selected. If a fire model is selected, key attributes are displayed."},
+        { value: 1, text: "Evac start is the time at which evacuation starts (announcement is made).\nIf there is a fire model, this should be some time after fire ignition attribute of chosen fire.\nEvac peak is the length of time after the start, at which the largest number of people are starting to leave.\nEvacuations are dispersed around the peak point."},
+        { value: 2, text: "Potential destinations are indicated in location file. These provide direction of evacuation. If multiple destinations are given, evacuation is split between these (currently an equal split - future work will allow user specification).\nThe safe line is a line beyond which evacuees can be considered out of danger. Safe lines should be sufficiently long to cut all possible roads that could be used to a given destination. Only one safe line is allowed per destination. To draw line, click start point, release, click end point."},
+        { value: 3, text: "The simulator will modify speeds based on congestion. However in a bushfire additional factors (e.g. smoke) may affect possible speed. This allows that to be specified as a % of the normal speed. The setting will affect all roads in the network, not only those near the fire." }
+      ]
     };
   },
   computed: {
@@ -301,12 +300,9 @@ export default {
         this.selectFire(value);
       }
     },
-    evacTimepicker: {
+    selectedIncident: {
       get() {
-        return this.evac_time;
-      },
-      set(value) {
-        this.changeTime(value);
+        return ["fire"];
       }
     },
     showSmoke: {
@@ -340,6 +336,9 @@ export default {
         this.$store.commit(EMBER_SET_OPACITY, parseFloat(value));
         this.$store.dispatch("resetSmokeLayers");
       }
+    },
+    callbackRange (val) {
+      this.trafficSlider.rangeValue = val
     }
   },
 
@@ -407,4 +406,11 @@ export default {
   position: relative;
   left: 5px;
 }
+.custom-select {
+  width: 50% @important;
+}/*
+.vue-slide-bar-component[data-v-68863e48] {
+  padding-left: 5% !important;
+  padding-right: 5% !important;
+}*/
 </style>
