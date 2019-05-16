@@ -3,10 +3,10 @@
     <b-button
       variant="outline-primary"
       id="save-map-settings-toggle"
-      v-on:click="SaveSimulationToggle"
-      >Save</b-button
-    >
-    <b-button variant="outline-primary" id="create-simulation">Create</b-button>
+      v-on:click="SaveSimulationToggle">Save</b-button>
+    <b-button variant="outline-primary"
+    id="create-simulation"
+    v-on:click="CreateSimulation">Create</b-button>
 
     <div class="map-overlay" v-show="saveSimIsOpen">
       <div class="save-simulation-panel">
@@ -15,14 +15,11 @@
         <b-button
           variant="outline-primary"
           id="save-map-settings"
-          v-on:click="SaveSimulationConfig"
-          >Save</b-button
-        >
+          v-on:click="SaveSimulationConfig">Save</b-button>
         <b-button
           variant="outline-primary"
           id="cancel-map-settings"
-          v-on:click="SaveSimulationToggle"
-          >Cancel</b-button
+          v-on:click="SaveSimulationToggle">Cancel</b-button
         >
       </div>
     </div>
@@ -30,7 +27,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   name: "saveSettings",
@@ -66,6 +63,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["createSimulation"]),
     SaveSimulationToggle() {
       this.saveSimIsOpen = !this.saveSimIsOpen;
     },
@@ -181,6 +179,9 @@ export default {
       );
 
       this.SaveSimulationToggle();
+    },
+    CreateSimulation() {
+      this.createSimulation();
     }
   }
 };
