@@ -1,42 +1,64 @@
-<template>
-  <div>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
-      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-      crossorigin
-    >
-    <l-map :zoom="zoom" :center="center">
-      <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-      <l-marker :lat-lng="marker"></l-marker>
-    </l-map>
+
+<template lang="html">
+ <div v-on:click="test()">
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"/>
+  <div class="row">
+    <div id="map">
+    </div>
+  </div>
   </div>
 </template>
-
+<script type="text/javascript" src="./map_data.js"></script>
 <script>
-import * as Vue2Leaflet from "vue2-leaflet";
-import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
+
+import L from "leaflet";
+import A from "agentmaps";
+
+var map_data = require("./map_data.js").map_data;
+var bounding_box = [[39.9058, -86.091], [39.8992, -86.1017]];
+let bounding_points = [[39.9058, -86.091], [39.8992, -86.1017]];
 
 export default {
-  name: "MyAwesomeMap",
-  data: function() {
-    return {
-      zoom: 13,
-      center: L.latLng(47.41322, -1.219482),
-      url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+  mounted() {
+    //Creates map
+    this.map = L.map("map").fitBounds(bounding_points);
+    L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
-        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      marker: L.latLng(47.41322, -1.219482)
-    };
+        'Thanks to <a href="http://openstreetmap.org">OpenStreetMap</a> community'
+    }).addTo(this.map);
   },
-  components: {
-    LMap,
-    LTileLayer,
-    LMarker
+  methods: {
+    test() {
+      //Taken from demo tutorial
+      let agentmap = L.A.agentmap(this.map);
+      agentmap.buildingify(bounding_points, map_data);
+      agentmap.agentify(50, agentmap.seqUnitAgentMaker);
+      agentmap.controller = function() {
+        if (agentmap.state.ticks % 300 === 0) {
+          agentmap.agents.eachLayer(function(agent) {
+            let random_index = Math.floor(
+                agentmap.units.count() * Math.random()
+              ),
+              random_unit = agentmap.units.getLayers()[random_index],
+              random_unit_id = agentmap.units.getLayerId(random_unit),
+              random_unit_center = random_unit.getBounds().getCenter();
+
+            agent.scheduleTrip(
+              random_unit_center,
+              { type: "unit", id: random_unit_id },
+              1,
+              false,
+              true
+            );
+          });
+        }
+
+        agent.moveIt();
+      };
+      agentmap.run();
+    }
   }
 };
 </script>
 
-<style>
 
-</style>
