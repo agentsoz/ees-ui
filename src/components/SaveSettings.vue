@@ -87,7 +87,7 @@ export default {
                   jAgents: "",
                   jLogLevel: "WARN",
                   jLogFile:
-                    "../../ees-data/test/output/io/github/agentsoz/ees/TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/jill.log",
+                    "../scripts/output/surf-coast-shire/" + this.simulationName + "/output/io/github/agentsoz/ees/TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/jill.log",
                   jOutFile:
                     "../../ees-data/test/output/io/github/agentsoz/ees/TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/jill.out"
                 }
@@ -96,9 +96,9 @@ export default {
               matsim: [
                 {
                   outputDir:
-                    "../../ees-data/test/output/io/github/agentsoz/ees/TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/matsim",
+                    "../scripts/output/surf-coast-shire/" + this.simulationName + "/output/io/github/agentsoz/ees/TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/matsim",
                   configXml:
-                    "../../ees-data/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_matsim_main.xml",
+                    "../../ees/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_matsim_main.xml",
                   maxDistanceForFireVisual: "1000",
                   maxDistanceForSmokeVisual: "5000",
                   fireAvoidanceBufferForVehicles: "5000",
@@ -112,7 +112,7 @@ export default {
               phoenix: [
                 {
                   ignitionHHMM: "00:00",
-                  fireGeoJson: "../../ees-data/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_fire.json",
+                  fireGeoJson: "../../ees/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_fire.json",
                   smokeGeoJson: ""
                 }
               ],
@@ -120,14 +120,14 @@ export default {
               disruption: [
                 {
                   fileJson:
-                    "../../ees-data/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_disruptions.json"
+                    "../../ees/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_disruptions.json"
                 }
               ],
 
               messaging: [
                 {
                   fileJson:
-                    "../../ees-data/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_messages.json"
+                    "../../ees/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_messages.json"
                 }
               ]
             }
@@ -135,7 +135,7 @@ export default {
           scenario_main: [
             {
               matsimfile:
-                "../../ees-data/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_matsim_main.xml",
+                "../../ees/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_matsim_main.xml",
 
               firefile: [
                 {
@@ -148,7 +148,7 @@ export default {
               geographyfile: [
                 {
                   geo_name:
-                    "../../ees-data/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_geography.xml"
+                    "../../ees/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_geography.xml"
                 }
               ],
 
@@ -181,7 +181,7 @@ export default {
       this.SaveSimulationToggle();
     },
     CreateSimulation() {
-      this.createSimulation();
+      this.createSimulation(this.simulationName);
     }
   }
 };

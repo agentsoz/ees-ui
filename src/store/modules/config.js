@@ -199,8 +199,16 @@ const mutations = {
   }
 };
 const actions = {
-  createSimulation() {
+  createSimulation({commit}, simName) {
+    var simulationName = {
+      simulationName: simName
+    };
     fetch(process.env.VUE_APP_EES_TILES_API + "/create-simulation", {
+      method: "POST",
+      body: JSON.stringify({simulationName}),
+      headers: {
+        "content-type": "application/json"
+      }
     }).then(response => response)
       .then(result => {
         if (result.details) {
