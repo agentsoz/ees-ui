@@ -3,10 +3,10 @@
     <b-button
       variant="outline-primary"
       id="save-map-settings-toggle"
-      v-on:click="SaveSimulationToggle"
-      >Save</b-button
-    >
-    <b-button variant="outline-primary" id="create-simulation">Create</b-button>
+      v-on:click="SaveSimulationToggle">Save</b-button>
+    <b-button variant="outline-primary"
+    id="create-simulation"
+    v-on:click="CreateSimulation">Create</b-button>
 
     <div class="map-overlay" v-show="saveSimIsOpen">
       <div class="save-simulation-panel">
@@ -15,14 +15,11 @@
         <b-button
           variant="outline-primary"
           id="save-map-settings"
-          v-on:click="SaveSimulationConfig"
-          >Save</b-button
-        >
+          v-on:click="SaveSimulationConfig">Save</b-button>
         <b-button
           variant="outline-primary"
           id="cancel-map-settings"
-          v-on:click="SaveSimulationToggle"
-          >Cancel</b-button
+          v-on:click="SaveSimulationToggle">Cancel</b-button
         >
       </div>
     </div>
@@ -30,7 +27,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   name: "saveSettings",
@@ -66,6 +63,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["createSimulation"]),
     SaveSimulationToggle() {
       this.saveSimIsOpen = !this.saveSimIsOpen;
     },
@@ -89,18 +87,18 @@ export default {
                   jAgents: "",
                   jLogLevel: "WARN",
                   jLogFile:
-                    "test/output/io/github/agentsoz/ees/TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/jill.log",
+                    "../scripts/output/surf-coast-shire/" + this.simulationName + "/output/io/github/agentsoz/ees/TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/jill.log",
                   jOutFile:
-                    "test/output/io/github/agentsoz/ees//TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/jill.out"
+                    "../../ees-data/test/output/io/github/agentsoz/ees/TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/jill.out"
                 }
               ],
 
               matsim: [
                 {
                   outputDir:
-                    "test/output/io/github/agentsoz/ees//TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/matsim",
+                    "../scripts/output/surf-coast-shire/" + this.simulationName + "/output/io/github/agentsoz/ees/TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/matsim",
                   configXml:
-                    "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_matsim_main.xml",
+                    "../../ees/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_matsim_main.xml",
                   maxDistanceForFireVisual: "1000",
                   maxDistanceForSmokeVisual: "5000",
                   fireAvoidanceBufferForVehicles: "5000",
@@ -114,7 +112,7 @@ export default {
               phoenix: [
                 {
                   ignitionHHMM: "00:00",
-                  fireGeoJson: this.selectedFire.geojson,
+                  fireGeoJson: "../../ees/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_fire.json",
                   smokeGeoJson: ""
                 }
               ],
@@ -122,14 +120,14 @@ export default {
               disruption: [
                 {
                   fileJson:
-                    "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_disruptions.json"
+                    "../../ees/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_disruptions.json"
                 }
               ],
 
               messaging: [
                 {
                   fileJson:
-                    "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_messages.json"
+                    "../../ees/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_messages.json"
                 }
               ]
             }
@@ -137,7 +135,7 @@ export default {
           scenario_main: [
             {
               matsimfile:
-                "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_matsim_main.xml",
+                "../../ees/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_matsim_main.xml",
 
               firefile: [
                 {
@@ -150,7 +148,7 @@ export default {
               geographyfile: [
                 {
                   geo_name:
-                    "scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_geography.xml"
+                    "../../ees/scenarios/surf-coast-shire/typical-summer-weekday-50k/scenario_geography.xml"
                 }
               ],
 
@@ -181,6 +179,9 @@ export default {
       );
 
       this.SaveSimulationToggle();
+    },
+    CreateSimulation() {
+      this.createSimulation(this.simulationName);
     }
   }
 };
