@@ -16,8 +16,8 @@ export var test_data = [
         "geometry": {
           "type": "Point",
           "coordinates": [
-            144.939709,
-            -37.804647
+            150.3914679837194,
+            -38.17061219384599
           ]
         }
     },
@@ -26,10 +26,10 @@ export var test_data = [
         "properties": {
           "place": {
             "type": "unit",
-            "id": 133
+            "id": 9981
           },
           "layer_options": {
-            "id": 9987,
+            "id": 9981,
             "radius": 0.5,
             "color": "red",
             "fillColor": "red"
@@ -38,8 +38,8 @@ export var test_data = [
         "geometry": {
           "type": "Point",
           "coordinates": [
-            144.939709,
-            -37.804647
+            150.39869270860257,
+            -38.17260124548784
           ]
         }
     },
@@ -48,10 +48,10 @@ export var test_data = [
         "properties": {
           "place": {
             "type": "unit",
-            "id": 134
+            "id": 9952
           },
           "layer_options": {
-            "id": 9987,
+            "id": 9952,
             "radius": 0.5,
             "color": "red",
             "fillColor": "red"
@@ -60,8 +60,8 @@ export var test_data = [
         "geometry": {
           "type": "Point",
           "coordinates": [
-            144.939709,
-            -37.804647
+            150.17253110183347,
+            -38.42476123944344
           ]
         }
     }
