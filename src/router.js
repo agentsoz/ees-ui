@@ -20,12 +20,5 @@ export default new Router({
       component: () =>
         import(/* webpackChunkName: "about" */ "./views/About.vue")
     }
-    ,
-    {
-      path: "/leaflet",
-      name: "leaflet",
-      component: () =>
-        import(/* webpackChunkName: "about" */ "./views/Leaflet.vue")
-    }
   ]
 });
