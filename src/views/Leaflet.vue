@@ -20,6 +20,7 @@ var map_data = require("./map_data.js").map_data;
 var test_data = require("./test_data.js").test_data;
 var events_data = require("./events_data.js").events_data;
 var agent_events = require("./agent_events.js").agent_events;
+var agents_startingPos = require("./agents_startingPos.js").agents_startingPos;
 
 var bounding_box = [[39.9058, -86.091], [39.8992, -86.1017]];
 let bounding_points = [[-37.804647,144.939709], [-37.822701,144.982924]];
@@ -27,7 +28,7 @@ let bounding_points = [[-37.804647,144.939709], [-37.822701,144.982924]];
 export default {
   data: function() {
     return {
-      totalAgentsNum: 500,
+      totalAgentsNum: 28,
       agentIndex: 0
     }
   },
@@ -52,11 +53,11 @@ export default {
   methods: {
     seqAgentMaker: function() {
       // get starting position of agent
-      var agentKey = Object.keys(agent_events["61.0"])[this.getAgentIndex];
+      var agentKey = Object.keys(agents_startingPos)[this.getAgentIndex];
 
-      var agent = agent_events["61.0"][agentKey];
-      var agentStartingLat = agent_events["61.0"][agentKey][0][0];
-      var agentStartingLong = agent_events["61.0"][agentKey][0][1];
+      var agent = agents_startingPos[agentKey];
+      var agentStartingLat = agent[0];
+      var agentStartingLong = agent[1];
       
       if(this.totalAgentsNum > this.getAgentIndex)
         this.getAgentIndex = this.getAgentIndex + 1;
@@ -100,18 +101,33 @@ export default {
 
       agentmap.agentify(this.totalAgentsNum, this.seqAgentMaker);
       
-      agentmap.controller = function() {
-        if (agentmap.state.ticks % 1 === 0) {
-          agentmap.agents.eachLayer(function(agent) {
-
-            if(agent_events[agentmap.state.ticks.toString() + ".0"] != null){
-              if(agent_events[agentmap.state.ticks.toString() + ".0"][agent.options.id] != null){
-                var coords = agent_events[agentmap.state.ticks.toString() + ".0"][agent.options.id];
+      var eventKey = Object.keys(agent_events);
+     
+     eventKey.filter(function(event){
+      agentmap.agents.eachLayer(function(agent) {
+              if(agent_events[event][agent.options.id] != null){
+                var coords = agent_events[event][agent.options.id];
                 var lat_lng = L.latLng(coords[1][1], coords[1][0]);
 
                 agent.scheduleTrip(lat_lng, {type: "unanchored"}, 20);
               }
-            }
+          });
+     });
+     
+    
+
+      agentmap.controller = function() {
+        if (agentmap.state.ticks % 1 === 0) {
+          agentmap.agents.eachLayer(function(agent) {
+
+            // if(agent_events[agentmap.state.ticks.toString() + ".0"] != null){
+            //   if(agent_events[agentmap.state.ticks.toString() + ".0"][agent.options.id] != null){
+            //     var coords = agent_events[agentmap.state.ticks.toString() + ".0"][agent.options.id];
+            //     var lat_lng = L.latLng(coords[1][1], coords[1][0]);
+
+            //     agent.scheduleTrip(lat_lng, {type: "unanchored"}, 20);
+            //   }
+            // }
             // var random_lat_lng = L.latLng(-37.814647, 144.929708);
 
             // agent.scheduleTrip(random_lat_lng, {type: "unanchored"}, 1);
