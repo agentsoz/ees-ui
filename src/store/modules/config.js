@@ -198,7 +198,29 @@ const mutations = {
     state.saveSimIsOpen = value;
   }
 };
-const actions = {};
+const actions = {
+  createSimulation({commit}, simName) {
+    var simulationName = {
+      simulationName: simName
+    };
+    fetch(process.env.VUE_APP_EES_TILES_API + "/create-simulation", {
+      method: "POST",
+      body: JSON.stringify({simulationName}),
+      headers: {
+        "content-type": "application/json"
+      }
+    }).then(response => response)
+      .then(result => {
+        if (result.details) {
+          // there was an error...
+          const error = result.details.map(detail => detail.message).join(". ");
+          console.log(error);
+        } else {
+          console.log(result);
+        }
+      });
+  }
+};
 
 export default {
   state,
