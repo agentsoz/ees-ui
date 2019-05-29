@@ -16,8 +16,6 @@ import A from "agentmaps";
 import proj4L from "proj4leaflet";
 import proj4 from "proj4";
 
-/* DO NOT LOAD THIS FILE */
-//var agent_events = require("./agent_events.js").agent_events;
 var agents_startingPos = require("./agents_startingPos.js").agents_startingPos;
 
 var bounding_box = [[39.9058, -86.091], [39.8992, -86.1017]];
