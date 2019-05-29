@@ -15,6 +15,7 @@
     "@fortawesome/vue-fontawesome": "^0.1.6",
     "@mapbox/mapbox-gl-draw": "^1.1.1",
     "@vue/cli": "^3.7.0",
+    "agentmaps": "^2.2.2",
     "bootstrap-vue": "^2.0.0-rc.19",
     "install": "^0.12.2",
     "leaflet": "^1.5.1",
@@ -31,9 +32,9 @@
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.2.0",
-    "@vue/cli-plugin-e2e-nightwatch": "^3.7.0",
+    "@vue/cli-plugin-e2e-nightwatch": "^3.8.0",
     "@vue/cli-plugin-eslint": "^3.2.1",
-    "@vue/cli-plugin-unit-jest": "^3.7.0",
+    "@vue/cli-plugin-unit-jest": "^3.8.0",
     "@vue/cli-service": "^3.7.0",
     "@vue/eslint-config-prettier": "^3.0.5",
     "@vue/test-utils": "^1.0.0-beta.27",
@@ -63,7 +64,7 @@
       "autoprefixer": {}
     }
   },
-  "serve":"node --max_old_space_size=8048 node_modules/@vue/cli-service/bin/vue-cli-service.js serve --open",
+  "serve": "node --max_old_space_size=8048 node_modules/@vue/cli-service/bin/vue-cli-service.js serve --open",
   "browserslist": [
     "> 1%",
     "last 2 versions",
