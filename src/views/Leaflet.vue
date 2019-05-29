@@ -13,8 +13,6 @@
 
 import L from "leaflet";
 import A from "agentmaps";
-import proj4L from "proj4leaflet";
-import proj4 from "proj4";
 
 var agents_startingPos = require("./agents_startingPos.js").agents_startingPos;
 
