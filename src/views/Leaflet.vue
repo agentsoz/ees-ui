@@ -22,7 +22,7 @@ let bounding_points = [[-37.804647,144.939709], [-37.822701,144.982924]];
 export default {
   data: function() {
     return {
-      totalAgentsNum: 100,
+      totalAgentsNum: 200,
       agentIndex: 0
     }
   },
@@ -105,7 +105,7 @@ export default {
                               var coords = agent_events[event][agent.options.id];
                               var lat_lng = L.latLng(coords[1][1], coords[1][0]);
 
-                              agent.scheduleTrip(lat_lng, {type: "unanchored"}, 40);
+                              agent.scheduleTrip(lat_lng, {type: "unanchored"}, 500);
                             }
                         });
                   });
@@ -115,12 +115,17 @@ export default {
       });
 
       agentmap.controller = function() {
-        if (agentmap.state.ticks % 1 === 0) {
-          agentmap.agents.eachLayer(function(agent) {
-            agent.moveIt();
-          });
-        }
+        if (this.animation_interval != 10)
+          this.setAnimationInterval(10);
       };
+
+      agentmap.agents.eachLayer(function(agent) {
+        //Define what the agent will do on each tick.
+        agent.controller = function() {
+          agent.moveIt();
+        };
+      });
+
       agentmap.run();
     }
   }
