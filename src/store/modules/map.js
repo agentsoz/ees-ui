@@ -20,7 +20,9 @@ import {
   MATSIM_SELECT_LINK,
   MATSIM_DESELECT_LINK,
   MATSIM_ADD_DISRUPTION,
-  TOGGLE_3D
+  TOGGLE_3D,
+  TEST_1,
+  TEST_2
 } from "@/store/mutation-types";
 
 const state = {
@@ -185,6 +187,38 @@ const mutations = {
     state.baseMATSimLayer = null;
     state.highlightMATSimLayer = null;
   },
+  [TEST_1](state) {
+    var map = state.mapInstance;
+    map.addSource("test", {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [
+          {"type": "Feature", "properties": { "activity": "home" }, "geometry": { "type": "Point", "coordinates": [144.39146798369427, -38.170612192845596] } },
+          { "type": "Feature", "properties": { "activity": "work" }, "geometry": { "type": "Point", "coordinates": [144.0233057365935, -38.25618772822852] } },
+          { "type": "Feature", "properties": { "activity": "beach" }, "geometry": { "type": "Point", "coordinates": [144.2963084807262, -38.34447780346395] } },
+          { "type": "Feature", "properties": { "activity": "other" }, "geometry": { "type": "Point", "coordinates": [144.31014487979158, -38.14154764655215] } },
+          { "type": "Feature", "properties": { "activity": "camp" }, "geometry": { "type": "Point", "coordinates": [144.10625928602246, -38.46087236518612] } }
+        ]
+      }
+    });
+  },
+  [TEST_2](state) {
+    var map = state.mapInstance;
+
+    map.addLayer({
+      'id': 'population',
+      'type': 'circle',
+      'source': 'test',
+      'paint': {
+        "circle-radius": {
+          'base': 1.75,
+          'stops': [[12, 2], [22, 180]]
+        },
+        "circle-color": "red"
+      }
+    });
+  },
   drawPopulationSquare(state) {
     const map = state.mapInstance;
     const draw = state.drawInstance;
@@ -231,6 +265,8 @@ const actions = {
     dispatch("clearMap");
     dispatch("loadLayers");
     commit(FLY_TO, getters.selectedRegion.center);
+    commit(TEST_1);
+    commit(TEST_2);
   },
   loadLayers({ dispatch, getters }) {
     var region = getters.selectedRegion;
