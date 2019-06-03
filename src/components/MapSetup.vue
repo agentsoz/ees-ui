@@ -56,7 +56,66 @@
                   </b-collapse>
                 </b-col>
               </b-row>
+              <b-col>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="inlineCheckbox1"
+                    :checked="showHomeLayer"
+                    v-on:click="hideLayer('activities_home')"
+                    :disabled="!loadedHomeLayer"
+                  >
+                  <label class="form-check-label" for="inlineCheckbox1">Home</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="inlineCheckbox1"
+                    value="option1"
+                    :checked="showWorkLayer"
+                    v-on:click="hideLayer('activities_work')"
+                    :disabled="!loadedWorkLayer"
+                  >
+                  <label class="form-check-label" for="inlineCheckbox1">Work</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="inlineCheckbox1"
+                    :checked="showBeachLayer"
+                    v-on:click="hideLayer('activities_beach')"
+                    :disabled="!loadedBeachLayer"
+                  >
+                  <label class="form-check-label" for="inlineCheckbox1">Beach</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="inlineCheckbox1"
+                    :checked="showShopLayer"
+                    v-on:click="hideLayer('activities_shops')"
+                    :disabled="!loadedShopLayer"
+                  >
+                  <label class="form-check-label" for="inlineCheckbox1">Shop</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="inlineCheckbox1"
+                    :checked="showOtherLayer"
+                    v-on:click="hideLayer('activities_other')"
+                    :disabled="!loadedOtherLayer"
+                  >
+                  <label class="form-check-label" for="inlineCheckbox1">Other</label>
+                </div>
+              </b-col>
             </b-card>
+
             <b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-incident>
                 Emergency Incident
@@ -189,7 +248,7 @@ import { SHOW_SMOKE } from "@/store/mutation-types";
 import MapAffectedLink from "@/components/MapAffectedLink.vue";
 import VueSlideBar from "vue-slide-bar";
 import Vue from "vue";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { library, layer } from "@fortawesome/fontawesome-svg-core";
 import {
   faMapMarker,
   faInfoCircle,
@@ -206,6 +265,18 @@ export default {
   props: {},
   data: function() {
     return {
+      loadedHomeLayer: false,
+      loadedWorkLayer: false,
+      loadedBeachLayer: false,
+      loadedOtherLayer: false,
+      loadedShopLayer: false,
+
+      showHomeLayer: false,
+      showWorkLayer: false,
+      showBeachLayer: false,
+      showOtherLayer: false,
+      showShopLayer: false,
+
       isHidden: false,
       styles: this.$store.state.config.styles,
       regions: this.$store.state.config.regions,
@@ -327,48 +398,67 @@ export default {
     },
     selectedPopulation: {
       get() {
-        return !this.$store.state.map.selectedRegion
-          ? "no-region"
-          : this.$store.state.map.selectedRegion;
+        return null;
       },
       set(value) {
         var map = this.$store.state.map.mapInstance;
         const axios = require("axios");
         var activities = [
-          {key : "activities_home"},
-          {key : "activities_work"},
-          {key : "activities_beach"},
-          {key : "activities_shops"},
-          {key : "activities_other"}
+          { key: "activities_home" },
+          { key: "activities_work" },
+          { key: "activities_beach" },
+          { key: "activities_shops" },
+          { key: "activities_other" }
         ];
+        let self = this;
+        activities.filter(function(activity) {
+          axios
+            .post(process.env.VUE_APP_EES_TILES_API + "/get-population", activity)
+            .then(resp => {
+              // json = json.replace(/\"([^(\")"]+)\":/g, "$1:"); //This will remove quotes from properties in object.
+              map.addSource(activity.key, {
+                type: "geojson",
+                data: {
+                  type: "FeatureCollection",
+                  features: resp.data
+                }
+              });
 
-        activities.filter(function(activity){
-
-          axios.post(process.env.VUE_APP_EES_TILES_API + "/get-population", activity).then(resp => {
-          // json = json.replace(/\"([^(\")"]+)\":/g, "$1:"); //This will remove quotes from properties in object. 
-          
-          map.addSource(activity.key, {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: resp.data
-            }
-          });
-
-          map.addLayer({
-            id: activity.key + "_layer",
-            type: "circle",
-            source: activity.key,
-            paint: {
-                "circle-radius": {
-                  'base': 1.75,
-                  'stops': [[12, 2], [22, 180]]
-                },
-                "circle-color": "red"
+              map.addLayer({
+                id: activity.key,
+                type: "circle",
+                source: activity.key,
+                paint: {
+                  "circle-radius": {
+                    base: 1.75,
+                    stops: [[12, 2], [22, 180]]
+                  },
+                  "circle-color": "red"
+                }
+              });
+              switch (activity.key) {
+                case "activities_work":
+                  self.loadedWorkLayer = true;
+                  self.showWorkLayer = true;
+                  break;
+                case "activities_home":
+                  self.loadedHomeLayer = true;
+                  self.showHomeLayer = true;
+                  break;
+                case "activities_shops":
+                  self.loadedShopLayer = true;
+                  self.showShopLayer = true;
+                  break;
+                case "activities_other":
+                  self.loadedOtherLayer = true;
+                  self.showOtherLayer = true;
+                  break;
+                case "activities_beach":
+                  self.loadedBeachLayer = true;
+                  self.showBeachLayer = true;
+                  break;
               }
-          });
-        });
-
+            });
         });
       }
     },
@@ -395,6 +485,7 @@ export default {
         this.$store.dispatch("showSmoke", value);
       }
     },
+
     fireOpacity: {
       get() {
         return this.$store.state.fire.fireOpacity;
@@ -433,6 +524,7 @@ export default {
     setStyle: function(event) {
       this.changeMapboxStyle(event.target.dataset.mapStyle);
     },
+
     setRegion: function(event) {
       // set the selected region in state
       this.selectRegion(event.target.dataset.region);
@@ -445,6 +537,34 @@ export default {
     },
     toggle() {
       this.isHidden = !this.isHidden;
+    },
+    hideLayer(layerid) {
+      var visibility;
+
+      switch (layerid) {
+        case "activities_work":
+          visibility = this.showWorkLayer = !this.showWorkLayer;
+          break;
+        case "activities_home":
+          visibility = this.showHomeLayer = !this.showHomeLayer;
+          break;
+        case "activities_shops":
+          visibility = this.showShopLayer = !this.showShopLayer;
+          break;
+        case "activities_other":
+          visibility = this.showOtherLayer = !this.showOtherLayer;
+          break;
+        case "activities_beach":
+          visibility = this.showBeachLayer = !this.showBeachLayer;
+          break;
+      }
+      var map = this.$store.state.map.mapInstance;
+      visibility = !visibility;
+      map.setLayoutProperty(
+        layerid,
+        "visibility",
+        visibility ? "none" : "visible"
+      );
     },
     callbackRange(val) {
       this.rangeValue = val;
