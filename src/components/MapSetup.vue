@@ -334,14 +334,20 @@ export default {
       set(value) {
         var map = this.$store.state.map.mapInstance;
         const axios = require("axios");
-        var data = {
-          activities: ["activities_home"]
-        };
-        
-        axios.post(process.env.VUE_APP_EES_TILES_API + "/get-population", data).then(resp => {
+        var activities = [
+          {key : "activities_home"},
+          {key : "activities_work"},
+          {key : "activities_beach"},
+          {key : "activities_shops"},
+          {key : "activities_other"}
+        ];
+
+        activities.filter(function(activity){
+
+          axios.post(process.env.VUE_APP_EES_TILES_API + "/get-population", activity).then(resp => {
           // json = json.replace(/\"([^(\")"]+)\":/g, "$1:"); //This will remove quotes from properties in object. 
           
-          map.addSource("national-park", {
+          map.addSource(activity.key, {
             type: "geojson",
             data: {
               type: "FeatureCollection",
@@ -350,9 +356,9 @@ export default {
           });
 
           map.addLayer({
-            id: "park-volcanoes",
+            id: activity.key + "_layer",
             type: "circle",
-            source: "national-park",
+            source: activity.key,
             paint: {
                 "circle-radius": {
                   'base': 1.75,
@@ -361,6 +367,8 @@ export default {
                 "circle-color": "red"
               }
           });
+        });
+
         });
       }
     },
