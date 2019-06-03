@@ -335,17 +335,17 @@ export default {
         var map = this.$store.state.map.mapInstance;
         const axios = require("axios");
         var data = {
-          activities: ["activities_home", "activities_work", "activities_shops"]
+          activities: ["activities_home"]
         };
-        axios.post("http://localhost:12345/get-population", data).then(resp => {
-          console.log(JSON.parse(resp.data));
+        
+        axios.post(process.env.VUE_APP_EES_TILES_API + "/get-population", data).then(resp => {
           // json = json.replace(/\"([^(\")"]+)\":/g, "$1:"); //This will remove quotes from properties in object. 
           
           map.addSource("national-park", {
             type: "geojson",
             data: {
               type: "FeatureCollection",
-              features: features
+              features: resp.data
             }
           });
 
@@ -354,10 +354,12 @@ export default {
             type: "circle",
             source: "national-park",
             paint: {
-              "circle-radius": 1,
-              "circle-color": "#B42222"
-            },
-            filter: ["==", "$type", "Point"]
+                "circle-radius": {
+                  'base': 1.75,
+                  'stops': [[12, 2], [22, 180]]
+                },
+                "circle-color": "red"
+              }
           });
         });
       }

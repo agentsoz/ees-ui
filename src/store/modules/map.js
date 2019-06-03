@@ -265,8 +265,6 @@ const actions = {
     dispatch("clearMap");
     dispatch("loadLayers");
     commit(FLY_TO, getters.selectedRegion.center);
-    commit(TEST_1);
-    commit(TEST_2);
   },
   loadLayers({ dispatch, getters }) {
     var region = getters.selectedRegion;
