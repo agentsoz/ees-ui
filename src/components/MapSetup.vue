@@ -404,11 +404,11 @@ export default {
         var map = this.$store.state.map.mapInstance;
         const axios = require("axios");
         var activities = [
-          { key: "activities_home" },
-          { key: "activities_work" },
-          { key: "activities_beach" },
-          { key: "activities_shops" },
-          { key: "activities_other" }
+          { key: "activities_home", colour: "#fbb03b" },
+          { key: "activities_work", colour: "#223b53" },
+          { key: "activities_beach", colour: "#e55e5e" },
+          { key: "activities_shops", colour: "#3bb2d0" },
+          { key: "activities_other", colour: "#ccc" }
         ];
         let self = this;
         activities.filter(function(activity) {
@@ -433,7 +433,8 @@ export default {
                     base: 1.75,
                     stops: [[12, 2], [22, 180]]
                   },
-                  "circle-color": "red"
+                  "circle-color": activity.colour,
+                  "circle-opacity": 0.5
                 }
               });
               switch (activity.key) {
