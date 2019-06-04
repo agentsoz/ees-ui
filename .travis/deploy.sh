@@ -13,6 +13,8 @@ ssh travis@$IP -p $PORT <<EOF
   cd $DEPLOY_DIR
   echo $(pwd)
   git pull
+  echo ">>> git pull"
   npm i
+  echo ">>> npm i"
   echo "Completed deployment."
 EOF
