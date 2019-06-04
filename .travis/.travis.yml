@@ -4,6 +4,9 @@ node_js:
 cache:
   directories:
   - "$HOME/.npm"
+before_install:
+	- openssl aes-256-cbc -K $encrypted_dd858ada6842_key -iv $encrypted_dd858ada6842_iv -in id_rsa.enc -out id_rsa -d
+
 before_deploy:
 - npm run test:unit
 - npm run build
@@ -19,3 +22,7 @@ env:
   global:
     - VUE_APP_EES_TILES_API=https://ees-server.now.sh
     - secure: IroFrW2s5aIGsb0eBYt6tMs7QF9prRrrNjjefoXIhbAOH4naag/OmKGe/+5gNScbCXGPhNg92ZnzgHuqGZDrMad1lWd5fiWyaZhpitW5fw8HHQwSKrTyRUGOrGdE+R3r+6PET6JE9kHDcH1OuoOCPWZcOhM+U230jqsFWpkUl+xu9VLgxRGM8+0SfgQLrogBCKmdz+rixqx7kF9vRdUBzhAckbD/VkWl3BHGyBwSbCAZPBOEWhTubCJsqFqa8bNEpQe7J6wX4pwFttwGE83wJRPcl+uI4mX400WFvBtlnXcJ//LuGAGT+Z8LfKGjMXzaMnHrmVkjcE3p5X4SgsbPFBH0vd6ZufAcRTCuNXnxXNe92jRWs90AMjCvsSgHuirbn7KJkSPw2w703f5zYOTLOiXzjTn91h8c9GE67VuDW+qJ3xiGuoWxmlFc6LmfsTYJJlHjzOSM+0nHUinjlvcvWneXfJDYUbEH/dqEjkbrMHac61mfdPDC6O/Q36+HLtHaOAro3nj2X2pq/IQ2UwO8Egmm2t5aQz3D97I4f3cBHWsVjmx/nx+oxAlFIwYt8Vy3ANM0QkLK0CKqgCPtsvpsupR8nEaPDi3HOj8BLqlEeAslAeVUyPushe40/VlqtPKYoaYuCk4PnM3ubChSFA0FonCbOPik1PvLWegZGG0k8j8=
+
+after_success:
+# - if ["$TRAVIS_BRANCH" = "master"] && ["$TRAVIS_PULL_REQUEST" = "false"]; then #deploy	
+
