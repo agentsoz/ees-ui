@@ -44,6 +44,3 @@ export const SHOW_SMOKE = "SHOW_SMOKE";
 
 // used to trigger pitch change, and 3D fire
 export const TOGGLE_3D = "TOGGLE_3D";
-
-export const TEST_1 = "TEST_1";
-export const TEST_2 = "TEST_2";
