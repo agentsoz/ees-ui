@@ -4,7 +4,9 @@ node_js:
 cache:
   directories:
   - "$HOME/.npm"
-
+addons:
+  ssh_known_hosts:
+  - 43.240.97.67
 before_install:
 - openssl aes-256-cbc -K $encrypted_adf042f75aba_key -iv $encrypted_adf042f75aba_iv
   -in .travis/id_rsa.enc -out .travis/id_rsa -d
