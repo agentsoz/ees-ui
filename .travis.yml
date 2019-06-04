@@ -6,7 +6,7 @@ cache:
   - "$HOME/.npm"
 before_install:
 - openssl aes-256-cbc -K $encrypted_adf042f75aba_key -iv $encrypted_adf042f75aba_iv
-  -in id_rsa.enc -out id_rsa -d
+  -in .travis/id_rsa.enc -out .travis/id_rsa -d
 before_deploy:
 - npm run test:unit
 - npm run build
