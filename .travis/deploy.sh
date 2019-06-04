@@ -14,4 +14,5 @@ ssh travis@$IP -p $PORT <<EOF
   echo $(pwd)
   git pull
   npm i
+  echo "Completed deployment."
 EOF
