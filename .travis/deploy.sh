@@ -12,7 +12,7 @@ git push deploy master
 ssh travis@$IP -p $PORT <<EOF
   cd $DEPLOY_DIR
   echo $(pwd)
-  git pull
+  git pull origin master
   echo ">>> git pull"
   npm i
   echo ">>> npm i"
