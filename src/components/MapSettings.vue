@@ -27,82 +27,11 @@
       </div>
     </div>
 
-    <div class="map-overlay" v-show="false">
-      <div class="map-settings-panel" v-on:keydown.esc.capture="toggle()">
-        <h3>Map Settings</h3>
-        <label for="map-style">Map Style:</label>
-        <select id="map-style" v-model="mapboxStyle">
-          <option
-            v-for="style in styles"
-            :key="style.id"
-            :value="style.id"
-            :disabled="mapboxStyle == style.id"
-          >
-            {{ style.name }}
-          </option>
-        </select>
-        <label for="map-region">Region:</label>
-        <select id="map-region" v-model="selectedRegion">
-          <option value="no-region" disabled></option>
-          <option
-            v-for="region in regions"
-            :key="region.id"
-            :value="region.id"
-            :disabled="selectedRegion == region.id"
-          >
-            {{ region.name }}
-          </option>
-        </select>
-        <label for="map-fire">Emergency Incident:</label>
-        <select id="map-fire" v-model="selectedFire">
-          <option value="no-fire" disabled></option>
-          <option
-            v-for="fire in firesInSelectedRegion"
-            :key="fire.id"
-            :value="fire.id"
-            :disabled="selectedFire == fire.id"
-          >
-            {{ fire.name }}
-          </option>
-        </select>
-        <label for="map-fire-opacity">Fire Opacity:</label>
-        <input
-          id="map-fire-opacity"
-          type="number"
-          min="0"
-          max="1"
-          step="0.01"
-          v-model="fireOpacity"
-        />
-        <label for="map-smoke-opacity">Show Smoke:</label>
-        <input id="map-smoke-opacity" type="checkbox" v-model="showSmoke" />
-        <label for="map-smoke-opacity">Smoke Opacity:</label>
-        <input
-          id="map-smoke-opacity"
-          type="number"
-          min="0"
-          max="1"
-          step="0.01"
-          v-model="smokeOpacity"
-          :disabled="!showSmoke"
-        >
-        <br>
-        <br>
-        <button
-          style="width: 100% !important"
-          class="btn btn-success"
-          v-on:keydown.esc="toggle()"
-          @click="toggle()"
-        >Done</button>
-      </div>
-    </div>
     <div class="map-overlay" v-show="showDisruptionWindow ">
       <div v-if="!isLinkDisrupted()" class="save-simulation-panel">
         <h3>Disruption</h3>
-
         <label id="status1" class="form-label">Description</label>
         <input ref="description" id="simulation-name" placeholder type="text">
-
         <div class="container">
           <div class="row">
             <div class="col"/>
@@ -366,15 +295,12 @@ export default {
         filter
       );
 
-      // this.showDisruptionWindow = false;
-
-      // Add each disrupted link to filter to display on disruption layer.
       disruptions.forEach(disruption => {
         disruption.affectedLinks.forEach(link => {
           filter.push(link);
         });
       });
-      //render layer
+
       store.state.map.mapInstance.setFilter(
         store.state.map.disruptionMATSimLayer,
         filter

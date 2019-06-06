@@ -180,35 +180,6 @@
                 </b-row>
               </b-collapse>
             </b-card>
-            <!--<b-card no-body class="mb-1">
-              <b-card-header v-b-toggle.collapse-dest>
-                Destinations and safe lines
-                <span class="helper-icons">
-                  <font-awesome-icon
-                    icon="info-circle"
-                    v-b-popover.hover="helperOptions[2].text"
-                  />
-                </span>
-              </b-card-header>
-              <b-collapse visible id="collapse-dest">
-                <b-row>
-                  <b-col md="6" sm="6" xs="6">
-                    <b-form-select
-                      v-model="dest_selected"
-                      :options="dest_options"
-                      disabled
-                    >
-                    </b-form-select>
-                  </b-col>
-                  <b-col md="5" sm="5" xs="5">
-                    <b-button disabled size="sm" variant="success">
-                      <font-awesome-icon icon="plus-circle" />
-                      Draw safe line
-                    </b-button>
-                  </b-col>
-                </b-row>
-              </b-collapse>
-            </b-card>-->
             <b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-traffic>Traffic Behaviour Setup</b-card-header>
               <b-collapse visible id="collapse-traffic">
@@ -232,7 +203,7 @@
                   </template>
                 </VueSlideBar>
               </b-collapse>
-            </b-card>s
+            </b-card>
           </div>
         </b-collapse>
       </b-col>
