@@ -17,12 +17,12 @@ import A from "agentmaps";
 var agents_startingPos = require("./agents_startingPos.js").agents_startingPos;
 
 var bounding_box = [[39.9058, -86.091], [39.8992, -86.1017]];
-let bounding_points = [[-37.804647,144.939709], [-37.822701,144.982924]];
+let bounding_points = [[-38.107783, 143.081728], [-38.763955, 144.534146]];
 
 export default {
   data: function() {
     return {
-      totalAgentsNum: 200,
+      totalAgentsNum: 499,
       agentIndex: 0
     }
   },
@@ -85,34 +85,44 @@ export default {
       let agentmap = L.A.agentmap(this.map);
 
       agentmap.agentify(this.totalAgentsNum, this.seqAgentMaker);
-      
-      fetch(process.env.VUE_APP_EES_TILES_API + "/agents-events")
-      .then(response => response)
-      .then(body => {
-          if (body.details) {
-              // there was an error...
-              const error = body.details.map(detail => detail.message).join(". ");
-              console.log(error);
-          } else {
-              body.json().then(chunk => {
-                  var agent_events = JSON.parse(chunk);
+      var i = 1;
 
-                  var eventKeys = Object.keys(agent_events);
-     
-                  eventKeys.filter(function(event) {
-                    agentmap.agents.eachLayer(function(agent) {
-                            if(agent_events[event][agent.options.id] != null) {
-                              var coords = agent_events[event][agent.options.id];
-                              var lat_lng = L.latLng(coords[1][1], coords[1][0]);
-
-                              agent.scheduleTrip(lat_lng, {type: "unanchored"}, 500);
-                            }
-                        });
-                  });
-
-              });
+      setInterval(function() {
+        var eventGroup = {eventGroup: "agents_events_" + i};
+        i++;
+        fetch(process.env.VUE_APP_EES_TILES_API + "/agents-events", {
+          method: "POST",
+          body: JSON.stringify(eventGroup),
+          headers: {
+            "content-type": "application/json"
           }
-      });
+        })
+        .then(response => response)
+        .then(body => {
+            if (body.details) {
+                // there was an error...
+                const error = body.details.map(detail => detail.message).join(". ");
+                console.log(error);
+            } else {
+                body.json().then(chunk => {
+                    var agent_events = JSON.parse(chunk);
+
+                    var eventKeys = Object.keys(agent_events);
+      
+                    eventKeys.filter(function(event) {
+                      agentmap.agents.eachLayer(function(agent) {
+                              if(agent_events[event][agent.options.id] != null) {
+                                var coords = agent_events[event][agent.options.id];
+                                var lat_lng = L.latLng(coords[1][1], coords[1][0]);
+
+                                agent.scheduleTrip(lat_lng, {type: "unanchored"}, 80);
+                              }
+                          });
+                    });
+                });
+            }
+        });
+      }, 1000);
 
       agentmap.controller = function() {
         if (this.animation_interval != 10)
