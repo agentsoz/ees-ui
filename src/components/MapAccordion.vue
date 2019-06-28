@@ -1,7 +1,15 @@
 <template>
-  <b-container fluid class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container">
+  <b-container
+    fluid
+    class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container"
+  >
     <b-row no-gutters class="h-100">
-      <b-col lg="4" md="4" sm="12" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col">
+      <b-col
+        lg="4"
+        md="4"
+        sm="12"
+        class="h-100 m-0 mapboxgl-ctrl map-sidebar-col"
+      >
         <div id="nav">
           <router-link to="/">Home</router-link> |
           <router-link to="/about">About</router-link>
@@ -14,13 +22,22 @@
                 <div class="icon caret-down" style="float:right"></div>
               </div>
             </div>
-            <b-collapse id="map-style-accordion" accordion="map-accordion" role="tabpanel">
+            <b-collapse
+              id="map-style-accordion"
+              accordion="map-accordion"
+              role="tabpanel"
+            >
               <ul>
-                <li v-for="style in styles" :key="style.id" :disabled="selectedStyle.id==style.id">
+                <li
+                  v-for="style in styles"
+                  :key="style.id"
+                  :disabled="selectedStyle.id == style.id"
+                >
                   <div
                     @click="setStyle"
                     :data-map-style="style.id"
-                    v-if="selectedStyle.id!=style.id">
+                    v-if="selectedStyle.id != style.id"
+                  >
                     {{ style.name }}
                   </div>
                 </li>
@@ -29,18 +46,36 @@
           </b-card>
           <b-card no-body class="mb-1">
             <div class="p-1" role="tab">
-              <div block href="#" v-b-toggle.map-region-accordion variant="info">
+              <div
+                block
+                href="#"
+                v-b-toggle.map-region-accordion
+                variant="info"
+              >
                 {{ selectedRegion ? selectedRegion.name : "Region" }}
                 <div class="icon caret-down" style="float:right"></div>
               </div>
             </div>
-            <b-collapse id="map-region-accordion" visible accordion="map-accordion" role="tabpanel">
+            <b-collapse
+              id="map-region-accordion"
+              visible
+              accordion="map-accordion"
+              role="tabpanel"
+            >
               <ul>
-                <li v-for="region in regions" :key="region.id" :disabled="selectedRegion && selectedRegion.id==region.id">
+                <li
+                  v-for="region in regions"
+                  :key="region.id"
+                  :disabled="selectedRegion && selectedRegion.id == region.id"
+                >
                   <div
                     @click="setRegion"
                     :data-region="region.id"
-                    v-if="!selectedRegion || (selectedRegion && selectedRegion.id!=region.id)">
+                    v-if="
+                      !selectedRegion ||
+                        (selectedRegion && selectedRegion.id != region.id)
+                    "
+                  >
                     {{ region.name }}
                   </div>
                 </li>
@@ -54,13 +89,25 @@
                 <div class="icon caret-down" style="float:right"></div>
               </div>
             </div>
-            <b-collapse id="map-fire-accordion" accordion="map-accordion" role="tabpanel">
+            <b-collapse
+              id="map-fire-accordion"
+              accordion="map-accordion"
+              role="tabpanel"
+            >
               <ul>
-                <li v-for="fire in firesInSelectedRegion" :key="fire.id" :disabled="selectedFire && selectedFire.id==fire.id">
+                <li
+                  v-for="fire in firesInSelectedRegion"
+                  :key="fire.id"
+                  :disabled="selectedFire && selectedFire.id == fire.id"
+                >
                   <div
                     @click="setFire"
                     :data-fire="fire.id"
-                    v-if="!selectedFire || (selectedFire && selectedFire.id!=fire.id)">
+                    v-if="
+                      !selectedFire ||
+                        (selectedFire && selectedFire.id != fire.id)
+                    "
+                  >
                     {{ fire.name }}
                   </div>
                 </li>
@@ -69,12 +116,21 @@
           </b-card>
           <b-card no-body class="mb-1">
             <div class="p-1" role="tab">
-              <div block href="#" v-b-toggle.map-vehicle-accordion variant="info">
+              <div
+                block
+                href="#"
+                v-b-toggle.map-vehicle-accordion
+                variant="info"
+              >
                 Vehicle Configuration
                 <div class="icon caret-down" style="float:right"></div>
               </div>
             </div>
-            <b-collapse id="map-vehicle-accordion" accordion="map-accordion" role="tabpanel">
+            <b-collapse
+              id="map-vehicle-accordion"
+              accordion="map-accordion"
+              role="tabpanel"
+            >
               <ul>
                 <li v-for="square in populationSquares" :key="square.id">
                   <div>
@@ -91,7 +147,11 @@
                 <div class="icon caret-down" style="float:right"></div>
               </div>
             </div>
-            <b-collapse id="map-link-accordion" accordion="map-accordion" role="tabpanel">
+            <b-collapse
+              id="map-link-accordion"
+              accordion="map-accordion"
+              role="tabpanel"
+            >
               <ul>
                 <li v-for="link in []" :key="link.id">
                   <div>
@@ -139,11 +199,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions([
-      "selectRegion",
-      "changeMapboxStyle",
-      "selectFire"
-    ]),
+    ...mapActions(["selectRegion", "changeMapboxStyle", "selectFire"]),
     setStyle: function(event) {
       this.changeMapboxStyle(event.target.dataset.mapStyle);
     },
@@ -163,9 +219,9 @@ export default {
 
 <style>
 #nav {
- width: 100%;
- position: absolute;
- left: 0;
+  width: 100%;
+  position: absolute;
+  left: 0;
 }
 .map-sidebar-container {
 }
@@ -179,3 +235,5 @@ export default {
   overflow-y: auto;
 }
 </style>
+<!-- Hello, from Travis. -->
+

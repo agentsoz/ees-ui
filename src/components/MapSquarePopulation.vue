@@ -1,14 +1,14 @@
 <template>
   <div class="map-settings-container">
-    <div class='map-overlay' v-show="isOpen">
-    <div class='map-population-panel'>
-      <label for="map-population">Population inside square:</label>
-      <input id="map-population" type="text" v-model="squarePopulation">
-      <button class="icon" type="button" @click='toggle()'>Save</button>
-    </div>
+    <div class="map-overlay" v-show="isOpen">
+      <div class="map-population-panel">
+        <label for="map-population">Population inside square:</label>
+        <input id="map-population" type="text" v-model="squarePopulation" />
+        <button class="icon" type="button" @click="toggle()">Save</button>
+      </div>
     </div>
     <div id="map-link-panel"></div>
-</div>
+  </div>
 </template>
 
 <script>
@@ -40,7 +40,6 @@ export default {
   }
 };
 </script>
-
 
 <style>
 .map-settings-panel select {

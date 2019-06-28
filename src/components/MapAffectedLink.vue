@@ -1,25 +1,20 @@
 <template>
-  <div class='map-link-panel'>
-      <b-form-group
-        label="MATSim Link ID:"
-        label-for="map-link">
-        <b-form-input
-          id="map-link"
-          type="text"
-          v-model="linkId"
-          placeholder="Please select a MATSim Network Link from the map" readonly>
-        </b-form-input>
-      </b-form-group>
-      <b-form-group
-        label="Disruption Start Time:"
-        label-for="map-link-start">
-        <b-form-input
-          id="map-link-start"
-          type="text"
-          v-model="linkStart">
-        </b-form-input>
-      </b-form-group>
-    <button class="icon" type="button" @click='toggle()'>Save</button>
+  <div class="map-link-panel">
+    <b-form-group label="MATSim Link ID:" label-for="map-link">
+      <b-form-input
+        id="map-link"
+        type="text"
+        v-model="linkId"
+        placeholder="Please select a MATSim Network Link from the map"
+        readonly
+      >
+      </b-form-input>
+    </b-form-group>
+    <b-form-group label="Disruption Start Time:" label-for="map-link-start">
+      <b-form-input id="map-link-start" type="text" v-model="linkStart">
+      </b-form-input>
+    </b-form-group>
+    <button class="icon" type="button" @click="toggle()">Save</button>
   </div>
 </template>
 
@@ -56,7 +51,6 @@ export default {
   }
 };
 </script>
-
 
 <style>
 .map-overlay {

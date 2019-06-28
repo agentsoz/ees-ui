@@ -127,7 +127,7 @@ const state = {
           geojson:
             process.env.VUE_APP_EES_TILES_API +
             "/phoenix/20181109_mountalex_evac_ffdi100d_grid.shp.json"
-        },
+        }
       ]
     },
     {
@@ -145,11 +145,15 @@ const state = {
           name: "Anglesea_FFDI104 PHX5 2016 MINSUP FH2017 GRID",
           description: "12:00 point fire ignition",
           geojson:
-            "https://raw.githubusercontent.com/agentsoz/ees/f25dd3427060180f08716c25198d5b6e0e530fd9/scenarios/surf-coast-shire/data/phoenix/Anglesea_evac_test_ffdi104_phx5_2016data_minsup_fh2017_grid_WSG84.json"
+            "https://raw.githubusercontent.com/agentsoz/ees/f25dd3427060180f08716c25198d5b6e0e530fd9/scenarios/surf-coast-shire/data/phoenix/Anglesea_evac_test_ffdi104_phx5_2016data_minsup_fh2017_grid_WSG84.json",
+            smokeGeojson: "https://raw.githubusercontent.com/agentsoz/ees/master/scenarios/surf-coast-shire/population-subgroups/scenario_smoke.json"
         }
       ]
     }
-  ]
+  ],
+  savedSettingsJson: null,
+  simulationName: null,
+  saveSimIsOpen: false
 };
 
 const getters = {
@@ -165,8 +169,58 @@ const getters = {
   }
 };
 
-const mutations = {};
-const actions = {};
+const mutations = {
+  setSavedSettingsJson(state, value) {
+    state.savedSettingsJson = value;
+
+    fetch(process.env.VUE_APP_EES_TILES_API + "/save-settings", {
+      method: "POST",
+      body: JSON.stringify(value),
+      headers: {
+        "content-type": "application/json"
+      }
+    })
+      .then(response => response)
+      .then(result => {
+        if (result.details) {
+          // there was an error...
+          const error = result.details.map(detail => detail.message).join(". ");
+          console.log(error);
+        } else {
+          console.log(result);
+        }
+      });
+  },
+  setSimulationName(state, value) {
+    state.simulationName = value;
+  },
+  setSaveSimIsOpen(state, value) {
+    state.saveSimIsOpen = value;
+  }
+};
+const actions = {
+  createSimulation({commit}, simName) {
+    var simulationName = {
+      simulationName: simName
+    };
+    fetch(process.env.VUE_APP_EES_TILES_API + "/create-simulation", {
+      method: "POST",
+      body: JSON.stringify({simulationName}),
+      headers: {
+        "content-type": "application/json"
+      }
+    }).then(response => response)
+      .then(result => {
+        if (result.details) {
+          // there was an error...
+          const error = result.details.map(detail => detail.message).join(". ");
+          console.log(error);
+        } else {
+          console.log(result);
+        }
+      });
+  }
+};
 
 export default {
   state,
