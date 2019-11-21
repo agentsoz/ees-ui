@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8' />
+        <title>Animate a point along a route</title>
+        <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+        <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js'></script>
+        <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css' rel='stylesheet' />
+<style>
+body { margin:0; padding:0; }
+#map { position:absolute; top:0; bottom:0; width:100%; }
+</style>
+    </head>
+    <body>
+         
+<style>
+.overlay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+ 
+.overlay button {
+    font:600 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    background-color: #3386c0;
+    color: #fff;
+    display: inline-block;
+    margin: 0;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+}
+ 
+.overlay button:hover {
+    background-color:#4ea0da;
+}
+</style>
+<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js' charset='utf-8'></script>
+ 
+<div id='map'></div>
+<div class='overlay'>
+    <button id='replay'>Replay</button>
+</div>
+ 
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZGhpeHNpbmdoIiwiYSI6ImNqbWx4OTR0ZzBkMWUzb255and1aTUweGkifQ.U0vPiwyfM4ad7axC_4dkHg';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [143.5235843,-38.1419968],
+    zoom: 8
+});
+ 
+// San Francisco
+var origin = [];
+
+origin.push([143.5235843,-38.1419968]);
+ 
+// Washington DC
+var destination = [];
+destination.push([144.2568013,-38.5081358]);
+
+for (var i = 0; i < 5000; i++) {
+    coords = [];
+    coords.push(Math.random() * (-38.5081 + 38.1420) - 38.1420);
+    coords.push(Math.random() * (-38.5081 + 38.1420) - 38.1420);
+
+    coords.push(Math.random() * (144.2568 - 143.5236) + 143.5236);
+    coords.push(Math.random() * (144.2568 - 143.5236) + 143.5236);
+
+    origin.push([coords[2],coords[0]]);
+    destination.push([coords[3],coords[1]]);
+}
+ 
+// A simple line from origin to destination.
+var routearr = [];
+
+for (var i = 0; i < origin.length; i++) {
+    routearr.push({
+        "type": "Feature",
+        "geometry": {
+            "type": "LineString",
+            "coordinates": [
+                origin[i],
+                destination[i]
+                ]
+        }
+    });
+}
+
+var routes = {
+    "type": "FeatureCollection",
+    "features": routearr
+};
+ 
+// A single point that animates along the route.
+// Coordinates are initially set to origin.
+var pointsarr = [];
+
+for (var i = 0; i < origin.length; i++) {
+    pointsarr.push({
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+            "type": "Point",
+            "coordinates": origin[i]
+        }
+    });
+}
+
+
+var points = {
+    "type": "FeatureCollection",
+    "features": pointsarr
+};
+ 
+// Calculate the distance in kilometers between route start/end point.
+var lineDistances = [];
+
+for (var i = 0; i < origin.length; i++) {
+    lineDistances.push(turf.lineDistance(routes.features[i], 'kilometers'));
+}
+ 
+var arc = [];
+ 
+// Number of steps to use in the arc and animation, more steps means
+// a smoother arc and animation, but too many steps will result in a
+// low frame rate
+var steps = 500;
+ 
+// Draw an arc between the `origin` & `destination` of the two points
+for (var i = 0; i < origin.length; i++) {
+    arc[i] = [];
+    for (var j = 0; j < lineDistances[i]; j += lineDistances[i] / steps) {
+        var segment = turf.along(routes.features[i], j, 'kilometers');
+        arc[i].push(segment.geometry.coordinates);
+    }
+}
+ 
+// Update the route with calculated arc coordinates
+for (var i = 0; i < origin.length; i++) {
+    routes.features[i].geometry.coordinates = arc[i];
+}
+ 
+// Used to increment the value of the point measurement against the route.
+var counter = 0;
+ 
+map.on('load', function () {
+    // Add a source and layer displaying a point which will be animated in a circle.
+    //map.addSource('route', {
+    //    "type": "geojson",
+    //    "data": routes
+    //});
+     
+    map.addSource('point', {
+        "type": "geojson",
+        "data": points
+    });
+     
+    //map.addLayer({
+    //    "id": "route",
+    //    "source": "route",
+    //    "type": "line",
+    //    "paint": {
+    //        "line-width": 2,
+    //        "line-color": "#007cbf"
+    //    }
+    //});
+     
+    map.addLayer({
+        "id": "point",
+        "source": "point",
+        //"type": "symbol",
+        "type": "circle",
+        "paint": {
+            "circle-radius": 1,
+            "circle-color": "blue"
+        }
+
+    });
+     
+    function animate() {
+        // Update point geometry to a new position based on counter denoting
+        // the index to access the arc.
+        for (var i = 0; i < origin.length; i++) {
+            points.features[i].geometry.coordinates = routes.features[i].geometry.coordinates[counter];
+        }
+         
+        // Calculate the bearing to ensure the icon is rotated to match the route arc
+        // The bearing is calculate between the current point and the next point, except
+        // at the end of the arc use the previous point and the current point
+        for (var i = 0; i < origin.length; i++) {
+            points.features[i].properties.bearing = turf.bearing(
+                turf.point(routes.features[i].geometry.coordinates[counter >= steps ? counter - 1 : counter]),
+                turf.point(routes.features[i].geometry.coordinates[counter >= steps ? counter : counter + 1])
+                );
+
+        }
+        // Update the source with this new data.
+        map.getSource('point').setData(points);
+         
+         
+        // Request the next frame of animation so long the end has not been reached.
+        if (counter < steps) {
+            requestAnimationFrame(animate);
+        }
+         
+        counter = counter + 1;
+    }
+     
+    document.getElementById('replay').addEventListener('click', function() {
+        for (var i = 0; i < origin.length; i++) {
+            // Set the coordinates of the original point back to origin
+            points.features[i].geometry.coordinates = origin[i];
+             
+        }
+        // Update the source layer
+        map.getSource('point').setData(points);
+         
+        // Reset the counter
+        counter = 0;
+         
+        // Restart the animation.
+            animate(counter);
+    });
+     
+    // Start the animation.
+        animate(counter);
+});
+    </script>
+     
+    </body>
+</html>
