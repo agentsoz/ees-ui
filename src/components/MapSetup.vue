@@ -8,7 +8,7 @@
       <b-col sm="5" class="m-0 mapboxgl-ctrl map-sidebar-col">
         <div id="h-100 nav">
           <h5>Emergency Evacuation Simulator</h5>
-          <router-link to="/">Home</router-link>|
+          <router-link to="/">Home</router-link> |
           <router-link to="/about">About</router-link>
         </div>
         <b-collapse visible id="collapse-side-panel" class="h-100">
@@ -190,7 +190,7 @@
 import { mapState, mapGetters, mapActions } from "vuex";
 import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
 import { EMBER_SET_OPACITY } from "@/store/mutation-types";
-import { SHOW_SMOKE } from "@/store/mutation-types";
+import { DRAW_SMOKE, CLEAR_SMOKE } from "@/store/mutation-types";
 import MapAffectedLink from "@/components/MapAffectedLink.vue";
 import VueSlideBar from "vue-slide-bar";
 import Vue from "vue";
@@ -311,10 +311,18 @@ export default {
     },
     showSmoke: {
       get() {
-        return this.$store.state.smoke.showSmoke;
+        return this.$store.state.smoke.smokeVisible;
       },
       set(value) {
-        this.$store.dispatch("showSmoke", value);
+        // make smoke visible
+        this.$store.commit(DRAW_SMOKE, value);
+        if (value) {
+          // reload any layers to apply this change
+          this.$store.dispatch("drawSmoke");
+        } else {
+          // remove smoke
+          this.$store.commit(CLEAR_SMOKE, this.$store.state.map.mapInstance);
+        }
       }
     },
     fireOpacity: {
@@ -338,7 +346,7 @@ export default {
         if (!value.match(decimal)) return;
 
         this.$store.commit(EMBER_SET_OPACITY, parseFloat(value));
-        this.$store.dispatch("resetSmokeLayers");
+        this.$store.dispatch("resetFireLayers");
       }
     }
   },
