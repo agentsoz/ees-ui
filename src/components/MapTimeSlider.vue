@@ -72,7 +72,6 @@ export default {
     },
     updateFilter(val) {
       this.$store.dispatch("filterFire", val);
-      this.$store.dispatch("filterSmoke", val);
     }
   }
 };
@@ -128,7 +127,10 @@ export default {
   background-color: #2980b9;
   width: 2px;
 }
-.time-slider-overlay-inner .vue-slider-component .vue-slider-dot .vue-slider-dot-handle {
+.time-slider-overlay-inner
+  .vue-slider-component
+  .vue-slider-dot
+  .vue-slider-dot-handle {
   width: 0;
   height: 0;
   border: 20px solid transparent;

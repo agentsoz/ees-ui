@@ -129,9 +129,6 @@ const actions = {
     var selectedFire = getters.selectedFire;
     if (selectedFire) {
       dispatch("fetchFire", selectedFire.geojson);
-
-      if (!!selectedFire.smokeGeojson)
-        dispatch("fetchSmoke", selectedFire.smokeGeojson);
     }
   },
   selectFire({ dispatch, commit, getters }, fire) {
@@ -139,8 +136,8 @@ const actions = {
     var fireData = getters.selectedFire;
     dispatch("fetchFire", !fireData ? "" : fireData.geojson);
 
-    if (!!fireData.smokeGeojson)
-      dispatch("selectSmoke", !fireData ? "" : fireData.smokeGeojson);
+    if (fireData && fireData.smokeGeojson)
+      dispatch("drawSmoke", fireData.smokeGeojson);
   },
   fetchFire({ dispatch, commit, getters, rootGetters }, url) {
     const map = rootGetters.mapInstance;

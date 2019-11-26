@@ -42,9 +42,7 @@
 
 <script>
 import { mapActions } from "vuex";
-import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
-import { EMBER_SET_OPACITY } from "@/store/mutation-types";
-import { SHOW_SMOKE } from "@/store/mutation-types";
+import { PHOENIX_SET_OPACITY, EMBER_SET_OPACITY, DRAW_SMOKE, CLEAR_SMOKE } from "@/store/mutation-types";
 
 export default {
   name: "mapSettings",
@@ -119,15 +117,23 @@ export default {
         if (!value.match(decimal)) return;
 
         this.$store.commit(EMBER_SET_OPACITY, parseFloat(value));
-        this.$store.dispatch("resetSmokeLayers");
+        this.$store.dispatch("resetFireLayers");
       }
     },
     showSmoke: {
       get() {
-        return this.$store.state.smoke.showSmoke;
+        return this.$store.state.smoke.smokeVisible;
       },
       set(value) {
-        this.$store.dispatch("showSmoke", value);
+        // make smoke visible
+        this.$store.commit(DRAW_SMOKE, value);
+        if (value) {
+          // reload any layers to apply this change
+          this.$store.dispatch("drawSmoke");
+        } else {
+          // remove smoke
+          this.$store.commit(CLEAR_SMOKE, this.$store.state.map.mapInstance)
+        }
       }
     },
     renderFireIn3D: {
