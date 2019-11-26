@@ -22,6 +22,11 @@ export const MATSIM_SET_HIGHLIGHT_LAYER = "MATSIM_SET_HIGHLIGHT_LAYER";
 export const MATSIM_SELECT_LINK = "MATSIM_SELECT_LINK";
 export const MATSIM_DESELECT_LINK = "MATSIM_DESELECT_LINK";
 
+// simulation setup/playthrough
+export const MATSIM_SAVE_CONFIG = "MATSIM_SAVE_CONFIG";
+export const MATSIM_SETTINGS_VIS = "MATSIM_SETTINGS_VIS";
+
+
 export const SELECT_FIRE = "SELECT_FIRE";
 export const CLEAR_FIRE = "CLEAR_FIRE";
 
