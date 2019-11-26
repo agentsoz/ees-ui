@@ -9,7 +9,11 @@
       <b-img :src="vicpol" fluid alt="Victoria Police" />
       <b-img :src="ffmvic" fluid alt="Forest Fire Management Victoria" />
       <b-img :src="cfa" fluid alt="Country Fire Authority" />
-      <b-img :src="cluster" fluid alt="Northern Victorian Emergency Management Cluster" />
+      <b-img
+        :src="cluster"
+        fluid
+        alt="Northern Victorian Emergency Management Cluster"
+      />
       <b-img :src="tub" fluid alt="TU Berlin" />
       <b-img :src="matsim" fluid alt="MATSim" />
     </div>

@@ -1,15 +1,29 @@
 <template>
-<div class="save-map-settings-container">
-  <b-button variant="outline-primary" id="save-map-settings-toggle" v-on:click="SaveSimulationToggle">Save</b-button>
-  <b-button variant="outline-primary" id="create-simulation">Create</b-button>
+  <div class="save-map-settings-container">
+    <b-button
+      variant="outline-primary"
+      id="save-map-settings-toggle"
+      v-on:click="SaveSimulationToggle"
+      >Save</b-button
+    >
+    <b-button variant="outline-primary" id="create-simulation">Create</b-button>
 
-    <div class='map-overlay' v-show="simSettingsIsOpen">
-      <div class='save-simulation-panel'>
+    <div class="map-overlay" v-show="simSettingsIsOpen">
+      <div class="save-simulation-panel">
         <label for="simulation-name">Simulation Name:</label>
         <input id="simulation-name" type="text" v-model="simulationName" />
-        <b-button variant="outline-primary" id="save-map-settings" v-on:click="SaveSimulationConfig">Save</b-button>
-        <b-button variant="outline-primary" id="cancel-map-settings" v-on:click="SaveSimulationToggle">Cancel</b-button>
-
+        <b-button
+          variant="outline-primary"
+          id="save-map-settings"
+          v-on:click="SaveSimulationConfig"
+          >Save</b-button
+        >
+        <b-button
+          variant="outline-primary"
+          id="cancel-map-settings"
+          v-on:click="SaveSimulationToggle"
+          >Cancel</b-button
+        >
       </div>
     </div>
   </div>
