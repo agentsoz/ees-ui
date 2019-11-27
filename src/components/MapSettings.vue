@@ -352,7 +352,6 @@ export default {
       var selectedLink = this.$store.state.map.selectedMATSimLink;
       var disruptions = this.$store.state.map.disruptions;
       var store = this.$store;
-      var result = false;
       var filter = ["in", "ID"];
 
       this.showDisruptionWindow = false;

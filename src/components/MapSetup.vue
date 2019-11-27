@@ -22,36 +22,46 @@
                     :key="style.id"
                     :value="style.id"
                     :disabled="mapboxStyle.id == style.id"
-                  >
-                    {{ style.name }}
-                  </option>
+                  >{{ style.name }}</option>
                 </b-form-select>
               </b-collapse>
             </b-card>
             <b-card no-body class="mb-1">
-              <b-card-header v-b-toggle.collapse-region>Region</b-card-header>
-              <b-collapse visible id="collapse-region">
-                <b-form-select id="map-region" v-model="selectedRegion">
-                  <option value="no-region" text="no-region" disabled></option>
-                  <option
-                    v-for="region in regions"
-                    :key="region.id"
-                    :value="region.id"
-                    :disabled="selectedRegion == region.id"
-                  >
-                    {{ region.name }}
-                  </option>
-                </b-form-select>
-              </b-collapse>
+              <b-row>
+                <b-col>
+                  <b-card-header>Region</b-card-header>
+                  <b-collapse visible id="collapse-region">
+                    <b-form-select id="map-region" v-model="selectedRegion">
+                      <option value="no-region" text="no-region" disabled></option>
+                      <option
+                        v-for="region in regions"
+                        :key="region.id"
+                        :value="region.id"
+                        :disabled="selectedRegion == region.id"
+                      >{{ region.name }}</option>
+                    </b-form-select>
+                  </b-collapse>
+                </b-col>
+                <b-col>
+                  <b-card-header>Population</b-card-header>
+                  <b-collapse visible id="collapse-region">
+                    <b-form-select id="map-region" v-model="selectedPopulation">
+                      <option value="no-region" text="no-region" disabled></option>
+                      <option
+                        v-for="population in populations"
+                        :key="population.population"
+                        :value="population.population"
+                      >{{ population.population }}</option>
+                    </b-form-select>
+                  </b-collapse>
+                </b-col>
+              </b-row>
             </b-card>
             <b-card no-body class="mb-1">
               <b-card-header v-b-toggle.collapse-incident>
                 Emergency Incident
                 <span class="helper-icons">
-                  <font-awesome-icon
-                    icon="info-circle"
-                    v-b-popover.hover="helperOptions[0].text"
-                  />
+                  <font-awesome-icon icon="info-circle" v-b-popover.hover="helperOptions[0].text"/>
                 </span>
               </b-card-header>
               <b-collapse visible id="collapse-incident">
@@ -64,9 +74,7 @@
                         :key="fire.id"
                         :value="fire.id"
                         :disabled="selectedFire == fire.id"
-                      >
-                        {{ fire.name }}
-                      </option>
+                      >{{ fire.name }}</option>
                     </b-form-select>
                   </b-col>
                   <b-col md="4" sm="4" xs="4">
@@ -78,7 +86,7 @@
                           id="inlineCheckbox1"
                           value="option1"
                           v-model="showSmoke"
-                          :disabled="this.$store.state.fire.selectedFire == null" 
+                          :disabled="this.$store.state.fire.selectedFire == null"
                         >
                         <label class="form-check-label" for="inlineCheckbox1">Smoke</label>
                       </div>
@@ -89,7 +97,8 @@
                   <b-col>
                     <label>Fire Opacity</label>
 
-                    <input class="form-control"
+                    <input
+                      class="form-control"
                       type="number"
                       value="0.7"
                       step="0.1"
@@ -99,8 +108,9 @@
                   </b-col>
                   <b-col>
                     <label>Smoke Opacity</label>
-  
-                    <input class="form-control"
+
+                    <input
+                      class="form-control"
                       type="number"
                       value="0.5"
                       step="0.1"
@@ -163,7 +173,7 @@
                   </template>
                 </VueSlideBar>
               </b-collapse>
-            </b-card>
+            </b-card>s
           </div>
         </b-collapse>
       </b-col>
