@@ -22,7 +22,7 @@ const state = {
 };
 
 const getters = {
-  totalSmokeLayers: state => state.loadedSmokeLayers.length,
+  totalSmokeLayers: state => state.loadedSmokeLayers.length
 };
 
 const mutations = {
@@ -80,8 +80,8 @@ const actions = {
     // ensure any existing smoke artifacts are removed
     commit(CLEAR_SMOKE, rootGetters.mapInstance);
   },
-  loadLayers({ state, dispatch, getters, rootGetters }) {
-      dispatch("drawSmoke")
+  loadLayers({ dispatch }) {
+    dispatch("drawSmoke");
   },
   fetchSmoke({ dispatch, commit, getters, rootGetters }, url) {
     const map = rootGetters.mapInstance;
@@ -105,7 +105,9 @@ const actions = {
         // now we can efficiently set up sources
         const lastFeature = features[features.length - 1];
         const totalMinutes = lastFeature.properties.hour_spot * 60;
-        const totalSteps = Math.ceil(totalMinutes / rootGetters.fireStepMinutes);
+        const totalSteps = Math.ceil(
+          totalMinutes / rootGetters.fireStepMinutes
+        );
 
         // this will track the geojson features array
         var j = 0;
@@ -151,7 +153,7 @@ const actions = {
         commit(DONE_LOADING);
       });
   },
-  drawSmoke({ state, dispatch, commit, rootGetters }) {
+  drawSmoke({ state, dispatch, rootGetters }) {
     // called by selectFire after selecting a fire
     // we have the smoke data for this fire
     var selectedFire = rootGetters.selectedFire;
@@ -160,7 +162,7 @@ const actions = {
       dispatch("fetchSmoke", selectedFire.smokeGeojson);
     }
   },
-  filterFire({ getters, commit }, smokeStep) {
+  filterFire({ getters }, smokeStep) {
     var map = getters.mapInstance;
 
     // ensure every layer before the current step is on, and every one after is off

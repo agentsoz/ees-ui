@@ -146,7 +146,8 @@ const state = {
           description: "12:00 point fire ignition",
           geojson:
             "https://raw.githubusercontent.com/agentsoz/ees/f25dd3427060180f08716c25198d5b6e0e530fd9/scenarios/surf-coast-shire/data/phoenix/Anglesea_evac_test_ffdi104_phx5_2016data_minsup_fh2017_grid_WSG84.json",
-            smokeGeojson: "https://raw.githubusercontent.com/agentsoz/ees/master/scenarios/surf-coast-shire/population-subgroups/scenario_smoke.json"
+          smokeGeojson:
+            "https://raw.githubusercontent.com/agentsoz/ees/master/scenarios/surf-coast-shire/population-subgroups/scenario_smoke.json"
         }
       ]
     }

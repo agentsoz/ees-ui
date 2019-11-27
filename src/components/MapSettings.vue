@@ -2,27 +2,43 @@
   <div class="map-settings-container" v-on:keydown.esc.capture="toggle()">
     <div class="map-settings-button-container mapboxgl-ctrl-top-right">
       <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
-        <button class="icon sprocket" type="button" v-on:keydown.esc="toggle()" @click="toggle()"></button>
+        <button
+          class="icon sprocket"
+          type="button"
+          v-on:keydown.esc="toggle()"
+          @click="toggle()"
+        ></button>
       </div>
       <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
-        <button class="icon grid" type="button" @click="drawRectangle()"></button>
+        <button
+          class="icon grid"
+          type="button"
+          @click="drawRectangle()"
+        ></button>
       </div>
       <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
         <button
           :class="{ 'font-weight-bold': renderFireIn3D }"
           type="button"
           @click="toggleFireIn3D()"
-        >3D</button>
+        >
+          3D
+        </button>
       </div>
       <div
         class="mapboxgl-ctrl mapboxgl-ctrl-group"
-        v-show="this.$store.state.map.selectedMATSimLink != '' || this.showDisruptionWindow"
+        v-show="
+          this.$store.state.map.selectedMATSimLink != '' ||
+            this.showDisruptionWindow
+        "
       >
         <button
           class="icon bug"
           type="button"
           @click="showDisruptionWindow = !showDisruptionWindow"
-          :style="this.showDisruptionWindow ? 'background-color: lightskyblue;' : '' "
+          :style="
+            this.showDisruptionWindow ? 'background-color: lightskyblue;' : ''
+          "
         ></button>
       </div>
     </div>
@@ -85,27 +101,29 @@
           step="0.01"
           v-model="smokeOpacity"
           :disabled="!showSmoke"
-        >
-        <br>
-        <br>
+        />
+        <br />
+        <br />
         <button
           style="width: 100% !important"
           class="btn btn-success"
           v-on:keydown.esc="toggle()"
           @click="toggle()"
-        >Done</button>
+        >
+          Done
+        </button>
       </div>
     </div>
-    <div class="map-overlay" v-show="showDisruptionWindow ">
+    <div class="map-overlay" v-show="showDisruptionWindow">
       <div v-if="!isLinkDisrupted()" class="save-simulation-panel">
         <h3>Disruption</h3>
 
         <label id="status1" class="form-label">Description</label>
-        <input ref="description" id="simulation-name" placeholder type="text">
+        <input ref="description" id="simulation-name" placeholder type="text" />
 
         <div class="container">
           <div class="row">
-            <div class="col"/>
+            <div class="col" />
             <div class="col">
               Start Time
               <input
@@ -114,7 +132,7 @@
                 type="time"
                 value="00:00:00"
                 id="example-time-input"
-              >
+              />
             </div>
             <div class="col">
               End Time
@@ -124,7 +142,7 @@
                 type="time"
                 value="00:00:00"
                 id="example-time-input"
-              >
+              />
             </div>
             <div class="col-4">
               Speed
@@ -137,22 +155,30 @@
                   placeholder="Speed"
                   aria-label="Recipient's username"
                   aria-describedby="basic-addon2"
-                >
+                />
                 <div class="input-group-append">
                   <button
-                    :class="!absoluteSpeed ? 'btn btn-secondary' : 'btn btn-primary'"
+                    :class="
+                      !absoluteSpeed ? 'btn btn-secondary' : 'btn btn-primary'
+                    "
                     type="button"
                     @click="absoluteSpeed = true"
-                  >KM/H</button>
+                  >
+                    KM/H
+                  </button>
                   <button
-                    :class="absoluteSpeed ? 'btn btn-secondary' : 'btn btn-primary'"
+                    :class="
+                      absoluteSpeed ? 'btn btn-secondary' : 'btn btn-primary'
+                    "
                     type="button"
                     @click="absoluteSpeed = false"
-                  >%</button>
+                  >
+                    %
+                  </button>
                 </div>
               </div>
             </div>
-            <div class="col"/>
+            <div class="col" />
           </div>
         </div>
 
@@ -163,20 +189,24 @@
           :value="this.$store.state.map.selectedMATSimLink"
           style="margin-bottom: 10px;"
           disabled
-        >
+        />
         <button
           v-if="this.$store.state.map.selectedMATSimLink != ''"
           style="width: 100% !important"
           class="btn btn-success"
           @click="saveDisruption()"
-        >Save</button>
+        >
+          Save
+        </button>
         <button
           v-else
           style="width: 100% !important"
           class="btn btn-success"
           disabled
           @click="saveDisruption()"
-        >Save</button>
+        >
+          Save
+        </button>
       </div>
       <div v-else class="save-simulation-panel">
         <h3>Disruption</h3>
@@ -184,7 +214,9 @@
           style="width: 100% !important"
           class="btn btn-danger"
           @click="deleteDisruption()"
-        >Delete</button>
+        >
+          Delete
+        </button>
       </div>
     </div>
   </div>
@@ -192,7 +224,14 @@
 
 <script>
 import { mapActions } from "vuex";
-import { PHOENIX_SET_OPACITY, EMBER_SET_OPACITY, DRAW_SMOKE, CLEAR_SMOKE, MATSIM_ADD_DISRUPTION, MATSIM_DESELECT_LINK } from "@/store/mutation-types";
+import {
+  PHOENIX_SET_OPACITY,
+  EMBER_SET_OPACITY,
+  DRAW_SMOKE,
+  CLEAR_SMOKE,
+  MATSIM_ADD_DISRUPTION,
+  MATSIM_DESELECT_LINK
+} from "@/store/mutation-types";
 
 export default {
   name: "mapSettings",
@@ -284,7 +323,7 @@ export default {
           this.$store.dispatch("drawSmoke");
         } else {
           // remove smoke
-          this.$store.commit(CLEAR_SMOKE, this.$store.state.map.mapInstance)
+          this.$store.commit(CLEAR_SMOKE, this.$store.state.map.mapInstance);
         }
       }
     },

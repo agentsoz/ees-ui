@@ -1,5 +1,8 @@
 // simulation state
-import { MATSIM_SAVE_CONFIG, MATSIM_SETTINGS_VIS } from "@/store/mutation-types";
+import {
+  MATSIM_SAVE_CONFIG,
+  MATSIM_SETTINGS_VIS
+} from "@/store/mutation-types";
 
 const state = {
   savedSettingsJson: null,

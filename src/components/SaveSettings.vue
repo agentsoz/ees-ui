@@ -31,7 +31,10 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
-import { MATSIM_SAVE_CONFIG, MATSIM_SETTINGS_VIS } from "@/store/mutation-types";
+import {
+  MATSIM_SAVE_CONFIG,
+  MATSIM_SETTINGS_VIS
+} from "@/store/mutation-types";
 
 export default {
   name: "saveSettings",
