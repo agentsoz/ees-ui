@@ -14,7 +14,9 @@
         <b-collapse visible id="collapse-side-panel" class="h-100">
           <div class="h-100 map-accordion-container">
             <b-card no-body class="mb-1">
-              <b-card-header v-b-toggle.collapse-map-style>Map Style</b-card-header>
+              <b-card-header v-b-toggle.collapse-map-style
+                >Map Style</b-card-header
+              >
               <b-collapse visible id="collapse-map-style">
                 <b-form-select v-model="mapboxStyle">
                   <option
@@ -22,7 +24,8 @@
                     :key="style.id"
                     :value="style.id"
                     :disabled="mapboxStyle.id == style.id"
-                  >{{ style.name }}</option>
+                    >{{ style.name }}</option
+                  >
                 </b-form-select>
               </b-collapse>
             </b-card>
@@ -32,13 +35,18 @@
                   <b-card-header>Region</b-card-header>
                   <b-collapse visible id="collapse-region">
                     <b-form-select id="map-region" v-model="selectedRegion">
-                      <option value="no-region" text="no-region" disabled></option>
+                      <option
+                        value="no-region"
+                        text="no-region"
+                        disabled
+                      ></option>
                       <option
                         v-for="region in regions"
                         :key="region.id"
                         :value="region.id"
                         :disabled="selectedRegion == region.id"
-                      >{{ region.name }}</option>
+                        >{{ region.name }}</option
+                      >
                     </b-form-select>
                   </b-collapse>
                 </b-col>
@@ -46,12 +54,17 @@
                   <b-card-header>Population</b-card-header>
                   <b-collapse visible id="collapse-region">
                     <b-form-select id="map-region" v-model="selectedPopulation">
-                      <option value="no-region" text="no-region" disabled></option>
+                      <option
+                        value="no-region"
+                        text="no-region"
+                        disabled
+                      ></option>
                       <option
                         v-for="population in populations"
                         :key="population.population"
                         :value="population.population"
-                      >{{ population.population }}</option>
+                        >{{ population.population }}</option
+                      >
                     </b-form-select>
                   </b-collapse>
                 </b-col>
@@ -61,7 +74,10 @@
               <b-card-header v-b-toggle.collapse-incident>
                 Emergency Incident
                 <span class="helper-icons">
-                  <font-awesome-icon icon="info-circle" v-b-popover.hover="helperOptions[0].text"/>
+                  <font-awesome-icon
+                    icon="info-circle"
+                    v-b-popover.hover="helperOptions[0].text"
+                  />
                 </span>
               </b-card-header>
               <b-collapse visible id="collapse-incident">
@@ -74,7 +90,8 @@
                         :key="fire.id"
                         :value="fire.id"
                         :disabled="selectedFire == fire.id"
-                      >{{ fire.name }}</option>
+                        >{{ fire.name }}</option
+                      >
                     </b-form-select>
                   </b-col>
                   <b-col md="4" sm="4" xs="4">
@@ -86,9 +103,13 @@
                           id="inlineCheckbox1"
                           value="option1"
                           v-model="showSmoke"
-                          :disabled="this.$store.state.fire.selectedFire == null"
+                          :disabled="
+                            this.$store.state.fire.selectedFire == null
+                          "
+                        />
+                        <label class="form-check-label" for="inlineCheckbox1"
+                          >Smoke</label
                         >
-                        <label class="form-check-label" for="inlineCheckbox1">Smoke</label>
                       </div>
                     </b-form-group>
                   </b-col>
@@ -104,7 +125,7 @@
                       step="0.1"
                       v-model="fireOpacity"
                       :disabled="this.$store.state.fire.selectedFire == null"
-                    >
+                    />
                   </b-col>
                   <b-col>
                     <label>Smoke Opacity</label>
@@ -116,7 +137,7 @@
                       step="0.1"
                       v-model="smokeOpacity"
                       :disabled="this.$store.state.fire.selectedFire == null"
-                    >
+                    />
                   </b-col>
                 </b-row>
               </b-collapse>
@@ -151,7 +172,9 @@
               </b-collapse>
             </b-card>-->
             <b-card no-body class="mb-1">
-              <b-card-header v-b-toggle.collapse-traffic>Traffic Behaviour Setup</b-card-header>
+              <b-card-header v-b-toggle.collapse-traffic
+                >Traffic Behaviour Setup</b-card-header
+              >
               <b-collapse visible id="collapse-traffic">
                 <label>
                   Maximum speed on roads (as % of speed limits)
@@ -169,11 +192,11 @@
                   @callbackRange="callbackRange"
                 >
                   <template slot="tooltip" slot-scope="tooltip">
-                    <img src="../assets/rectangle-slider.png">
+                    <img src="../assets/rectangle-slider.png" />
                   </template>
                 </VueSlideBar>
-              </b-collapse>
-            </b-card>s
+              </b-collapse> </b-card
+            >s
           </div>
         </b-collapse>
       </b-col>
@@ -235,17 +258,26 @@ export default {
         ],
         rangeValue: {}
       },
-      global: [
-        { text: "startHHMM", value: "00:00" }
-      ],
+      global: [{ text: "startHHMM", value: "00:00" }],
       phoenix: [
         { text: "ignitionHHMM", value: "00:00" },
-        { text: "fireGeoJson", value: "scenarios/surf-coast-shire/test-files/scenario_fire.json" },
+        {
+          text: "fireGeoJson",
+          value: "scenarios/surf-coast-shire/test-files/scenario_fire.json"
+        },
         { text: "smokeGeoJson", value: "" }
       ],
       matsim: [
-        { text: "outputDir", value: "test/output/io/github/agentsoz/ees//TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/matsim" },
-        { text: "configXml", value: "scenarios/surf-coast-shire/test-files/scenario_matsim_main.xml" },
+        {
+          text: "outputDir",
+          value:
+            "test/output/io/github/agentsoz/ees//TypicalSummerWeekday50kTest/testTypicalSummerWeekday50k/matsim"
+        },
+        {
+          text: "configXml",
+          value:
+            "scenarios/surf-coast-shire/test-files/scenario_matsim_main.xml"
+        },
         { text: "maxDistanceForFireVisual", value: "1000" },
         { text: "maxDistanceForSmokeVisual", value: "5000" },
         { text: "fireAvoidanceBufferForVehicles", value: "5000" },
@@ -259,14 +291,28 @@ export default {
         { text: "radiusInMtrs", value: "0" }
       ],
       dest_selected: null,
-      dest_options: [
-        { value: null, text: "Please select an option" },
-      ],
+      dest_options: [{ value: null, text: "Please select an option" }],
       helperOptions: [
-        { value: 0, text: "If the location chosen has fire models, choose which one to use. Select whether to show visually on map.\nEvacuation can proceed without fire model, in which case No incident should be selected. If a fire model is selected, key attributes are displayed."},
-        { value: 1, text: "Evac start is the time at which evacuation starts (announcement is made).\nIf there is a fire model, this should be some time after fire ignition attribute of chosen fire.\nEvac peak is the length of time after the start, at which the largest number of people are starting to leave.\nEvacuations are dispersed around the peak point."},
-        { value: 2, text: "Potential destinations are indicated in location file. These provide direction of evacuation. If multiple destinations are given, evacuation is split between these (currently an equal split - future work will allow user specification).\nThe safe line is a line beyond which evacuees can be considered out of danger. Safe lines should be sufficiently long to cut all possible roads that could be used to a given destination. Only one safe line is allowed per destination. To draw line, click start point, release, click end point."},
-        { value: 3, text: "The simulator will modify speeds based on congestion. However in a bushfire additional factors (e.g. smoke) may affect possible speed. This allows that to be specified as a % of the normal speed. The setting will affect all roads in the network, not only those near the fire." }
+        {
+          value: 0,
+          text:
+            "If the location chosen has fire models, choose which one to use. Select whether to show visually on map.\nEvacuation can proceed without fire model, in which case No incident should be selected. If a fire model is selected, key attributes are displayed."
+        },
+        {
+          value: 1,
+          text:
+            "Evac start is the time at which evacuation starts (announcement is made).\nIf there is a fire model, this should be some time after fire ignition attribute of chosen fire.\nEvac peak is the length of time after the start, at which the largest number of people are starting to leave.\nEvacuations are dispersed around the peak point."
+        },
+        {
+          value: 2,
+          text:
+            "Potential destinations are indicated in location file. These provide direction of evacuation. If multiple destinations are given, evacuation is split between these (currently an equal split - future work will allow user specification).\nThe safe line is a line beyond which evacuees can be considered out of danger. Safe lines should be sufficiently long to cut all possible roads that could be used to a given destination. Only one safe line is allowed per destination. To draw line, click start point, release, click end point."
+        },
+        {
+          value: 3,
+          text:
+            "The simulator will modify speeds based on congestion. However in a bushfire additional factors (e.g. smoke) may affect possible speed. This allows that to be specified as a % of the normal speed. The setting will affect all roads in the network, not only those near the fire."
+        }
       ]
     };
   },
@@ -355,8 +401,8 @@ export default {
         this.$store.dispatch("resetFireLayers");
       }
     },
-    callbackRange (val) {
-      this.trafficSlider.rangeValue = val
+    callbackRange(val) {
+      this.trafficSlider.rangeValue = val;
     }
   },
 
