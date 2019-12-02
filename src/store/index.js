@@ -3,6 +3,8 @@ import Vuex from "vuex";
 import config from "./modules/config";
 import map from "./modules/map";
 import fire from "./modules/fire";
+import smoke from "./modules/smoke";
+import simulation from "./modules/simulation";
 
 Vue.use(Vuex);
 
@@ -10,6 +12,8 @@ export default new Vuex.Store({
   modules: {
     config,
     map,
-    fire
+    fire,
+    smoke,
+    simulation
   }
 });

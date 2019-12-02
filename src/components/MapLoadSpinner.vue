@@ -1,9 +1,9 @@
 <template>
-    <div v-if="isLoading !== 0" class='load-spinner-overlay'>
-      <div class='load-spinner-overlay-inner'>
-        <span class="loading"></span>
-      </div>
+  <div v-if="isLoading !== 0" class="load-spinner-overlay">
+    <div class="load-spinner-overlay-inner">
+      <span class="loading"></span>
     </div>
+  </div>
 </template>
 
 <script>
@@ -19,7 +19,6 @@ export default {
   }
 };
 </script>
-
 
 <style>
 .load-spinner-overlay {

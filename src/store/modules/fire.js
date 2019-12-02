@@ -135,6 +135,9 @@ const actions = {
     commit(SELECT_FIRE, fire);
     var fireData = getters.selectedFire;
     dispatch("fetchFire", !fireData ? "" : fireData.geojson);
+
+    if (fireData && fireData.smokeGeojson)
+      dispatch("drawSmoke", fireData.smokeGeojson);
   },
   fetchFire({ dispatch, commit, getters, rootGetters }, url) {
     const map = rootGetters.mapInstance;

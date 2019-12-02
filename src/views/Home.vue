@@ -1,11 +1,12 @@
 <template>
   <div v-on:keydown.esc.capture="toggleSettingsVis()">
-    <maplayer/>
-    <slider/>
-    <spinner/>
-    <population/>
-    <setup/>
-    <settings/>
+    <maplayer />
+    <slider />
+    <spinner />
+    <population />
+    <setup />
+    <settings />
+    <savesettings />
   </div>
 </template>
 
@@ -16,6 +17,7 @@ import MapSquarePopulation from "@/components/MapSquarePopulation.vue";
 import MapLoadSpinner from "@/components/MapLoadSpinner.vue";
 import MapSetup from "@/components/MapSetup.vue";
 import MapSettings from "@/components/MapSettings.vue";
+import SaveSettings from "@/components/SaveSettings.vue";
 
 import { mapActions } from "vuex";
 
@@ -27,7 +29,8 @@ export default {
     spinner: MapLoadSpinner,
     population: MapSquarePopulation,
     setup: MapSetup,
-    settings: MapSettings
+    settings: MapSettings,
+    savesettings: SaveSettings
   },
   methods: {
     ...mapActions(["toggleSettingsVis"])

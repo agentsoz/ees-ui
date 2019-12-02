@@ -1,9 +1,8 @@
-jest.mock('mapbox-gl/dist/mapbox-gl', () => ({
-   Map: () => ({})
+jest.mock("mapbox-gl/dist/mapbox-gl", () => ({
+  Map: () => ({})
 }));
 
 import { expect } from "chai";
-import mapboxgl from "mapbox-gl";
 import * as m from "@/store/mutation-types";
 import map from "@/store/modules/map";
 
@@ -80,7 +79,7 @@ const testAction = (
 describe("High level calls to cleanup region & fire mutations", () => {
   const getters = {
     selectedRegion: {
-      center: [138,42]
+      center: [138, 42]
     }
   };
   it("selectRegion", done => {
@@ -89,7 +88,10 @@ describe("High level calls to cleanup region & fire mutations", () => {
       null,
       getters,
       [{ type: "clearMap" }, { type: "loadLayers" }],
-      [{ type: m.SELECT_REGION }, { type: m.FLY_TO, payload: getters.selectedRegion.center }],
+      [
+        { type: m.SELECT_REGION },
+        { type: m.FLY_TO, payload: getters.selectedRegion.center }
+      ],
       done
     );
   });
