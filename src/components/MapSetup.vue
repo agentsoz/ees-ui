@@ -53,7 +53,7 @@
                 <h6 class="mb-0">
                   Emergency Incident
                   <span class="helper-icons">
-                    <font-awesome-icon
+                    <FontAwesomeIcon
                       icon="info-circle"
                       v-b-popover.hover="helperOptions[0].text"
                     />
@@ -110,29 +110,10 @@
                 </b-row>
               </b-collapse>
             </b-card>-->
-            <b-card class="mb-1" header="Traffic Behaviour Setup">
-              <b-collapse visible id="collapse-traffic">
-                <label>
-                  Maximum speed on roads (as % of speed limits)
-                  <span class="helper-icons">
-                    <font-awesome-icon
-                      icon="info-circle"
-                      v-b-popover.hover="helperOptions[3].text"
-                    />
-                  </span>
-                </label>
-                <VueSlideBar
-                  v-model="trafficSlider.value"
-                  :data="trafficSlider.data"
-                  :range="trafficSlider.range"
-                  @callbackRange="callbackRange"
-                >
-                  <template slot="tooltip" slot-scope="tooltip">
-                    <img src="../assets/rectangle-slider.png" />
-                  </template>
-                </VueSlideBar>
-              </b-collapse>
-            </b-card>
+            <MapTrafficBehaviourCard
+              :helpText="helperOptions[3].text"
+              :trafficSpeed="100"
+            />
             <b-card class="mb-1" header="UI Settings">
               <b-collapse visible id="collapse-map-style">
                 <b-form>
@@ -202,7 +183,7 @@ import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
 import { EMBER_SET_OPACITY } from "@/store/mutation-types";
 import { DRAW_SMOKE, CLEAR_SMOKE } from "@/store/mutation-types";
 import MapAffectedLink from "@/components/MapAffectedLink.vue";
-import VueSlideBar from "vue-slide-bar";
+import MapTrafficBehaviourCard from "@/components/MapTrafficBehaviourCard.vue";
 import Vue from "vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -213,7 +194,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 library.add(faMapMarker, faInfoCircle, faPlusCircle);
-Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.config.productionTip = false;
 
 export default {
@@ -226,30 +206,6 @@ export default {
       regions: this.$store.state.config.regions,
       modalShow: false,
       //incident_selected: ["fire"], // Must be an array reference!
-      incident_options: [
-        { text: "Show on map", value: "fire" },
-        { text: "Toggle smoker", value: "smoke" }
-      ],
-      rangeValue: {},
-      trafficSlider: {
-        // Traffic Behaviour Setup
-        value: 0,
-        data: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-        range: [
-          { label: "0" },
-          { label: "|", isHide: true },
-          { label: "20%" },
-          { label: "|", isHide: true },
-          { label: "40%" },
-          { label: "|", isHide: true },
-          { label: "60%" },
-          { label: "|", isHide: true },
-          { label: "80%" },
-          { label: "|", isHide: true },
-          { label: "100%" }
-        ],
-        rangeValue: {}
-      },
       global: [{ text: "startHHMM", value: "00:00" }],
       phoenix: [
         { text: "ignitionHHMM", value: "00:00" },
@@ -392,15 +348,13 @@ export default {
         this.$store.commit(EMBER_SET_OPACITY, parseFloat(value));
         this.$store.dispatch("resetFireLayers");
       }
-    },
-    callbackRange(val) {
-      this.trafficSlider.rangeValue = val;
     }
   },
 
   components: {
     mapAffectedLink: MapAffectedLink,
-    VueSlideBar
+    MapTrafficBehaviourCard,
+    FontAwesomeIcon
   },
   methods: {
     ...mapActions(["selectRegion", "changeMapboxStyle", "selectFire"]),
@@ -419,9 +373,6 @@ export default {
     },
     toggle() {
       this.isHidden = !this.isHidden;
-    },
-    callbackRange(val) {
-      this.rangeValue = val;
     },
     changeTime(val) {
       if (val.length == 4) {
