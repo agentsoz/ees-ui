@@ -138,6 +138,15 @@ const state = {
       matsimNetworkTiles:
         process.env.VUE_APP_EES_TILES_API +
         "/matsim-tiles/surf-coast-shire/{z}/{x}/{y}.pbf",
+      populations: [
+        {
+          id: "default",
+          name: "default",
+          data:
+            process.env.VUE_APP_EES_TILES_API +
+            "/populations/sorted_plans_hr_ll.json"
+        }
+      ],
       phoenixRuns: [
         {
           id:
@@ -160,6 +169,10 @@ const getters = {
   regions: state => state.regions,
   region: state => regionId => {
     return state.regions.find(region => region.id === regionId);
+  },
+  popInRegion: (state, getters) => regionId => {
+    var regionX = getters.region(regionId);
+    return regionX.populations;
   },
   firesInRegion: (state, getters) => regionId => {
     var regionX = getters.region(regionId);

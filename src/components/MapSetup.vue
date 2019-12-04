@@ -38,12 +38,16 @@
                 label-for="map-population"
               >
                 <b-form-select id="map-population" v-model="selectedPopulation">
-                  <option value="no-region" text="no-region" disabled></option>
                   <option
-                    v-for="population in populations"
-                    :key="population.population"
-                    :value="population.population"
-                    >{{ population.population }}</option
+                    value="no-population"
+                    text="no-population"
+                    disabled
+                  ></option>
+                  <option
+                    v-for="population in popInSelectedRegion"
+                    :key="population.id"
+                    :value="population.id"
+                    >{{ population.name }}</option
                   >
                 </b-form-select>
               </b-form-group>
@@ -204,6 +208,7 @@ export default {
       isHidden: false,
       styles: this.$store.state.config.styles,
       regions: this.$store.state.config.regions,
+      populations: this.$store.state.config.populations,
       modalShow: false,
       //incident_selected: ["fire"], // Must be an array reference!
       global: [{ text: "startHHMM", value: "00:00" }],
@@ -269,7 +274,12 @@ export default {
       populationSquares: state => state.map.populationSquares,
       selectedMATSimLink: state => state.map.selectedMATSimLink
     }),
-    ...mapGetters(["selectedStyle", "selectedRegion", "selectedFire"]),
+    ...mapGetters([
+      "selectedStyle",
+      "selectedRegion",
+      "popInSelectedRegion",
+      "selectedFire"
+    ]),
     firesInSelectedRegion() {
       return !this.$store.getters.firesInSelectedRegion
         ? []
@@ -292,6 +302,16 @@ export default {
       set(value) {
         // set the selected region in state
         this.selectRegion(value);
+      }
+    },
+    selectedPopulation: {
+      get() {
+        return !this.$store.state.population.selectedPopulation
+          ? "no-population"
+          : this.$store.state.population.selectedPopulation;
+      },
+      set(value) {
+        this.selectPopulation(value);
       }
     },
     selectedFire: {
@@ -357,16 +377,18 @@ export default {
     FontAwesomeIcon
   },
   methods: {
-    ...mapActions(["selectRegion", "changeMapboxStyle", "selectFire"]),
+    ...mapActions([
+      "selectRegion",
+      "changeMapboxStyle",
+      "selectFire",
+      "selectPopulation"
+    ]),
     setStyle: function(event) {
       this.changeMapboxStyle(event.target.dataset.mapStyle);
     },
     setRegion: function(event) {
       // set the selected region in state
       this.selectRegion(event.target.dataset.region);
-    },
-    setFire: function(event) {
-      this.selectFire(event.target.dataset.fire);
     },
     drawRectangle() {
       this.$store.commit("drawPopulationSquare");

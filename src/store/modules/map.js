@@ -56,6 +56,10 @@ const getters = {
     if (!state.selectedRegion) return null;
     return rootGetters.region(state.selectedRegion);
   },
+  popInSelectedRegion: (state, getters, rootState, rootGetters) => {
+    if (!state.selectedRegion) return [];
+    return rootGetters.popInRegion(state.selectedRegion);
+  },
   firesInSelectedRegion: (state, getters, rootState, rootGetters) => {
     if (!state.selectedRegion) return [];
     return rootGetters.firesInRegion(state.selectedRegion);
