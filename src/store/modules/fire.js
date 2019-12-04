@@ -19,7 +19,6 @@ const state = {
   loadedFireSources: [],
   visibleFireStep: null,
   fire3DFlameHeight: false,
-  fireSliderTicks: true,
   fireOpacity: 0.4,
   fireIntensityLevels: [[0, "#ffc107"], [100000, "#dc3545"]]
 };
