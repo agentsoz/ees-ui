@@ -13,133 +13,72 @@
         </div>
         <b-collapse visible id="collapse-side-panel" class="h-100">
           <div class="h-100 map-accordion-container">
-            <b-card no-body class="mb-1">
-              <b-card-header v-b-toggle.collapse-map-style
-                >Map Style</b-card-header
+            <b-card header="Scenario" class="mb-1 p-0">
+              <b-form-group
+                label-cols-sm="12"
+                label-cols-lg="4"
+                label="Region"
+                label-for="map-region"
               >
-              <b-collapse visible id="collapse-map-style">
-                <b-form-select v-model="mapboxStyle">
+                <b-form-select id="map-region" v-model="selectedRegion">
+                  <option value="no-region" text="no-region" disabled></option>
                   <option
-                    v-for="style in styles"
-                    :key="style.id"
-                    :value="style.id"
-                    :disabled="mapboxStyle.id == style.id"
-                    >{{ style.name }}</option
+                    v-for="region in regions"
+                    :key="region.id"
+                    :value="region.id"
+                    :disabled="selectedRegion == region.id"
+                    >{{ region.name }}</option
                   >
                 </b-form-select>
-              </b-collapse>
+              </b-form-group>
+              <b-form-group
+                label-cols-sm="12"
+                label-cols-lg="4"
+                label="Population"
+                label-for="map-population"
+              >
+                <b-form-select id="map-population" v-model="selectedPopulation">
+                  <option value="no-region" text="no-region" disabled></option>
+                  <option
+                    v-for="population in populations"
+                    :key="population.population"
+                    :value="population.population"
+                    >{{ population.population }}</option
+                  >
+                </b-form-select>
+              </b-form-group>
             </b-card>
-            <b-card no-body class="mb-1">
-              <b-row>
-                <b-col>
-                  <b-card-header>Region</b-card-header>
-                  <b-collapse visible id="collapse-region">
-                    <b-form-select id="map-region" v-model="selectedRegion">
-                      <option
-                        value="no-region"
-                        text="no-region"
-                        disabled
-                      ></option>
-                      <option
-                        v-for="region in regions"
-                        :key="region.id"
-                        :value="region.id"
-                        :disabled="selectedRegion == region.id"
-                        >{{ region.name }}</option
-                      >
-                    </b-form-select>
-                  </b-collapse>
-                </b-col>
-                <b-col>
-                  <b-card-header>Population</b-card-header>
-                  <b-collapse visible id="collapse-region">
-                    <b-form-select id="map-region" v-model="selectedPopulation">
-                      <option
-                        value="no-region"
-                        text="no-region"
-                        disabled
-                      ></option>
-                      <option
-                        v-for="population in populations"
-                        :key="population.population"
-                        :value="population.population"
-                        >{{ population.population }}</option
-                      >
-                    </b-form-select>
-                  </b-collapse>
-                </b-col>
-              </b-row>
-            </b-card>
-            <b-card no-body class="mb-1">
-              <b-card-header v-b-toggle.collapse-incident>
-                Emergency Incident
-                <span class="helper-icons">
-                  <font-awesome-icon
-                    icon="info-circle"
-                    v-b-popover.hover="helperOptions[0].text"
-                  />
-                </span>
-              </b-card-header>
+            <b-card class="mb-1">
+              <template v-slot:header>
+                <h6 class="mb-0">
+                  Emergency Incident
+                  <span class="helper-icons">
+                    <font-awesome-icon
+                      icon="info-circle"
+                      v-b-popover.hover="helperOptions[0].text"
+                    />
+                  </span>
+                </h6>
+              </template>
               <b-collapse visible id="collapse-incident">
-                <b-row>
-                  <b-col md="8" sm="8" xs="8">
-                    <b-form-select id="map-fire" v-model="selectedFire">
-                      <option value="no-fire" disabled></option>
-                      <option
-                        v-for="fire in firesInSelectedRegion"
-                        :key="fire.id"
-                        :value="fire.id"
-                        :disabled="selectedFire == fire.id"
-                        >{{ fire.name }}</option
-                      >
-                    </b-form-select>
-                  </b-col>
-                  <b-col md="4" sm="4" xs="4">
-                    <b-form-group>
-                      <div class="form-check form-check-inline">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          id="inlineCheckbox1"
-                          value="option1"
-                          v-model="showSmoke"
-                          :disabled="
-                            this.$store.state.fire.selectedFire == null
-                          "
-                        />
-                        <label class="form-check-label" for="inlineCheckbox1"
-                          >Smoke</label
-                        >
-                      </div>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
-                    <label>Fire Opacity</label>
-
-                    <input
-                      class="form-control"
-                      type="number"
-                      value="0.7"
-                      step="0.1"
-                      v-model="fireOpacity"
-                      :disabled="this.$store.state.fire.selectedFire == null"
-                    />
-                  </b-col>
-                  <b-col>
-                    <label>Smoke Opacity</label>
-
-                    <input
-                      class="form-control"
-                      type="number"
-                      value="0.5"
-                      step="0.1"
-                      v-model="smokeOpacity"
-                      :disabled="this.$store.state.fire.selectedFire == null"
-                    />
-                  </b-col>
-                </b-row>
+                <b-form inline>
+                  <b-form-select id="map-fire" v-model="selectedFire">
+                    <option value="no-fire" disabled></option>
+                    <option
+                      v-for="fire in firesInSelectedRegion"
+                      :key="fire.id"
+                      :value="fire.id"
+                      :disabled="selectedFire == fire.id"
+                      >{{ fire.name }}</option
+                    >
+                  </b-form-select>
+                  <b-form-checkbox
+                    class="form-check-input"
+                    v-model="showSmoke"
+                    :disabled="this.$store.state.fire.selectedFire == null"
+                    >Display Embers
+                  </b-form-checkbox>
+                </b-form>
               </b-collapse>
             </b-card>
             <!--<b-card no-body class="mb-1">
@@ -171,10 +110,7 @@
                 </b-row>
               </b-collapse>
             </b-card>-->
-            <b-card no-body class="mb-1">
-              <b-card-header v-b-toggle.collapse-traffic
-                >Traffic Behaviour Setup</b-card-header
-              >
+            <b-card class="mb-1" header="Traffic Behaviour Setup">
               <b-collapse visible id="collapse-traffic">
                 <label>
                   Maximum speed on roads (as % of speed limits)
@@ -195,8 +131,64 @@
                     <img src="../assets/rectangle-slider.png" />
                   </template>
                 </VueSlideBar>
-              </b-collapse> </b-card
-            >s
+              </b-collapse>
+            </b-card>
+            <b-card class="mb-1" header="UI Settings">
+              <b-collapse visible id="collapse-map-style">
+                <b-form>
+                  <b-form-group
+                    label-cols-sm="12"
+                    label-cols-lg="8"
+                    label="Map Style"
+                    label-for="map-style"
+                  >
+                    <b-form-select id="map-style" v-model="mapboxStyle">
+                      <option
+                        v-for="style in styles"
+                        :key="style.id"
+                        :value="style.id"
+                        :disabled="mapboxStyle.id == style.id"
+                        >{{ style.name }}</option
+                      >
+                    </b-form-select>
+                  </b-form-group>
+                  <b-form-group
+                    label-cols-sm="12"
+                    label-cols-lg="8"
+                    label="Fire Opacity"
+                    label-for="fire_opacity"
+                  >
+                    <b-form-input
+                      id="fire_opacity"
+                      type="number"
+                      value="0.7"
+                      step="0.1"
+                      v-model="fireOpacity"
+                      :disabled="this.$store.state.fire.selectedFire == null"
+                    />
+                  </b-form-group>
+
+                  <b-form-group
+                    label-cols-sm="12"
+                    label-cols-lg="8"
+                    label="Smoke Opacity"
+                    label-for="smoke_opacity"
+                  >
+                    <b-form-input
+                      id="smoke_opacity"
+                      type="number"
+                      value="0.5"
+                      step="0.1"
+                      v-model="smokeOpacity"
+                      :disabled="this.$store.state.fire.selectedFire == null"
+                    />
+                  </b-form-group>
+                </b-form>
+              </b-collapse>
+            </b-card>
+            <br />
+            <br />
+            <br />
           </div>
         </b-collapse>
       </b-col>
@@ -457,6 +449,9 @@ export default {
   left: 0;
 }
 .map-sidebar-container {
+}
+.map-sidebar-container .card-body {
+  padding: 1em;
 }
 .map-accordion-container {
   text-align: left;
