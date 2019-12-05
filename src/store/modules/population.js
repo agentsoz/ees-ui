@@ -51,6 +51,9 @@ const mutations = {
       id: popSlice.layerName,
       type: "circle",
       source: popSlice.sourceName,
+      layout: {
+        visibility: "none"
+      },
       paint: {
         "circle-radius": {
           base: 1.75,
@@ -122,11 +125,18 @@ const actions = {
 
         var whereareyounow = {};
 
+        // a first sweep to determine where everyone starts
+        for(const plan of json) {
+          if (! (plan.id in whereareyounow)) {
+            whereareyounow[plan.id] = plan
+          }
+        }
+
         // this will track the geojson features array
         var j = 0;
         // skip nulls
         // generate a geojson object for each step
-        for (var i = 0; i < totalSteps; i++) {
+        for (var i = 0; i < 30; i++) {
           // set a threshold
           var threshold = (i * rootGetters.fireStepMinutes) / 60;
           // create a fresh geojson structure for this layer
@@ -137,21 +147,26 @@ const actions = {
 
           // add all features below the minutes threshold to this structure
           while (json[j].end_hr < threshold) {
+            whereareyounow[json[j].id] = json[j]
+            j++;
+          }
+
+          // we know the state of everyone at this time, create a feature for each person
+          for (const k of Object.keys(whereareyounow)) {
             var feature = {
               type: "Feature",
               properties: {
-                person: json[j].person,
-                end_hr: json[j].end_hr,
-                type: json[j].type,
-                color:activityColors[json[j].type] 
+                person: whereareyounow[k].id,
+                end_hr: whereareyounow[k].end_hr,
+                type: whereareyounow[k].type,
+                color:activityColors[whereareyounow[k].type] 
               },
               geometry: {
                 type: "Point",
-                coordinates: [json[j].x, json[j].y]
+                coordinates: [whereareyounow[k].x, whereareyounow[k].y]
               }
-            };
+            }
             sect.features.push(feature);
-            j++;
           }
 
           // create this layer
@@ -188,7 +203,7 @@ const actions = {
 
       // population may not be selected
       if (typeof l !== 'undefined') {
-        if (i <= fireStep) map.setLayoutProperty(layername, "visibility", "visible");
+        if (i == fireStep) map.setLayoutProperty(layername, "visibility", "visible");
         else map.setLayoutProperty(layername, "visibility", "none");
       }
     }
