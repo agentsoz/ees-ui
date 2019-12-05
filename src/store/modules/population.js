@@ -5,6 +5,7 @@ import {
   DONE_LOADING,
   SELECT_POPULATION,
   POP_ADD_SOURCE,
+  POP_ADD_GEOJSON,
   POP_ADD_LAYER,
   CLEAR_POPULATION
 } from "@/store/mutation-types";
@@ -12,7 +13,8 @@ import {
 const state = {
   selectedPopulation: null,
   loadedPopLayers: [],
-  loadedPopSources: []
+  loadedPopSources: [],
+  populationGeojson: []
 };
 
 const getters = {
@@ -51,9 +53,6 @@ const mutations = {
       id: popSlice.layerName,
       type: "circle",
       source: popSlice.sourceName,
-      layout: {
-        visibility: "none"
-      },
       paint: {
         "circle-radius": {
           base: 1.75,
@@ -69,6 +68,9 @@ const mutations = {
     payload.map.addLayer(layer, payload.beforeLayer);
     state.loadedPopLayers.push(popSlice.layerName);
   },
+  [POP_ADD_GEOJSON](state, payload) {
+    state.populationGeojson.push(payload);
+  },
   [CLEAR_POPULATION](state, map) {
     // remove layers
     for (const layer of state.loadedPopLayers) map.removeLayer(layer);
@@ -76,6 +78,9 @@ const mutations = {
     // remove sources
     for (const source of state.loadedPopSources) map.removeSource(source);
     state.loadedPopSources = [];
+
+    // remove animation states
+    state.populationGeojson = [];
   }
 };
 
@@ -99,6 +104,8 @@ const actions = {
     const map = rootGetters.mapInstance;
     commit(CLEAR_POPULATION, map);
     commit(START_LOADING);
+
+    window.populationGeojson = [];
 
     // download and pre-process the geojson for better performance while rendering
     // we will build our own sources and layers for each fire step
@@ -136,20 +143,21 @@ const actions = {
         var j = 0;
         // skip nulls
         // generate a geojson object for each step
-        for (var i = 0; i < 30; i++) {
+        for (var i = 0; i < totalSteps; i++) {
           // set a threshold
           var threshold = (i * rootGetters.fireStepMinutes) / 60;
-          // create a fresh geojson structure for this layer
-          var sect = {
-            type: "FeatureCollection",
-            features: []
-          };
 
           // add all features below the minutes threshold to this structure
           while (json[j].end_hr < threshold) {
             whereareyounow[json[j].id] = json[j]
             j++;
           }
+
+          // create a fresh geojson structure for this layer
+          var sect = {
+            type: "FeatureCollection",
+            features: []
+          };
 
           // we know the state of everyone at this time, create a feature for each person
           for (const k of Object.keys(whereareyounow)) {
@@ -169,43 +177,39 @@ const actions = {
             sect.features.push(feature);
           }
 
-          // create this layer
-          var stepStr = i.toString();
-          var layer = "pop-layer" + stepStr;
-          var source = "pop-source" + stepStr;
-          commit(POP_ADD_SOURCE, {
-            map: map,
-            popSlice: {
-              sourceName: source,
-              geojson: sect
-            }
-          });
-          commit(POP_ADD_LAYER, {
-            map: map,
-            beforeLayer: rootGetters.fireBeforeLayer,
-            popSlice: {
-              sourceName: source,
-              layerName: layer
-            }
-          });
+          window.populationGeojson.push(sect);
+          // save this data for animation later
+          //commit(POP_ADD_GEOJSON, sect);
         }
+
+        // create a single layer to conduct animation in
+        var layer = "pop-layer"
+        var source = "pop-source"
+        commit(POP_ADD_SOURCE, {
+          map: map,
+          popSlice: {
+            sourceName: source,
+            geojson: window.populationGeojson[0]
+          }
+        });
+        commit(POP_ADD_LAYER, {
+          map: map,
+          beforeLayer: rootGetters.fireBeforeLayer,
+          popSlice: {
+            sourceName: source,
+            layerName: layer
+          }
+        });
         //dispatch("filterFire", totalSteps - 1); // load the final fire step
         commit(DONE_LOADING);
       });
   },
-  filterFire({ getters, rootGetters, commit }, fireStep) {
+  filterFire({ state, getters, rootGetters, commit }, fireStep) {
     var map = getters.mapInstance;
 
-    // ensure every layer other than the current step is off
-    for (var i = 0; i < rootGetters.totalPopLayers; i++) {
-      var layername = "pop-layer" + i.toString();
-      var l = map.getLayer(layername);
-
-      // population may not be selected
-      if (typeof l !== 'undefined') {
-        if (i == fireStep) map.setLayoutProperty(layername, "visibility", "visible");
-        else map.setLayoutProperty(layername, "visibility", "none");
-      }
+    const s = map.getSource("pop-source")
+    if (typeof s !== 'undefined') {
+      s.setData(window.populationGeojson[fireStep]);
     }
   },
   resetFireLayers({ dispatch, rootGetters, getters, commit }) {
@@ -217,16 +221,14 @@ const actions = {
 
     // we dont want to clear, just reset each fire layer
     for (i = 0; i < totalFireLayers; i++) {
-      step = i.toString();
-      layer = "pop-layer" + step;
+      layer = "pop-layer";
       map.removeLayer(layer);
     }
     state.loadedPopLayers = [];
 
     for (i = 0; i < totalFireLayers; i++) {
-      step = i.toString();
-      var source = "pop-source" + step;
-      layer = "pop-layer" + step;
+      var source = "pop-source";
+      layer = "pop-layer";
 
       commit(POP_ADD_LAYER, {
         map: map,
