@@ -52,8 +52,14 @@ const mutations = {
       type: "circle",
       source: popSlice.sourceName,
       paint: {
-        "circle-radius": 1,
-        "circle-color": "#ff0000"
+        "circle-radius": {
+          base: 1.75,
+          stops: [[12, 2], [22, 180]]
+        },
+        "circle-color": {
+          type: "identity",
+          property: "color"
+        }
       }
     };
 
@@ -106,6 +112,16 @@ const actions = {
           totalMinutes / rootGetters.fireStepMinutes
         );
 
+        var activityColors = {
+          "home": "#fbb03b",
+          "work": "#223b53",
+          "beach": "#e55e5e",
+          "shops": "#3bb2d0",
+          "other": "#ccc"
+        };
+
+        var whereareyounow = {};
+
         // this will track the geojson features array
         var j = 0;
         // skip nulls
@@ -126,7 +142,8 @@ const actions = {
               properties: {
                 person: json[j].person,
                 end_hr: json[j].end_hr,
-                type: json[j].type
+                type: json[j].type,
+                color:activityColors[json[j].type] 
               },
               geometry: {
                 type: "Point",
@@ -165,10 +182,15 @@ const actions = {
     var map = getters.mapInstance;
 
     // ensure every layer other than the current step is off
-    for (var i = 0; i < rootGetters.totalFireLayers; i++) {
-      var layer = "pop-layer" + i.toString();
-      if (i == fireStep) map.setLayoutProperty(layer, "visibility", "visible");
-      else map.setLayoutProperty(layer, "visibility", "none");
+    for (var i = 0; i < rootGetters.totalPopLayers; i++) {
+      var layername = "pop-layer" + i.toString();
+      var l = map.getLayer(layername);
+
+      // population may not be selected
+      if (typeof l !== 'undefined') {
+        if (i <= fireStep) map.setLayoutProperty(layername, "visibility", "visible");
+        else map.setLayoutProperty(layername, "visibility", "none");
+      }
     }
   },
   resetFireLayers({ dispatch, rootGetters, getters, commit }) {
