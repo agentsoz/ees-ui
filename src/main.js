@@ -17,5 +17,11 @@ new Vue({
   el: "#app",
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  mounted: function() {
+    this.$store.dispatch(
+      "getConfig",
+      process.env.VUE_APP_EES_TILES_API + "/config"
+    );
+  }
 }).$mount("#app");

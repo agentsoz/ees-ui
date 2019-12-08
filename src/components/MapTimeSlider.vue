@@ -11,6 +11,7 @@
         :marks="hasLabel"
         :tooltip="'always'"
         :tooltip-formatter="stepToTime"
+        :use-keyboard="true"
       >
         <template v-slot:label="{ active, value }">
           <div :class="['vue-slider-mark-label', 'custom-label', { active }]">
@@ -33,8 +34,8 @@ export default {
   props: {},
   data: function() {
     var ls = []; // label step size
-    ls["sm"] = 12;
-    ls["md"] = 9;
+    ls["sm"] = 6 * 6;
+    ls["md"] = 6 * 4;
     ls["lg"] = 6;
     return {
       labelStep: ls
@@ -42,6 +43,7 @@ export default {
   },
   computed: {
     ...mapState({
+      fireStepMinutes: state => state.fire.fireStepMinutes,
       visibleFireStep: state => state.fire.visibleFireStep,
       fireSliderTicks: state => state.fire.fireSliderTicks
     }),
@@ -51,7 +53,7 @@ export default {
         width: "98%",
         value: this.visibleFireStep ? this.visibleFireStep : 0,
         min: 0,
-        max: this.totalFireLayers ? this.totalFireLayers - 1 : 0
+        max: this.maxSteps
       };
     },
     timeStep: {
@@ -61,20 +63,22 @@ export default {
       set(val) {
         this.$store.dispatch("filterFire", val);
       }
+    },
+    maxSteps() {
+      return (24 * 60) / this.fireStepMinutes;
     }
   },
   methods: {
     hasLabel(timeStep) {
-      var interval = this.$data.labelStep[this.$mq];
-      var notTooClose = timeStep < this.totalFireLayers - interval + 1;
+      var interval = this.labelStep[this.$mq];
+      var notTooClose = timeStep < this.maxSteps - interval + 1;
       return (
         (timeStep % interval === 0 && notTooClose) ||
-        timeStep === this.totalFireLayers - 1
+        timeStep === this.maxSteps - 1
       );
     },
     stepToTime(timeStep) {
       return (
-        "+" +
         Math.floor((timeStep * 10) / 60).toString() +
         ":" +
         ((timeStep * 10) % 60).toString().padStart(2, "0")

@@ -1,6 +1,9 @@
 <template>
   <b-container
-    v-show="this.$store.state.map.mapSettingsIsOpen"
+    v-show="
+      this.$store.state.map.mapInstance != null &&
+        this.$store.state.map.mapSettingsIsOpen
+    "
     fluid
     class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container"
   >
@@ -23,11 +26,11 @@
                 <b-form-select id="map-region" v-model="selectedRegion">
                   <option value="no-region" text="no-region" disabled></option>
                   <option
-                    v-for="region in regions"
-                    :key="region.id"
-                    :value="region.id"
-                    :disabled="selectedRegion == region.id"
-                    >{{ region.name }}</option
+                    v-for="(r, id) in regions"
+                    :key="id"
+                    :value="id"
+                    :disabled="selectedRegion == id"
+                    >{{ r.name }}</option
                   >
                 </b-form-select>
               </b-form-group>
@@ -38,12 +41,17 @@
                 label-for="map-population"
               >
                 <b-form-select id="map-population" v-model="selectedPopulation">
-                  <option value="no-region" text="no-region" disabled></option>
                   <option
-                    v-for="population in populations"
-                    :key="population.population"
-                    :value="population.population"
-                    >{{ population.population }}</option
+                    value="no-population"
+                    text="no-population"
+                    disabled
+                  ></option>
+                  <option
+                    v-for="(p, id) in popInSelectedRegion"
+                    :key="id"
+                    :value="id"
+                    :disabled="selectedFire == id"
+                    >{{ p.display_name }}</option
                   >
                 </b-form-select>
               </b-form-group>
@@ -65,11 +73,11 @@
                   <b-form-select id="map-fire" v-model="selectedFire">
                     <option value="no-fire" disabled></option>
                     <option
-                      v-for="fire in firesInSelectedRegion"
-                      :key="fire.id"
-                      :value="fire.id"
-                      :disabled="selectedFire == fire.id"
-                      >{{ fire.name }}</option
+                      v-for="(f, id) in firesInSelectedRegion"
+                      :key="id"
+                      :value="id"
+                      :disabled="selectedFire == id"
+                      >{{ f.display_name }}</option
                     >
                   </b-form-select>
                   <b-form-checkbox
@@ -203,7 +211,7 @@ export default {
     return {
       isHidden: false,
       styles: this.$store.state.config.styles,
-      regions: this.$store.state.config.regions,
+      populations: this.$store.state.config.populations,
       modalShow: false,
       //incident_selected: ["fire"], // Must be an array reference!
       global: [{ text: "startHHMM", value: "00:00" }],
@@ -269,7 +277,13 @@ export default {
       populationSquares: state => state.map.populationSquares,
       selectedMATSimLink: state => state.map.selectedMATSimLink
     }),
-    ...mapGetters(["selectedStyle", "selectedRegion", "selectedFire"]),
+    ...mapGetters([
+      "regions",
+      "selectedStyle",
+      "selectedRegion",
+      "popInSelectedRegion",
+      "selectedFire"
+    ]),
     firesInSelectedRegion() {
       return !this.$store.getters.firesInSelectedRegion
         ? []
@@ -292,6 +306,16 @@ export default {
       set(value) {
         // set the selected region in state
         this.selectRegion(value);
+      }
+    },
+    selectedPopulation: {
+      get() {
+        return !this.$store.state.population.selectedPopulation
+          ? "no-population"
+          : this.$store.state.population.selectedPopulation;
+      },
+      set(value) {
+        this.selectPopulation(value);
       }
     },
     selectedFire: {
@@ -357,16 +381,18 @@ export default {
     FontAwesomeIcon
   },
   methods: {
-    ...mapActions(["selectRegion", "changeMapboxStyle", "selectFire"]),
+    ...mapActions([
+      "selectRegion",
+      "changeMapboxStyle",
+      "selectFire",
+      "selectPopulation"
+    ]),
     setStyle: function(event) {
       this.changeMapboxStyle(event.target.dataset.mapStyle);
     },
     setRegion: function(event) {
       // set the selected region in state
       this.selectRegion(event.target.dataset.region);
-    },
-    setFire: function(event) {
-      this.selectFire(event.target.dataset.fire);
     },
     drawRectangle() {
       this.$store.commit("drawPopulationSquare");

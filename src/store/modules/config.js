@@ -4,6 +4,7 @@
 const state = {
   mapboxAccessToken:
     "pk.eyJ1IjoiZGhpeHNpbmdoIiwiYSI6ImNqbWx4OTR0ZzBkMWUzb255and1aTUweGkifQ.U0vPiwyfM4ad7axC_4dkHg",
+  data: null,
   styles: [
     {
       id: "basic",
@@ -29,146 +30,75 @@ const state = {
       id: "streets",
       name: "Streets"
     }
-  ],
-  regions: [
-    {
-      id: "Mount_Alexander_Shire",
-      name: "Mount Alexander Shire",
-      center: [144.212304, -37.064737], // Castlemaine VIC
-      matsimNetworkLayer: "mount_alexander_shire_networkP",
-      matsimNetworkTiles:
-        process.env.VUE_APP_EES_TILES_API +
-        "/matsim-tiles/mount-alexander-shire/{z}/{x}/{y}.pbf",
-      phoenixRuns: [
-        {
-          id: "20181109_mountalex_evac_ffdi50a_grid",
-          name: "20181109 Mountalex evac FFDI50a",
-          description: "",
-          geojson:
-            process.env.VUE_APP_EES_TILES_API +
-            "/phoenix/20181109_mountalex_evac_ffdi50a_grid.shp.json"
-        },
-        {
-          id: "20181109_mountalex_evac_ffdi50b_grid",
-          name: "20181109 Mountalex evac FFDI50b",
-          description: "",
-          geojson:
-            process.env.VUE_APP_EES_TILES_API +
-            "/phoenix/20181109_mountalex_evac_ffdi50b_grid.shp.json"
-        },
-        {
-          id: "20181109_mountalex_evac_ffdi50c_grid",
-          name: "20181109 Mountalex evac FFDI50c",
-          description: "",
-          geojson:
-            process.env.VUE_APP_EES_TILES_API +
-            "/phoenix/20181109_mountalex_evac_ffdi50c_grid.shp.json"
-        },
-        {
-          id: "20181109_mountalex_evac_ffdi50d_grid",
-          name: "20181109 Mountalex evac FFDI50d",
-          description: "",
-          geojson:
-            process.env.VUE_APP_EES_TILES_API +
-            "/phoenix/20181109_mountalex_evac_ffdi50d_grid.shp.json"
-        },
-        {
-          id: "20181109_mountalex_evac_ffdi75a_grid",
-          name: "20181109 Mountalex evac FFDI75a",
-          description: "",
-          geojson:
-            process.env.VUE_APP_EES_TILES_API +
-            "/phoenix/20181109_mountalex_evac_ffdi75a_grid.shp.json"
-        },
-        {
-          id: "20181109_mountalex_evac_ffdi75b_grid",
-          name: "20181109 Mountalex evac FFDI75b",
-          description: "",
-          geojson:
-            process.env.VUE_APP_EES_TILES_API +
-            "/phoenix/20181109_mountalex_evac_ffdi75b_grid.shp.json"
-        },
-        {
-          id: "20181109_mountalex_evac_ffdi75c_grid",
-          name: "20181109 Mountalex evac FFDI75c",
-          description: "",
-          geojson:
-            process.env.VUE_APP_EES_TILES_API +
-            "/phoenix/20181109_mountalex_evac_ffdi75c_grid.shp.json"
-        },
-        {
-          id: "20181109_mountalex_evac_ffdi75d_grid",
-          name: "20181109 Mountalex evac FFDI75d",
-          description: "",
-          geojson:
-            process.env.VUE_APP_EES_TILES_API +
-            "/phoenix/20181109_mountalex_evac_ffdi75d_grid.shp.json"
-        },
-        {
-          id: "20181109_mountalex_evac_ffdi100b_grid",
-          name: "20181109 Mountalex evac FFDI100b",
-          description: "",
-          geojson:
-            process.env.VUE_APP_EES_TILES_API +
-            "/phoenix/20181109_mountalex_evac_ffdi100b_grid.shp.json"
-        },
-        {
-          id: "20181109_mountalex_evac_ffdi100c_grid",
-          name: "20181109 Mountalex evac FFDI100c",
-          description: "",
-          geojson:
-            process.env.VUE_APP_EES_TILES_API +
-            "/phoenix/20181109_mountalex_evac_ffdi100c_grid.shp.json"
-        },
-        {
-          id: "20181109_mountalex_evac_ffdi100d_grid",
-          name: "20181109 Mountalex evac FFDI100d",
-          description: "",
-          geojson:
-            process.env.VUE_APP_EES_TILES_API +
-            "/phoenix/20181109_mountalex_evac_ffdi100d_grid.shp.json"
-        }
-      ]
-    },
-    {
-      id: "Surf_Coast_Shire",
-      name: "Surf Coast Shire",
-      center: [144.326271, -38.332386], // Torquay Esplanade
-      matsimNetworkLayer: "surf_coast_shire_networkP",
-      matsimNetworkTiles:
-        process.env.VUE_APP_EES_TILES_API +
-        "/matsim-tiles/surf-coast-shire/{z}/{x}/{y}.pbf",
-      phoenixRuns: [
-        {
-          id:
-            "Anglesea_evac_test_ffdi104_phx5_2016data_minsup_fh2017_grid_WSG84",
-          name: "Anglesea_FFDI104 PHX5 2016 MINSUP FH2017 GRID",
-          description: "12:00 point fire ignition",
-          geojson:
-            "https://raw.githubusercontent.com/agentsoz/ees/f25dd3427060180f08716c25198d5b6e0e530fd9/scenarios/surf-coast-shire/data/phoenix/Anglesea_evac_test_ffdi104_phx5_2016data_minsup_fh2017_grid_WSG84.json",
-          smokeGeojson:
-            "https://raw.githubusercontent.com/agentsoz/ees/master/scenarios/surf-coast-shire/population-subgroups/scenario_smoke.json"
-        }
-      ]
-    }
   ]
 };
 
 const getters = {
   mapboxAccessToken: state => state.mapboxAccessToken,
   styles: state => state.styles,
-  regions: state => state.regions,
-  region: state => regionId => {
-    return state.regions.find(region => region.id === regionId);
+  regions: state => {
+    if (state.data) {
+      return state.data.tiles;
+    } else {
+      return {};
+    }
   },
-  firesInRegion: (state, getters) => regionId => {
-    var regionX = getters.region(regionId);
-    return regionX.phoenixRuns;
+  populations: state => {
+    if (state.data) {
+      return state.data.populations;
+    } else {
+      return {};
+    }
+  },
+  fires: state => {
+    if (state.data) {
+      return state.data.fires;
+    } else {
+      return {};
+    }
+  },
+  region: state => regionId => {
+    return state.data.tiles[regionId];
+  },
+  populationsWithTag: (state, getters) => tag => {
+    const populations = getters.populations;
+    var filteredPops = {};
+    for (const p in populations) {
+      if (
+        Array.isArray(populations[p].tags) &&
+        populations[p].tags.includes(tag)
+      ) {
+        filteredPops[p] = populations[p];
+      }
+    }
+    return filteredPops;
+  },
+  firesWithTag: (state, getters) => tag => {
+    const fires = getters.fires;
+    var filteredFires = {};
+    for (const f in fires) {
+      if (Array.isArray(fires[f].tags) && fires[f].tags.includes(tag)) {
+        filteredFires[f] = fires[f];
+      }
+    }
+    return filteredFires;
   }
 };
 
-const mutations = {};
-const actions = {};
+const mutations = {
+  ["SAVE_SETTINGS"](state, value) {
+    state.data = value;
+  }
+};
+const actions = {
+  getConfig({ commit }, url) {
+    fetch(url)
+      .then(res => res.json())
+      .then(json => {
+        commit("SAVE_SETTINGS", json);
+      });
+  }
+};
 
 export default {
   state,

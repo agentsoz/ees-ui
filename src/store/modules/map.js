@@ -56,9 +56,13 @@ const getters = {
     if (!state.selectedRegion) return null;
     return rootGetters.region(state.selectedRegion);
   },
-  firesInSelectedRegion: (state, getters, rootState, rootGetters) => {
+  popInSelectedRegion: (state, getters, rootState, rootGetters) => {
     if (!state.selectedRegion) return [];
-    return rootGetters.firesInRegion(state.selectedRegion);
+    return rootGetters.populationsWithTag(getters.selectedRegion.name);
+  },
+  firesInSelectedRegion: (state, getters, rootState, rootGetters) => {
+    if (!state.selectedRegion) return getters.fires;
+    return rootGetters.firesWithTag(getters.selectedRegion.name);
   }
 };
 
@@ -237,7 +241,7 @@ const actions = {
 
     var matsimNetwork = {
       sourceName: "matsim",
-      pbfurl: region.matsimNetworkTiles,
+      pbfurl: process.env.VUE_APP_EES_TILES_API + region.matsimNetworkTiles,
       layerName: region.matsimNetworkLayer,
       sourceLayer: region.matsimNetworkLayer,
       paint: {

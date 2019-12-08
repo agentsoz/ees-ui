@@ -4,6 +4,7 @@ import config from "./modules/config";
 import map from "./modules/map";
 import fire from "./modules/fire";
 import smoke from "./modules/smoke";
+import population from "./modules/population";
 import simulation from "./modules/simulation";
 
 Vue.use(Vuex);
@@ -14,6 +15,7 @@ export default new Vuex.Store({
     map,
     fire,
     smoke,
+    population,
     simulation
   }
 });
