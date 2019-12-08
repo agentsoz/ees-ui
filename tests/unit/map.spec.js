@@ -113,7 +113,7 @@ describe("High level calls to cleanup region & fire mutations", () => {
 describe("Actions & mutations responsible for Region selection", () => {
   const getters = {
     selectedRegion: {
-      matsimNetworkTiles: "tiles",
+      matsimNetworkTiles: "/tiles",
       matsimNetworkLayer: "layer"
     }
   };
@@ -126,7 +126,7 @@ describe("Actions & mutations responsible for Region selection", () => {
   };
   const matsimNetwork = {
     sourceName: "matsim",
-    pbfurl: getters.selectedRegion.matsimNetworkTiles,
+    pbfurl: process.env.VUE_APP_EES_TILES_API + getters.selectedRegion.matsimNetworkTiles,
     layerName: getters.selectedRegion.matsimNetworkLayer,
     sourceLayer: getters.selectedRegion.matsimNetworkLayer,
     paint: {
