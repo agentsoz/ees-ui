@@ -19,11 +19,11 @@ const state = {
 
 const getters = {
   selectedPopulation: (state, getters) => {
-    var pops = getters.popInSelectedRegion;
+    var pops = getters.populations;
     if (!pops) return null;
 
-    var pop = pops.find(obj => obj.id === state.selectedPopulation);
-    return pop;
+    if (state.selectedPopulation in pops) return pops[state.selectedPopulation];
+    else return null;
   },
   totalPopLayers: state => state.loadedPopLayers.length,
   popAboveLayer: (state, getters, rootState) => {
@@ -98,9 +98,12 @@ const actions = {
   selectPopulation({ dispatch, commit, getters }, pop) {
     commit(SELECT_POPULATION, pop);
     var popData = getters.selectedPopulation;
-    dispatch("fetchPopulation", !popData ? "" : popData.data);
+    dispatch(
+      "fetchPopulation",
+      !popData ? "" : process.env.VUE_APP_EES_TILES_API + "/" + popData.file
+    );
   },
-  fetchPopulation({ dispatch, commit, getters, rootGetters }, url) {
+  fetchPopulation({ dispatch, commit, rootGetters }, url) {
     const map = rootGetters.mapInstance;
     commit(CLEAR_POPULATION, map);
     commit(START_LOADING);
@@ -123,19 +126,19 @@ const actions = {
         );
 
         var activityColors = {
-          "home": "#fbb03b",
-          "work": "#223b53",
-          "beach": "#e55e5e",
-          "shops": "#3bb2d0",
-          "other": "#ccc"
+          home: "#fbb03b",
+          work: "#223b53",
+          beach: "#e55e5e",
+          shops: "#3bb2d0",
+          other: "#ccc"
         };
 
         var whereareyounow = {};
 
         // a first sweep to determine where everyone starts
-        for(const plan of json) {
-          if (! (plan.id in whereareyounow)) {
-            whereareyounow[plan.id] = plan
+        for (const plan of json) {
+          if (!(plan.id in whereareyounow)) {
+            whereareyounow[plan.id] = plan;
           }
         }
 
@@ -149,7 +152,7 @@ const actions = {
 
           // add all features below the minutes threshold to this structure
           while (json[j].end_hr < threshold) {
-            whereareyounow[json[j].id] = json[j]
+            whereareyounow[json[j].id] = json[j];
             j++;
           }
 
@@ -167,13 +170,13 @@ const actions = {
                 person: whereareyounow[k].id,
                 end_hr: whereareyounow[k].end_hr,
                 type: whereareyounow[k].type,
-                color:activityColors[whereareyounow[k].type] 
+                color: activityColors[whereareyounow[k].type]
               },
               geometry: {
                 type: "Point",
                 coordinates: [whereareyounow[k].x, whereareyounow[k].y]
               }
-            }
+            };
             sect.features.push(feature);
           }
 
@@ -183,8 +186,8 @@ const actions = {
         }
 
         // create a single layer to conduct animation in
-        var layer = "pop-layer"
-        var source = "pop-source"
+        var layer = "pop-layer";
+        var source = "pop-source";
         commit(POP_ADD_SOURCE, {
           map: map,
           popSlice: {
@@ -200,23 +203,22 @@ const actions = {
             layerName: layer
           }
         });
-        //dispatch("filterFire", totalSteps - 1); // load the final fire step
+        dispatch("filterFire", totalSteps - 1); // load the final fire step
         commit(DONE_LOADING);
       });
   },
-  filterFire({ state, getters, rootGetters, commit }, fireStep) {
+  filterFire({ getters }, fireStep) {
     var map = getters.mapInstance;
 
-    const s = map.getSource("pop-source")
-    if (typeof s !== 'undefined') {
+    const s = map.getSource("pop-source");
+    if (typeof s !== "undefined") {
       s.setData(window.populationGeojson[fireStep]);
     }
   },
-  resetFireLayers({ dispatch, rootGetters, getters, commit }) {
+  resetFireLayers({ rootGetters, getters, commit }) {
     var map = rootGetters.mapInstance;
     var totalFireLayers = getters.totalPopLayers;
     var i;
-    var step;
     var layer;
 
     // we dont want to clear, just reset each fire layer

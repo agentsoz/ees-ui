@@ -28,11 +28,18 @@ const getters = {
   visibleFireStep: state => state.visibleFireStep,
   totalFireLayers: state => state.loadedFireLayers.length,
   selectedFire: (state, getters) => {
-    var fires = getters.firesInSelectedRegion;
-    if (!fires) return null;
-
-    var fire = fires.find(obj => obj.id === state.selectedFire);
-    return fire;
+    var fires = getters.fires;
+    if (state.selectedFire in fires) return fires[state.selectedFire];
+    else return null;
+  },
+  fireIgnitionMinutes: (state, getters) => {
+    var fireData = getters.selectedFire;
+    if (fireData && "ignition_hhmm" in fireData)
+      return (
+        parseInt(fireData.ignition_hhmm.slice(0, 2)) * 60 +
+        parseInt(fireData.ignition_hhmm.slice(2))
+      );
+    else return 0;
   },
   fireAboveLayer: (state, getters, rootState) => {
     return rootState.firstSymbolLayer;
@@ -133,7 +140,10 @@ const actions = {
   selectFire({ dispatch, commit, getters }, fire) {
     commit(SELECT_FIRE, fire);
     var fireData = getters.selectedFire;
-    dispatch("fetchFire", !fireData ? "" : fireData.geojson);
+    dispatch(
+      "fetchFire",
+      !fireData ? "" : process.env.VUE_APP_EES_TILES_API + "/" + fireData.file
+    );
 
     if (fireData && fireData.smokeGeojson)
       dispatch("drawSmoke", fireData.smokeGeojson);
@@ -202,17 +212,23 @@ const actions = {
             }
           });
         }
-        dispatch("filterFire", totalSteps - 1); // load the final fire step
+        dispatch(
+          "filterFire",
+          getters.fireIgnitionMinutes / getters.fireStepMinutes + totalSteps - 1
+        ); // load the final fire step
         commit(DONE_LOADING);
       });
   },
   filterFire({ getters, commit }, fireStep) {
     var map = getters.mapInstance;
 
+    var fireStartStep = getters.fireIgnitionMinutes / getters.fireStepMinutes;
+
     // ensure every layer before the current step is on, and every one after is off
     for (var i = 0; i < getters.totalFireLayers; i++) {
       var layer = "phoenix-layer" + i.toString();
-      if (i <= fireStep) map.setLayoutProperty(layer, "visibility", "visible");
+      if (i + fireStartStep <= fireStep)
+        map.setLayoutProperty(layer, "visibility", "visible");
       else map.setLayoutProperty(layer, "visibility", "none");
     }
     commit(PHOENIX_TIME_STEP, fireStep);
