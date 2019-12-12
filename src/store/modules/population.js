@@ -92,7 +92,10 @@ const actions = {
   loadLayers({ dispatch, getters }) {
     var selectedPopulation = getters.selectedPopulation;
     if (selectedPopulation) {
-      dispatch("fetchPopulation", selectedPopulation.data);
+      dispatch(
+        "fetchPopulation",
+        process.env.VUE_APP_EES_TILES_API + "/" + selectedPopulation.file
+      );
     }
   },
   selectPopulation({ dispatch, commit, getters }, pop) {

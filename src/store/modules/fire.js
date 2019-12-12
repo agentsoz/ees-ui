@@ -134,7 +134,10 @@ const actions = {
   loadLayers({ dispatch, getters }) {
     var selectedFire = getters.selectedFire;
     if (selectedFire) {
-      dispatch("fetchFire", selectedFire.geojson);
+      dispatch(
+        "fetchFire",
+        process.env.VUE_APP_EES_TILES_API + "/" + selectedFire.file
+      );
     }
   },
   selectFire({ dispatch, commit, getters }, fire) {
