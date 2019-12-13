@@ -2,6 +2,7 @@
   <b-container
     v-show="
       this.$store.state.map.mapInstance != null &&
+      this.$store.state.config.data != null &&
         this.$store.state.map.mapSettingsIsOpen
     "
     fluid
@@ -156,7 +157,6 @@
                       :disabled="this.$store.state.fire.selectedFire == null"
                     />
                   </b-form-group>
-
                   <b-form-group
                     label-cols-sm="12"
                     label-cols-lg="8"
@@ -170,6 +170,21 @@
                       step="0.1"
                       v-model="smokeOpacity"
                       :disabled="this.$store.state.fire.selectedFire == null"
+                    />
+                  </b-form-group>
+                  <b-form-group
+                    label-cols-sm="12"
+                    label-cols-lg="8"
+                    label="Population Opacity"
+                    label-for="population_opacity"
+                  >
+                    <b-form-input
+                      id="population_opacity"
+                      type="number"
+                      value="0.5"
+                      step="0.1"
+                      v-model="popOpacity"
+                      :disabled="this.$store.state.population.selectedPopulation == null"
                     />
                   </b-form-group>
                 </b-form>
@@ -189,6 +204,7 @@
 import { mapState, mapGetters, mapActions } from "vuex";
 import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
 import { EMBER_SET_OPACITY } from "@/store/mutation-types";
+import { POPULATION_SET_OPACITY } from "@/store/mutation-types";
 import { DRAW_SMOKE, CLEAR_SMOKE } from "@/store/mutation-types";
 import MapAffectedLink from "@/components/MapAffectedLink.vue";
 import MapTrafficBehaviourCard from "@/components/MapTrafficBehaviourCard.vue";
@@ -371,6 +387,17 @@ export default {
 
         this.$store.commit(EMBER_SET_OPACITY, parseFloat(value));
         this.$store.dispatch("resetFireLayers");
+      }
+    },
+    popOpacity: {
+      get() {
+        return this.$store.state.population.popOpacity;
+      },
+      set(value) {
+        var decimal = /^[-+]?[0-9]+\.[0-9]+$/;
+        if (!value.match(decimal)) return;
+
+        this.$store.dispatch("setPopOpacity", parseFloat(value));
       }
     }
   },

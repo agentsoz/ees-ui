@@ -4,6 +4,7 @@ import {
   START_LOADING,
   DONE_LOADING,
   SELECT_POPULATION,
+  POPULATION_SET_OPACITY,
   POP_ADD_SOURCE,
   POP_ADD_GEOJSON,
   POP_ADD_LAYER,
@@ -14,7 +15,8 @@ const state = {
   selectedPopulation: null,
   loadedPopLayers: [],
   loadedPopSources: [],
-  populationGeojson: []
+  populationGeojson: [],
+  popOpacity: 1.0
 };
 
 const getters = {
@@ -34,6 +36,9 @@ const getters = {
 const mutations = {
   [SELECT_POPULATION](state, newVal) {
     state.selectedPopulation = newVal;
+  },
+  [POPULATION_SET_OPACITY](state, value) {
+    state.fireOpacity = value;
   },
   [POP_ADD_SOURCE](state, payload) {
     var popSlice = payload.popSlice;
@@ -61,6 +66,10 @@ const mutations = {
         "circle-color": {
           type: "identity",
           property: "color"
+        },
+        "circle-opacity": state.popOpacity,
+        "circle-opacity-transition": {
+          "duration": 0
         }
       }
     };
@@ -218,31 +227,31 @@ const actions = {
       s.setData(window.populationGeojson[fireStep]);
     }
   },
+  setPopOpacity({ rootGetters, getters, commit }, val) {
+    var map = rootGetters.mapInstance;
+    var layer = "pop-layer";
+
+    commit(POPULATION_SET_OPACITY, val);
+    map.setPaintProperty(layer, "circle-opacity", val);
+  },
   resetFireLayers({ rootGetters, getters, commit }) {
     var map = rootGetters.mapInstance;
-    var totalFireLayers = getters.totalPopLayers;
-    var i;
     var layer;
 
-    // we dont want to clear, just reset each fire layer
-    for (i = 0; i < totalFireLayers; i++) {
-      layer = "pop-layer";
-      map.removeLayer(layer);
-    }
+    // we dont want to clear, just reset each layer
+    layer = "pop-layer";
+    map.removeLayer(layer);
     state.loadedPopLayers = [];
 
-    for (i = 0; i < totalFireLayers; i++) {
-      var source = "pop-source";
-      layer = "pop-layer";
+    var source = "pop-source";
 
-      commit(POP_ADD_LAYER, {
-        map: map,
-        popSlice: {
-          sourceName: source,
-          layerName: layer
-        }
-      });
-    }
+    commit(POP_ADD_LAYER, {
+      map: map,
+      popSlice: {
+        sourceName: source,
+        layerName: layer
+      }
+    });
   }
 };
 
