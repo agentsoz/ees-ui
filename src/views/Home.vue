@@ -5,6 +5,7 @@
     <spinner />
     <population />
     <setup />
+    <buttons />
     <savesettings />
   </div>
 </template>
@@ -15,6 +16,7 @@ import MapTimeSlider from "@/components/MapTimeSlider.vue";
 import MapSquarePopulation from "@/components/MapSquarePopulation.vue";
 import MapLoadSpinner from "@/components/MapLoadSpinner.vue";
 import MapSetup from "@/components/MapSetup.vue";
+import MapButtons from "@/components/MapButtons.vue";
 import SaveSettings from "@/components/SaveSettings.vue";
 
 import { mapActions } from "vuex";
@@ -27,6 +29,7 @@ export default {
     spinner: MapLoadSpinner,
     population: MapSquarePopulation,
     setup: MapSetup,
+    buttons: MapButtons,
     savesettings: SaveSettings
   },
   methods: {
