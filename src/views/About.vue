@@ -17,6 +17,7 @@
       <b-img :src="tub" fluid alt="TU Berlin" />
       <b-img :src="matsim" fluid alt="MATSim" />
     </div>
+    <router-link to="/">Home</router-link>
   </div>
 </template>
 
