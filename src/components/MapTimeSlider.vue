@@ -61,7 +61,7 @@ export default {
         return this.visibleFireStep;
       },
       set(val) {
-        this.$store.dispatch("filterFire", val);
+        this.$store.dispatch("filter", val);
       }
     },
     maxSteps() {

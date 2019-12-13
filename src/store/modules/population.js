@@ -11,31 +11,33 @@ import {
   CLEAR_POPULATION
 } from "@/store/mutation-types";
 
+const namespaced = true; // https://vuex.vuejs.org/guide/modules.html#namespacing
+
 const state = {
-  selectedPopulation: null,
-  loadedPopLayers: [],
-  loadedPopSources: [],
+  selected: null,
+  loadedLayers: [],
+  loadedSources: [],
   populationGeojson: [],
   popOpacity: 1.0
 };
 
 const getters = {
-  selectedPopulation: (state, getters) => {
-    var pops = getters.populations;
-    if (!pops) return null;
+  selected: (state, getters, rootState, rootGetters) => {
+    const all = rootGetters.populations;
+    if (!all) return null;
 
-    if (state.selectedPopulation in pops) return pops[state.selectedPopulation];
+    if (state.selected in all) return all[state.selected];
     else return null;
   },
-  totalPopLayers: state => state.loadedPopLayers.length,
-  popAboveLayer: (state, getters, rootState) => {
+  totalLayers: state => state.loadedLayers.length,
+  aboveLayer: (state, getters, rootState) => {
     return rootState.firstSymbolLayer;
   }
 };
 
 const mutations = {
   [SELECT_POPULATION](state, newVal) {
-    state.selectedPopulation = newVal;
+    state.selected = newVal;
   },
   [POPULATION_SET_OPACITY](state, value) {
     state.fireOpacity = value;
@@ -49,7 +51,7 @@ const mutations = {
       type: "geojson",
       data: popSlice.geojson
     });
-    state.loadedPopSources.push(source);
+    state.loadedSources.push(source);
   },
   [POP_ADD_LAYER](state, payload) {
     var popSlice = payload.popSlice;
@@ -69,56 +71,61 @@ const mutations = {
         },
         "circle-opacity": state.popOpacity,
         "circle-opacity-transition": {
-          "duration": 0
+          duration: 0
         }
       }
     };
 
     payload.map.addLayer(layer, payload.beforeLayer);
-    state.loadedPopLayers.push(popSlice.layerName);
+    state.loadedLayers.push(popSlice.layerName);
   },
   [POP_ADD_GEOJSON](state, payload) {
     state.populationGeojson.push(payload);
   },
   [CLEAR_POPULATION](state, map) {
     // remove layers
-    for (const layer of state.loadedPopLayers) map.removeLayer(layer);
-    state.loadedPopLayers = [];
+    for (const layer of state.loadedLayers) map.removeLayer(layer);
+    state.loadedLayers = [];
     // remove sources
-    for (const source of state.loadedPopSources) map.removeSource(source);
-    state.loadedPopSources = [];
+    for (const source of state.loadedSources) map.removeSource(source);
+    state.loadedSources = [];
 
     // remove animation states
     state.populationGeojson = [];
+
+    state.selected = null;
   }
 };
 
 const actions = {
-  clearMap({ commit, rootGetters }) {
-    // ensure any existing matsim/fire artifacts are removed
-    commit(CLEAR_POPULATION, rootGetters.mapInstance);
+  clearMap: {
+    // Every store module is responsible for cleaning up after itself
+    // https://vuex.vuejs.org/guide/modules.html#register-global-action-in-namespaced-modules
+    root: true,
+    handler({ commit, rootGetters }) {
+      // ensure any existing matsim/fire artifacts are removed
+      commit(CLEAR_POPULATION, rootGetters.mapInstance);
+    }
   },
-  loadLayers({ dispatch, getters }) {
-    var selectedPopulation = getters.selectedPopulation;
-    if (selectedPopulation) {
+  select({ dispatch, getters, rootGetters, commit }, pop) {
+    commit(SELECT_POPULATION, pop);
+    if (getters.selected)
+      dispatch("load");
+    else
+      commit(CLEAR_POPULATION, rootGetters.mapInstance);
+  },
+  load({ dispatch, getters }) {
+    if (getters.selected) {
       dispatch(
-        "fetchPopulation",
-        process.env.VUE_APP_EES_TILES_API + "/" + selectedPopulation.file
+        "downloadAndCreateLayers",
+        process.env.VUE_APP_EES_TILES_API + "/" + getters.selected.file
       );
     }
   },
-  selectPopulation({ dispatch, commit, getters }, pop) {
-    commit(SELECT_POPULATION, pop);
-    var popData = getters.selectedPopulation;
-    dispatch(
-      "fetchPopulation",
-      !popData ? "" : process.env.VUE_APP_EES_TILES_API + "/" + popData.file
-    );
-  },
-  fetchPopulation({ dispatch, commit, rootGetters }, url) {
+  downloadAndCreateLayers({ dispatch, commit, rootGetters }, url) {
     const map = rootGetters.mapInstance;
     commit(CLEAR_POPULATION, map);
-    commit(START_LOADING);
+    commit(START_LOADING, null, { root: true });
 
     window.populationGeojson = [];
 
@@ -215,47 +222,54 @@ const actions = {
             layerName: layer
           }
         });
-        dispatch("filterFire", totalSteps - 1); // load the final fire step
-        commit(DONE_LOADING);
+        dispatch("filterFire", totalSteps - 1, { root: true }); // load the final fire step
+        commit(DONE_LOADING, null, { root: true });
       });
   },
-  filterFire({ getters }, fireStep) {
-    var map = getters.mapInstance;
+  filter: {
+    root: true,
+    handler({ rootGetters }, fireStep) {
+      const map = rootGetters.mapInstance;
 
-    const s = map.getSource("pop-source");
-    if (typeof s !== "undefined") {
-      s.setData(window.populationGeojson[fireStep]);
+      const s = map.getSource("pop-source");
+      if (typeof s !== "undefined") {
+        s.setData(window.populationGeojson[fireStep]);
+      }
     }
   },
-  setPopOpacity({ rootGetters, getters, commit }, val) {
+  setOpacity({ rootGetters, commit }, val) {
     var map = rootGetters.mapInstance;
     var layer = "pop-layer";
 
     commit(POPULATION_SET_OPACITY, val);
     map.setPaintProperty(layer, "circle-opacity", val);
   },
-  resetFireLayers({ rootGetters, getters, commit }) {
-    var map = rootGetters.mapInstance;
-    var layer;
+  reload: {
+    root: true,
+    handler({ rootGetters, commit }) {
+      var map = rootGetters.mapInstance;
+      var layer;
 
-    // we dont want to clear, just reset each layer
-    layer = "pop-layer";
-    map.removeLayer(layer);
-    state.loadedPopLayers = [];
+      // we dont want to clear, just reset each layer
+      layer = "pop-layer";
+      map.removeLayer(layer);
+      state.loadedLayers = [];
 
-    var source = "pop-source";
+      var source = "pop-source";
 
-    commit(POP_ADD_LAYER, {
-      map: map,
-      popSlice: {
-        sourceName: source,
-        layerName: layer
-      }
-    });
+      commit(POP_ADD_LAYER, {
+        map: map,
+        popSlice: {
+          sourceName: source,
+          layerName: layer
+        }
+      });
+    }
   }
 };
 
 export default {
+  namespaced,
   state,
   getters,
   mutations,

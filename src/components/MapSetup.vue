@@ -2,14 +2,14 @@
   <b-container
     v-show="
       this.$store.state.map.mapInstance != null &&
-      this.$store.state.config.data != null &&
+        this.$store.state.config.data != null &&
         this.$store.state.map.mapSettingsIsOpen
     "
     fluid
     class="p-0 h-100 mapboxgl-ctrl-top-left map-sidebar-container"
   >
     <b-row no-gutters class="h-100">
-      <b-col sm="5" class="h-100 m-0 mapboxgl-ctrl map-sidebar-col">
+      <b-col sm="5" class="h-100 m-0 pt-2 mapboxgl-ctrl map-sidebar-col">
         <div id="h-100 nav">
           <h5>Emergency Evacuation Simulator</h5>
           <router-link to="/">Home</router-link> |
@@ -25,7 +25,7 @@
                 label-for="map-region"
               >
                 <b-form-select id="map-region" v-model="selectedRegion">
-                  <option value="no-region" text="no-region" disabled></option>
+                  <option value="any-region">(any)</option>
                   <option
                     v-for="(r, id) in regions"
                     :key="id"
@@ -42,16 +42,12 @@
                 label-for="map-population"
               >
                 <b-form-select id="map-population" v-model="selectedPopulation">
-                  <option
-                    value="no-population"
-                    text="no-population"
-                    disabled
-                  ></option>
+                  <option value="no-population">None</option>
                   <option
                     v-for="(p, id) in popInSelectedRegion"
                     :key="id"
                     :value="id"
-                    :disabled="selectedFire == id"
+                    :disabled="selectedPopulation == id"
                     >{{ p.display_name }}</option
                   >
                 </b-form-select>
@@ -82,7 +78,7 @@
                     >
                   </b-form-select>
                   <b-form-checkbox
-                    class="form-check-input"
+                    class="ml-2 form-check-input"
                     v-model="showSmoke"
                     :disabled="this.$store.state.fire.selectedFire == null"
                     >Display Embers
@@ -153,6 +149,8 @@
                       type="number"
                       value="0.7"
                       step="0.1"
+                      min="0"
+                      max="1"
                       v-model="fireOpacity"
                       :disabled="this.$store.state.fire.selectedFire == null"
                     />
@@ -168,6 +166,8 @@
                       type="number"
                       value="0.5"
                       step="0.1"
+                      min="0"
+                      max="1"
                       v-model="smokeOpacity"
                       :disabled="this.$store.state.fire.selectedFire == null"
                     />
@@ -183,8 +183,9 @@
                       type="number"
                       value="0.5"
                       step="0.1"
+                      min="0"
+                      max="1"
                       v-model="popOpacity"
-                      :disabled="this.$store.state.population.selectedPopulation == null"
                     />
                   </b-form-group>
                 </b-form>
@@ -204,7 +205,6 @@
 import { mapState, mapGetters, mapActions } from "vuex";
 import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
 import { EMBER_SET_OPACITY } from "@/store/mutation-types";
-import { POPULATION_SET_OPACITY } from "@/store/mutation-types";
 import { DRAW_SMOKE, CLEAR_SMOKE } from "@/store/mutation-types";
 import MapAffectedLink from "@/components/MapAffectedLink.vue";
 import MapTrafficBehaviourCard from "@/components/MapTrafficBehaviourCard.vue";
@@ -298,6 +298,7 @@ export default {
       "selectedStyle",
       "selectedRegion",
       "popInSelectedRegion",
+      "population/selected",
       "selectedFire"
     ]),
     firesInSelectedRegion() {
@@ -311,6 +312,7 @@ export default {
       },
       set(value) {
         this.changeMapboxStyle(value);
+        // loadLayersOnStyleChange triggers 'loadLayers' once mapbox is done
       }
     },
     selectedRegion: {
@@ -326,12 +328,12 @@ export default {
     },
     selectedPopulation: {
       get() {
-        return !this.$store.state.population.selectedPopulation
+        return !this.$store.state.population.selected
           ? "no-population"
-          : this.$store.state.population.selectedPopulation;
+          : this.$store.state.population.selected;
       },
       set(value) {
-        this.selectPopulation(value);
+        this["population/select"](value);
       }
     },
     selectedFire: {
@@ -397,7 +399,7 @@ export default {
         var decimal = /^[-+]?[0-9]+\.[0-9]+$/;
         if (!value.match(decimal)) return;
 
-        this.$store.dispatch("setPopOpacity", parseFloat(value));
+        this.$store.dispatch("population/setOpacity", parseFloat(value));
       }
     }
   },
@@ -412,11 +414,8 @@ export default {
       "selectRegion",
       "changeMapboxStyle",
       "selectFire",
-      "selectPopulation"
+      "population/select"
     ]),
-    setStyle: function(event) {
-      this.changeMapboxStyle(event.target.dataset.mapStyle);
-    },
     setRegion: function(event) {
       // set the selected region in state
       this.selectRegion(event.target.dataset.region);

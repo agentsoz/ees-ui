@@ -1,17 +1,22 @@
 <template>
   <div class="map-settings-container" v-on:keydown.esc.capture="toggle()">
-    <div class="map-settings-button-container mapboxgl-ctrl-top-right">
+    <div class="map-settings-hamburger mapboxgl-ctrl-top-left">
+      <button
+        class="pt-2 pb-1 px-3 mapboxgl-ctrl mapboxgl-ctrl-group"
+        type="button"
+        v-on:keydown.esc="toggle()"
+        @click="toggle()"
+      >
+        <FontAwesomeIcon icon="bars" size="2x" />
+      </button>
+    </div>
+    <div
+      z-index="10000"
+      class="map-settings-button-container mapboxgl-ctrl-top-right"
+    >
       <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
         <button
-          class="icon sprocket"
-          type="button"
-          v-on:keydown.esc="toggle()"
-          @click="toggle()"
-        ></button>
-      </div>
-      <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
-        <button
-          class="icon grid"
+          class="icon polygon"
           type="button"
           @click="drawRectangle()"
         ></button>
@@ -151,12 +156,13 @@
 </template>
 
 <script>
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+library.add(faBars);
+
 import { mapActions } from "vuex";
 import {
-  PHOENIX_SET_OPACITY,
-  EMBER_SET_OPACITY,
-  DRAW_SMOKE,
-  CLEAR_SMOKE,
   MATSIM_ADD_DISRUPTION,
   MATSIM_DESELECT_LINK
 } from "@/store/mutation-types";
@@ -164,6 +170,7 @@ import {
 export default {
   name: "mapButtons",
   props: {},
+  components: { FontAwesomeIcon },
   data: function() {
     return {
       absoluteSpeed: true,
@@ -182,7 +189,7 @@ export default {
   methods: {
     ...mapActions({
       toggleFireIn3D: "toggleFireIn3D",
-      toggle: "toggleSettingsVis",
+      toggle: "toggleSettingsVis"
     }),
     drawRectangle() {
       this.$store.commit("drawPopulationSquare");
@@ -289,6 +296,13 @@ export default {
   text-align: center !important;
 }
 
+.map-settings-hamburger {
+  padding-top: 10px;
+  padding-left: 20px;
+}
+.map-settings-hamburger .mapboxgl-ctrl-group {
+  margin: 0;
+}
 .map-settings-button-container {
   padding-top: 150px;
 }
