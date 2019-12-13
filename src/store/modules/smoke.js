@@ -106,7 +106,7 @@ const actions = {
         const lastFeature = features[features.length - 1];
         const totalMinutes = lastFeature.properties.hour_spot * 60;
         const totalSteps = Math.ceil(
-          totalMinutes / rootGetters.fireStepMinutes
+          totalMinutes / rootGetters["fire/stepMinutes"]
         );
 
         // this will track the geojson features array
@@ -116,7 +116,7 @@ const actions = {
         // generate a geojson object for each step
         for (var i = 0; i < totalSteps; i++) {
           // set a threshold
-          var threshold = (i * rootGetters.fireStepMinutes) / 60;
+          var threshold = (i * rootGetters["fire/stepMinutes"]) / 60;
           // create a fresh geojson structure for this layer
           var sect = {
             type: "FeatureCollection",

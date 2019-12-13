@@ -126,7 +126,9 @@ describe("Actions & mutations responsible for Region selection", () => {
   };
   const matsimNetwork = {
     sourceName: "matsim",
-    pbfurl: process.env.VUE_APP_EES_TILES_API + getters.selectedRegion.matsimNetworkTiles,
+    pbfurl:
+      process.env.VUE_APP_EES_TILES_API +
+      getters.selectedRegion.matsimNetworkTiles,
     layerName: getters.selectedRegion.matsimNetworkLayer,
     sourceLayer: getters.selectedRegion.matsimNetworkLayer,
     paint: {

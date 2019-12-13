@@ -188,7 +188,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      toggleFireIn3D: "toggleFireIn3D",
+      toggleFireIn3D: "fire/toggleFireIn3D",
       toggle: "toggleSettingsVis"
     }),
     drawRectangle() {

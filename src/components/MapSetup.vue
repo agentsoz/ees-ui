@@ -2,7 +2,7 @@
   <b-container
     v-show="
       this.$store.state.map.mapInstance != null &&
-        this.$store.state.config.data != null &&
+        (this.$store.state.config.data != null || this.error != null) &&
         this.$store.state.map.mapSettingsIsOpen
     "
     fluid
@@ -17,6 +17,12 @@
         </div>
         <b-collapse visible id="collapse-side-panel" class="h-100">
           <div class="h-100 map-accordion-container">
+            <b-alert
+              show
+              v-if="this.error != null"
+              variant="danger"
+              v-html="this.error"
+            ></b-alert>
             <b-card header="Scenario" class="mb-1 p-0">
               <b-form-group
                 label-cols-sm="12"
@@ -203,7 +209,6 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
-import { PHOENIX_SET_OPACITY } from "@/store/mutation-types";
 import { EMBER_SET_OPACITY } from "@/store/mutation-types";
 import { DRAW_SMOKE, CLEAR_SMOKE } from "@/store/mutation-types";
 import MapAffectedLink from "@/components/MapAffectedLink.vue";
@@ -291,15 +296,15 @@ export default {
   computed: {
     ...mapState({
       populationSquares: state => state.map.populationSquares,
-      selectedMATSimLink: state => state.map.selectedMATSimLink
+      selectedMATSimLink: state => state.map.selectedMATSimLink,
+      error: state => state.config.error
     }),
     ...mapGetters([
       "regions",
       "selectedStyle",
       "selectedRegion",
       "popInSelectedRegion",
-      "population/selected",
-      "selectedFire"
+      "population/selected"
     ]),
     firesInSelectedRegion() {
       return !this.$store.getters.firesInSelectedRegion
@@ -343,7 +348,7 @@ export default {
           : this.$store.state.fire.selectedFire;
       },
       set(value) {
-        this.selectFire(value);
+        this["fire/select"](value);
       }
     },
     selectedIncident: {
@@ -369,14 +374,13 @@ export default {
     },
     fireOpacity: {
       get() {
-        return this.$store.state.fire.fireOpacity;
+        return this.$store.state.fire.opacity;
       },
       set(value) {
         var decimal = /^[-+]?[0-9]+\.[0-9]+$/;
         if (!value.match(decimal)) return;
 
-        this.$store.commit(PHOENIX_SET_OPACITY, parseFloat(value));
-        this.$store.dispatch("resetFireLayers");
+        this.$store.dispatch("fire/setOpacity", parseFloat(value));
       }
     },
     smokeOpacity: {
@@ -393,7 +397,7 @@ export default {
     },
     popOpacity: {
       get() {
-        return this.$store.state.population.popOpacity;
+        return this.$store.state.population.opacity;
       },
       set(value) {
         var decimal = /^[-+]?[0-9]+\.[0-9]+$/;
@@ -413,7 +417,7 @@ export default {
     ...mapActions([
       "selectRegion",
       "changeMapboxStyle",
-      "selectFire",
+      "fire/select",
       "population/select"
     ]),
     setRegion: function(event) {

@@ -26,7 +26,7 @@
 <script>
 import VueSlider from "vue-slider-component";
 import "vue-slider-component/theme/default.css";
-import { mapState, mapGetters } from "vuex";
+import { mapState } from "vuex";
 
 export default {
   name: "mapSlider",
@@ -43,11 +43,10 @@ export default {
   },
   computed: {
     ...mapState({
-      fireStepMinutes: state => state.fire.fireStepMinutes,
+      fireStepMinutes: state => state.fire.stepMinutes,
       visibleFireStep: state => state.fire.visibleFireStep,
       fireSliderTicks: state => state.fire.fireSliderTicks
     }),
-    ...mapGetters(["totalFireLayers"]),
     sliderConfig() {
       return {
         width: "98%",

@@ -1,9 +1,11 @@
 // Configuration for the application.
 //
+import { START_LOADING, DONE_LOADING } from "@/store/mutation-types";
 
 const state = {
   mapboxAccessToken:
     "pk.eyJ1IjoiZGhpeHNpbmdoIiwiYSI6ImNqbWx4OTR0ZzBkMWUzb255and1aTUweGkifQ.U0vPiwyfM4ad7axC_4dkHg",
+  error: null,
   data: null,
   styles: [
     {
@@ -88,14 +90,31 @@ const getters = {
 const mutations = {
   ["SAVE_SETTINGS"](state, value) {
     state.data = value;
+  },
+  ["ERROR"](state, value) {
+    state.error = value;
   }
 };
 const actions = {
   getConfig({ commit }, url) {
+    commit(START_LOADING);
     fetch(url)
       .then(res => res.json())
       .then(json => {
+        commit(DONE_LOADING);
         commit("SAVE_SETTINGS", json);
+      })
+      .catch(e => {
+        commit(
+          "ERROR",
+          "Could not retreive anything from the server. Please try again later." +
+            "<br />Tried URL: " +
+            url +
+            "<br />" +
+            "<br /> Error message below.<br /><br />" +
+            e
+        );
+        commit(DONE_LOADING);
       });
   }
 };
