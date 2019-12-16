@@ -13,198 +13,222 @@ import {
   CLEAR_SMOKE
 } from "@/store/mutation-types";
 
+const namespaced = true; // https://vuex.vuejs.org/guide/modules.html#namespacing
+
 const state = {
-  smokeVisible: false,
-  loadedSmokeLayers: [],
-  loadedSmokeSources: [],
-  smokeOpacity: 0.4,
-  smokeIntensityLevels: [[0, "#333333"], [100000, "#000000"]]
+  color: "#000000",
+  visible: false,
+  loadedLayers: [],
+  loadedSources: [],
+  opacity: 0.4
 };
 
 const getters = {
-  totalSmokeLayers: state => state.loadedSmokeLayers.length
+  totalLayers: state => state.loadedLayers.length
 };
 
 const mutations = {
   [DRAW_SMOKE](state, newVal) {
-    state.smokeVisible = newVal;
+    state.visible = newVal;
   },
   [EMBER_ADD_SOURCE](state, payload) {
-    var smokeSlice = payload.smokeSlice;
-    var source = smokeSlice.sourceName;
+    var slice = payload.slice;
+    var source = slice.sourceName;
 
     // setup unique source
     payload.map.addSource(source, {
       type: "geojson",
-      data: smokeSlice.geojson
+      data: slice.geojson
     });
-    state.loadedSmokeSources.push(source);
+    state.loadedSources.push(source);
   },
   [EMBER_ADD_LAYER](state, payload) {
-    var smokeSlice = payload.smokeSlice;
+    var slice = payload.slice;
     var layer;
     layer = {
-      id: smokeSlice.layerName,
+      id: slice.layerName,
       type: "fill",
-      source: smokeSlice.sourceName,
+      source: slice.sourceName,
       layout: {
         visibility: "none"
       },
       paint: {
-        "fill-color": {
-          property: "E_INTSTY",
-          stops: state.smokeIntensityLevels
-        },
-        "fill-opacity": state.smokeOpacity
+        "fill-color": state.color,
+        "fill-opacity": state.opacity
       }
     };
 
     payload.map.addLayer(layer, payload.beforeLayer);
-    state.loadedSmokeLayers.push(smokeSlice.layerName);
+    state.loadedLayers.push(slice.layerName);
   },
   [EMBER_SET_OPACITY](state, value) {
-    state.smokeOpacity = value;
+    state.opacity = value;
   },
   [CLEAR_SMOKE](state, map) {
     // remove layers
-    for (const layer of state.loadedSmokeLayers) map.removeLayer(layer);
-    state.loadedSmokeLayers = [];
+    for (const layer of state.loadedLayers) map.removeLayer(layer);
+    state.loadedLayers = [];
     // remove sources
-    for (const source of state.loadedSmokeSources) map.removeSource(source);
-    state.loadedSmokeSources = [];
+    for (const source of state.loadedSources) map.removeSource(source);
+    state.loadedSources = [];
   }
 };
 
 const actions = {
-  clearMap({ commit, rootGetters }) {
-    // ensure any existing smoke artifacts are removed
-    commit(CLEAR_SMOKE, rootGetters.mapInstance);
+  clearMap: {
+    root: true,
+    handler({ commit, rootGetters }) {
+      // ensure any existing smoke artifacts are removed
+      commit(CLEAR_SMOKE, rootGetters.mapInstance);
+    }
   },
-  loadLayers({ dispatch }) {
-    dispatch("drawSmoke");
-  },
-  fetchSmoke({ dispatch, commit, getters, rootGetters }, url) {
+  createLayers({ dispatch, commit, getters, rootGetters }, geojson) {
     const map = rootGetters.mapInstance;
     commit(CLEAR_SMOKE, map);
-    commit(START_LOADING);
+    commit(START_LOADING, null, { root: true });
 
-    // download and pre-process the geojson for better performance while rendering
+    // pre-process the geojson for better performance while rendering
+    // we will re-use the geojson from the phoenix fire load step
     // we will build our own sources and layers for each smoke step
-    fetch(url)
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function(geojson) {
-        var features = geojson.features;
-        // first sort
-        features.sort(function(a, b) {
-          if (a.properties.hour_spot === null) return -1;
-          if (b.properties.hour_spot === null) return 1;
-          else return a.properties.hour_spot - b.properties.hour_spot;
-        });
-        // now we can efficiently set up sources
-        const lastFeature = features[features.length - 1];
-        const totalMinutes = lastFeature.properties.hour_spot * 60;
-        const totalSteps = Math.ceil(
-          totalMinutes / rootGetters["fire/stepMinutes"]
-        );
+    var features = [...geojson.features];
+    // first sort
+    features.sort(function(a, b) {
+      if (a.properties.HOUR_SPOT === null) return -1;
+      if (b.properties.HOUR_SPOT === null) return 1;
+      else return a.properties.HOUR_SPOT - b.properties.HOUR_SPOT;
+    });
+    // now we can efficiently set up sources
+    const lastFeature = features[features.length - 1];
+    const totalMinutes = lastFeature.properties.HOUR_SPOT * 60;
+    const totalSteps = Math.ceil(
+      totalMinutes / rootGetters["fire/stepMinutes"]
+    );
 
-        // this will track the geojson features array
-        var j = 0;
-        // skip nulls
-        while (features[j].properties.hour_spot === null) j++;
-        // generate a geojson object for each step
-        for (var i = 0; i < totalSteps; i++) {
-          // set a threshold
-          var threshold = (i * rootGetters["fire/stepMinutes"]) / 60;
-          // create a fresh geojson structure for this layer
-          var sect = {
-            type: "FeatureCollection",
-            features: []
-          };
+    // this will track the geojson features array
+    var j = 0;
+    // skip nulls
+    while (features[j].properties.HOUR_SPOT === null) j++;
+    // generate a geojson object for each step
+    for (var i = 0; i < totalSteps; i++) {
+      // set a threshold
+      var threshold = (i * rootGetters["fire/stepMinutes"]) / 60;
+      // create a fresh geojson structure for this layer
+      var sect = {
+        type: "FeatureCollection",
+        features: []
+      };
 
-          // add all features below the minutes threshold to this structure
-          while (features[j].properties.hour_spot < threshold) {
-            sect.features.push(features[j]);
-            j++;
-          }
+      // add all features below the minutes threshold to this structure
+      while (features[j].properties.HOUR_SPOT < threshold) {
+        sect.features.push(features[j]);
+        j++;
+      }
 
-          // create this layer
-          var stepStr = i.toString();
-          var layer = "ember-layer" + stepStr;
-          var source = "ember-source" + stepStr;
-          commit(EMBER_ADD_SOURCE, {
-            map: map,
-            smokeSlice: {
-              sourceName: source,
-              geojson: sect
-            }
-          });
-          commit(EMBER_ADD_LAYER, {
-            map: map,
-            beforeLayer: getters.smokeBeforeLayer,
-            smokeSlice: {
-              sourceName: source,
-              layerName: layer
-            }
-          });
+      // create this layer
+      var stepStr = i.toString();
+      var layer = "ember-layer" + stepStr;
+      var source = "ember-source" + stepStr;
+      commit(EMBER_ADD_SOURCE, {
+        map: map,
+        slice: {
+          sourceName: source,
+          geojson: sect
         }
-        dispatch("filterFire", rootGetters.visibleFireStep); // load the final smoke step
-        commit(DONE_LOADING);
       });
-  },
-  drawSmoke({ state, dispatch, rootGetters }) {
-    // called by selectFire after selecting a fire
-    // we have the smoke data for this fire
-    var selectedFire = rootGetters.selectedFire;
-    // check there is a fire selected and we want smoke to be visible
-    if (selectedFire && selectedFire.smokeGeojson && state.smokeVisible) {
-      dispatch("fetchSmoke", selectedFire.smokeGeojson);
-    }
-  },
-  filterFire({ getters }, smokeStep) {
-    var map = getters.mapInstance;
-
-    // ensure every layer before the current step is on, and every one after is off
-    for (var i = 0; i < getters.totalSmokeLayers; i++) {
-      var layer = "ember-layer" + i.toString();
-      if (i <= smokeStep) map.setLayoutProperty(layer, "visibility", "visible");
-      else map.setLayoutProperty(layer, "visibility", "none");
-    }
-  },
-  resetFireLayers({ dispatch, rootGetters, getters, commit }) {
-    var map = rootGetters.mapInstance;
-    var totalSmokeLayers = getters.totalSmokeLayers;
-    var i;
-    var step;
-    var layer;
-
-    // we dont want to clear, just reset each smoke layer
-    for (i = 0; i < totalSmokeLayers; i++) {
-      step = i.toString();
-      layer = "ember-layer" + step;
-      map.removeLayer(layer);
-    }
-    state.loadedSmokeLayers = [];
-
-    for (i = 0; i < totalSmokeLayers; i++) {
-      step = i.toString();
-      var source = "ember-source" + step;
-      layer = "ember-layer" + step;
-
       commit(EMBER_ADD_LAYER, {
         map: map,
-        smokeSlice: {
+        beforeLayer: getters.smokeBeforeLayer,
+        slice: {
           sourceName: source,
           layerName: layer
         }
       });
     }
-    dispatch("filterFire", rootGetters.visibleFireStep);
+    dispatch("filter", rootGetters["fire/visibleStep"], { root: true });
+    commit(DONE_LOADING, null, { root: true });
+  },
+  filter: {
+    root: true,
+    handler({ state, getters, rootGetters }, step) {
+      if (state.visible) {
+        const map = rootGetters.mapInstance;
+        const startStep = rootGetters["fire/startStep"];
+
+        // ensure every layer before the current step is on, and every one after is off
+        for (var i = 0; i < getters.totalLayers; i++) {
+          var layer = "ember-layer" + i.toString();
+          if (i + startStep <= step)
+            map.setLayoutProperty(layer, "visibility", "visible");
+          else map.setLayoutProperty(layer, "visibility", "none");
+        }
+      }
+    }
+  },
+  toggle({ getters, rootGetters, commit, dispatch }, val) {
+    commit(DRAW_SMOKE, val);
+    if (val) {
+      // filter to apply this change
+      dispatch("filter", rootGetters["fire/visibleStep"], { root: true });
+    } else {
+      const map = rootGetters.mapInstance;
+      // hide all smoke
+      for (var i = 0; i < getters.totalLayers; i++) {
+        var layer = "ember-layer" + i.toString();
+        map.setLayoutProperty(layer, "visibility", "none");
+      }
+    }
+  },
+  setOpacity({ getters, rootGetters, commit }, val) {
+    const map = rootGetters.mapInstance;
+    const totalLayers = getters.totalLayers;
+    var i;
+    var step;
+    var layer;
+    commit(EMBER_SET_OPACITY, val);
+
+    const paintProp = "fill-opacity";
+    for (i = 0; i < totalLayers; i++) {
+      step = i.toString();
+      layer = "ember-layer" + step;
+      map.setPaintProperty(layer, paintProp, val);
+    }
+  },
+  reload: {
+    root: true,
+    handler({ rootGetters, getters, commit }) {
+      const map = rootGetters.mapInstance;
+      var totalLayers = getters.totalLayers;
+      var i;
+      var step;
+      var layer;
+
+      // we dont want to clear, just reset each smoke layer
+      for (i = 0; i < totalLayers; i++) {
+        step = i.toString();
+        layer = "ember-layer" + step;
+        map.removeLayer(layer);
+      }
+      state.loadedLayers = [];
+
+      for (i = 0; i < totalLayers; i++) {
+        step = i.toString();
+        var source = "ember-source" + step;
+        layer = "ember-layer" + step;
+
+        commit(EMBER_ADD_LAYER, {
+          map: map,
+          slice: {
+            sourceName: source,
+            layerName: layer
+          }
+        });
+      }
+    }
   }
 };
 
 export default {
+  namespaced,
   state,
   getters,
   mutations,

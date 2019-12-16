@@ -89,7 +89,7 @@ export default {
     },
     loadLayersOnStyleChange() {
       store.commit(SET_FIRST_SYMBOL_LAYER);
-      store.dispatch("loadLayers");
+      store.dispatch("loadGlobal");
     },
     squareCreated(e) {
       var feature = e.features[0];

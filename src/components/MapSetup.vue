@@ -209,8 +209,6 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
-import { EMBER_SET_OPACITY } from "@/store/mutation-types";
-import { DRAW_SMOKE, CLEAR_SMOKE } from "@/store/mutation-types";
 import MapAffectedLink from "@/components/MapAffectedLink.vue";
 import MapTrafficBehaviourCard from "@/components/MapTrafficBehaviourCard.vue";
 import Vue from "vue";
@@ -297,9 +295,11 @@ export default {
     ...mapState({
       populationSquares: state => state.map.populationSquares,
       selectedMATSimLink: state => state.map.selectedMATSimLink,
+      visibleStep: state => state.fire.visibleStep,
       error: state => state.config.error
     }),
     ...mapGetters([
+      "mapInstance",
       "regions",
       "selectedStyle",
       "selectedRegion",
@@ -361,15 +361,7 @@ export default {
         return this.$store.state.smoke.smokeVisible;
       },
       set(value) {
-        // make smoke visible
-        this.$store.commit(DRAW_SMOKE, value);
-        if (value) {
-          // reload any layers to apply this change
-          this.$store.dispatch("drawSmoke");
-        } else {
-          // remove smoke
-          this.$store.commit(CLEAR_SMOKE, this.$store.state.map.mapInstance);
-        }
+        this["smoke/toggle"](value);
       }
     },
     fireOpacity: {
@@ -385,14 +377,13 @@ export default {
     },
     smokeOpacity: {
       get() {
-        return this.$store.state.smoke.smokeOpacity;
+        return this.$store.state.smoke.opacity;
       },
       set(value) {
         var decimal = /^[-+]?[0-9]+\.[0-9]+$/;
         if (!value.match(decimal)) return;
 
-        this.$store.commit(EMBER_SET_OPACITY, parseFloat(value));
-        this.$store.dispatch("resetFireLayers");
+        this.$store.dispatch("smoke/setOpacity", parseFloat(value));
       }
     },
     popOpacity: {
@@ -418,6 +409,7 @@ export default {
       "selectRegion",
       "changeMapboxStyle",
       "fire/select",
+      "smoke/toggle",
       "population/select"
     ]),
     setRegion: function(event) {

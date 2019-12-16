@@ -235,6 +235,16 @@ const actions = {
     dispatch("loadLayers");
     commit(FLY_TO, getters.selectedRegion.center);
   },
+  // Used in Map.vue by loadLayersOnStyleChange.
+  // Adds both source and layers back to the map in the event of a style change
+  // Must be implemented by any module that
+  // adds sources/layers to mapbox.
+  loadGlobal: {
+    root: true,
+    handler({ dispatch }) {
+      dispatch("loadLayers");
+    }
+  },
   loadLayers({ dispatch, getters }) {
     var region = getters.selectedRegion;
     if (!region) return; // no region to be loaded

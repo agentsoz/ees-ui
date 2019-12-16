@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="visibleFireStep || visibleFireStep === 0"
-    class="time-slider-overlay"
-  >
+  <div v-if="visibleStep || visibleStep === 0" class="time-slider-overlay">
     <div class="time-slider-overlay-inner">
       <vue-slider
         ref="fireslider"
@@ -44,20 +41,20 @@ export default {
   computed: {
     ...mapState({
       fireStepMinutes: state => state.fire.stepMinutes,
-      visibleFireStep: state => state.fire.visibleFireStep,
+      visibleStep: state => state.fire.visibleStep,
       fireSliderTicks: state => state.fire.fireSliderTicks
     }),
     sliderConfig() {
       return {
         width: "98%",
-        value: this.visibleFireStep ? this.visibleFireStep : 0,
+        value: this.visibleStep ? this.visibleStep : 0,
         min: 0,
         max: this.maxSteps
       };
     },
     timeStep: {
       get() {
-        return this.visibleFireStep;
+        return this.visibleStep;
       },
       set(val) {
         this.$store.dispatch("filter", val);

@@ -19,7 +19,7 @@ const state = {
   selectedFire: null,
   loadedLayers: [],
   loadedSources: [],
-  visibleFireStep: null,
+  visibleStep: null,
   fire3DFlameHeight: false,
   opacity: 0.4,
   fireIntensityLevels: [[0, "#ffc107"], [100000, "#dc3545"]]
@@ -27,7 +27,7 @@ const state = {
 
 const getters = {
   stepMinutes: state => state.stepMinutes,
-  visibleFireStep: state => state.visibleFireStep,
+  visibleStep: state => state.visibleStep,
   totalLayers: state => state.loadedLayers.length,
   selectedFire: (state, getters, rootState, rootGetters) => {
     const fires = rootGetters.fires;
@@ -42,6 +42,9 @@ const getters = {
         parseInt(fireData.ignition_hhmm.slice(2))
       );
     else return 0;
+  },
+  startStep: (state, getters) => {
+    return getters.ignitionMinutes / getters.stepMinutes;
   }
 };
 
@@ -118,10 +121,10 @@ const mutations = {
     // remove sources
     for (const source of state.loadedSources) map.removeSource(source);
     state.loadedSources = [];
-    state.visibleFireStep = null;
+    state.visibleStep = null;
   },
   [PHOENIX_TIME_STEP](state, newVal) {
-    state.visibleFireStep = newVal;
+    state.visibleStep = newVal;
   }
 };
 
@@ -145,6 +148,16 @@ const actions = {
     if (fireData && fireData.smokeGeojson)
       dispatch("drawSmoke", fireData.smokeGeojson);
   },
+  // Used in Map.vue by loadLayersOnStyleChange.
+  // Adds both source and layers back to the map in the event of a style change
+  // Must be implemented by any module that
+  // adds sources/layers to mapbox.
+  loadGlobal: {
+    root: true,
+    handler({ dispatch }) {
+      dispatch("load");
+    }
+  },
   load({ dispatch, getters }) {
     var selectedFire = getters.selectedFire;
     if (selectedFire) {
@@ -166,7 +179,7 @@ const actions = {
         return response.json();
       })
       .then(function(geojson) {
-        var features = geojson.features;
+        var features = [...geojson.features];
         // first sort
         features.sort(function(a, b) {
           if (a.properties.HOUR_BURNT === null) return -1;
@@ -218,20 +231,17 @@ const actions = {
             }
           });
         }
-        dispatch(
-          "filter",
-          getters.ignitionMinutes / getters.stepMinutes + totalSteps - 1,
-          { root: true }
-        ); // load the final fire step
+        dispatch("filter", getters.startStep + totalSteps - 1, { root: true }); // load the final fire step
+        dispatch("smoke/createLayers", geojson, { root: true });
         commit(DONE_LOADING, null, { root: true });
       });
   },
   filter: {
     root: true,
     handler({ getters, rootGetters, commit }, fireStep) {
-      var map = rootGetters.mapInstance;
+      const map = rootGetters.mapInstance;
 
-      var fireStartStep = getters.ignitionMinutes / getters.stepMinutes;
+      const fireStartStep = getters.startStep;
 
       // ensure every layer before the current step is on, and every one after is off
       for (var i = 0; i < getters.totalLayers; i++) {
@@ -298,7 +308,7 @@ const actions = {
         }
       });
     }
-    dispatch("filter", getters.visibleFireStep, { root: true });
+    dispatch("filter", getters.visibleStep, { root: true });
   },
   toggleFireIn3D({ dispatch, state, commit }) {
     commit(TOGGLE_3D, !state.fire3DFlameHeight, { root: true });

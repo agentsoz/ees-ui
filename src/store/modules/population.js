@@ -107,6 +107,16 @@ const actions = {
     if (getters.selected) dispatch("load");
     else commit(CLEAR_POPULATION, rootGetters.mapInstance);
   },
+  // Used in Map.vue by loadLayersOnStyleChange.
+  // Adds both source and layers back to the map in the event of a style change
+  // Must be implemented by any module that
+  // adds sources/layers to mapbox.
+  loadGlobal: {
+    root: true,
+    handler({ dispatch }) {
+      dispatch("load");
+    }
+  },
   load({ dispatch, getters }) {
     if (getters.selected) {
       dispatch(
