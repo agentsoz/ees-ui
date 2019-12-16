@@ -91,7 +91,7 @@
                     >Display Embers
                   </b-form-checkbox>
                 </b-form>
-              <div class="p-2">{{ eventDesc }}</div>
+                <div class="p-2">{{ eventDesc }}</div>
               </b-collapse>
             </b-card>
             <!--<b-card no-body class="mb-1">

@@ -16,7 +16,14 @@ const state = {
   selected: null,
   loadedLayers: [],
   loadedSources: [],
-  opacity: 1.0
+  opacity: 1.0,
+  activityColors: {
+    home: "#fbb03b",
+    work: "#223b53",
+    beach: "#e55e5e",
+    shops: "#3bb2d0",
+    other: "#ccc"
+  }
 };
 
 const getters = {
@@ -28,11 +35,9 @@ const getters = {
     else return null;
   },
   description: (state, getters) => {
-
     if (state.selected) {
       return getters.selected.description;
-    } else
-      return "";
+    } else return "";
   },
   totalLayers: state => state.loadedLayers.length,
   aboveLayer: (state, getters, rootState) => {
@@ -110,7 +115,7 @@ const actions = {
     }
   },
   select({ dispatch, getters, rootGetters, commit }, pop) {
-    commit(CLEAR_POPULATION);
+    commit(CLEAR_POPULATION, rootGetters.mapInstance);
     commit(SELECT_POPULATION, pop);
     if (getters.selected) dispatch("load");
   },
@@ -132,7 +137,7 @@ const actions = {
       );
     }
   },
-  downloadAndCreateLayers({ dispatch, commit, rootGetters }, url) {
+  downloadAndCreateLayers({ state, dispatch, commit, rootGetters }, url) {
     const map = rootGetters.mapInstance;
     commit(START_LOADING, null, { root: true });
 
@@ -153,14 +158,6 @@ const actions = {
         const totalSteps = Math.ceil(
           totalMinutes / rootGetters["fire/stepMinutes"]
         );
-
-        var activityColors = {
-          home: "#fbb03b",
-          work: "#223b53",
-          beach: "#e55e5e",
-          shops: "#3bb2d0",
-          other: "#ccc"
-        };
 
         var whereareyounow = {};
 
@@ -199,7 +196,7 @@ const actions = {
                 person: whereareyounow[k].id,
                 end_hr: whereareyounow[k].end_hr,
                 type: whereareyounow[k].type,
-                color: activityColors[whereareyounow[k].type]
+                color: state.activityColors[whereareyounow[k].type]
               },
               geometry: {
                 type: "Point",

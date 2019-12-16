@@ -35,11 +35,9 @@ const getters = {
     else return null;
   },
   description: (state, getters) => {
-
     if (state.selectedFire) {
       return getters.selectedFire.description;
-    } else
-      return "";
+    } else return "";
   },
   ignitionMinutes: (state, getters) => {
     var fireData = getters.selectedFire;
@@ -148,7 +146,7 @@ const actions = {
     }
   },
   select({ dispatch, commit, getters, rootGetters }, fire) {
-    commit(CLEAR_FIRE, map);
+    commit(CLEAR_FIRE, rootGetters.mapInstance);
     commit(SELECT_FIRE, fire);
     const fireData = getters.selectedFire;
 

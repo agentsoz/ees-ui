@@ -1,6 +1,7 @@
 <template>
   <div v-on:keydown.esc.capture="toggleSettingsVis()">
     <maplayer />
+    <popLegend />
     <slider />
     <spinner />
     <population />
@@ -13,6 +14,7 @@
 <script>
 import MapComponent from "@/components/Map.vue";
 import MapTimeSlider from "@/components/MapTimeSlider.vue";
+import MapPopulationLegend from "@/components/MapPopulationLegend.vue";
 import MapSquarePopulation from "@/components/MapSquarePopulation.vue";
 import MapLoadSpinner from "@/components/MapLoadSpinner.vue";
 import MapSetup from "@/components/MapSetup.vue";
@@ -26,6 +28,7 @@ export default {
   components: {
     maplayer: MapComponent,
     slider: MapTimeSlider,
+    popLegend: MapPopulationLegend,
     spinner: MapLoadSpinner,
     population: MapSquarePopulation,
     setup: MapSetup,
