@@ -46,6 +46,7 @@
                 label-cols-lg="4"
                 label="Population"
                 label-for="map-population"
+                :description="popDesc"
               >
                 <b-form-select id="map-population" v-model="selectedPopulation">
                   <option value="no-population">None</option>
@@ -90,6 +91,7 @@
                     >Display Embers
                   </b-form-checkbox>
                 </b-form>
+              <div class="p-2">{{ eventDesc }}</div>
               </b-collapse>
             </b-card>
             <!--<b-card no-body class="mb-1">
@@ -303,9 +305,12 @@ export default {
       "regions",
       "selectedStyle",
       "selectedRegion",
-      "popInSelectedRegion",
-      "population/selected"
+      "popInSelectedRegion"
     ]),
+    ...mapGetters({
+      popDesc: "population/description",
+      eventDesc: "fire/description"
+    }),
     firesInSelectedRegion() {
       return !this.$store.getters.firesInSelectedRegion
         ? []

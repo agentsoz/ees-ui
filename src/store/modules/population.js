@@ -27,6 +27,13 @@ const getters = {
     if (state.selected in all) return all[state.selected];
     else return null;
   },
+  description: (state, getters) => {
+
+    if (state.selected) {
+      return getters.selected.description;
+    } else
+      return "";
+  },
   totalLayers: state => state.loadedLayers.length,
   aboveLayer: (state, getters, rootState) => {
     return rootState.firstSymbolLayer;
@@ -103,9 +110,9 @@ const actions = {
     }
   },
   select({ dispatch, getters, rootGetters, commit }, pop) {
+    commit(CLEAR_POPULATION);
     commit(SELECT_POPULATION, pop);
     if (getters.selected) dispatch("load");
-    else commit(CLEAR_POPULATION, rootGetters.mapInstance);
   },
   // Used in Map.vue by loadLayersOnStyleChange.
   // Adds both source and layers back to the map in the event of a style change
@@ -127,7 +134,6 @@ const actions = {
   },
   downloadAndCreateLayers({ dispatch, commit, rootGetters }, url) {
     const map = rootGetters.mapInstance;
-    commit(CLEAR_POPULATION, map);
     commit(START_LOADING, null, { root: true });
 
     // the vuex state cant handle large datastructures

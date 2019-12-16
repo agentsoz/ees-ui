@@ -34,6 +34,13 @@ const getters = {
     if (state.selectedFire in fires) return fires[state.selectedFire];
     else return null;
   },
+  description: (state, getters) => {
+
+    if (state.selectedFire) {
+      return getters.selectedFire.description;
+    } else
+      return "";
+  },
   ignitionMinutes: (state, getters) => {
     var fireData = getters.selectedFire;
     if (fireData && "ignition_hhmm" in fireData)
@@ -122,6 +129,8 @@ const mutations = {
     for (const source of state.loadedSources) map.removeSource(source);
     state.loadedSources = [];
     state.visibleStep = null;
+
+    state.selectedFire = null;
   },
   [PHOENIX_TIME_STEP](state, newVal) {
     state.visibleStep = newVal;
@@ -139,11 +148,11 @@ const actions = {
     }
   },
   select({ dispatch, commit, getters, rootGetters }, fire) {
+    commit(CLEAR_FIRE, map);
     commit(SELECT_FIRE, fire);
     const fireData = getters.selectedFire;
 
     if (getters.selectedFire) dispatch("load");
-    else commit(CLEAR_FIRE, rootGetters.mapInstance);
 
     if (fireData && fireData.smokeGeojson)
       dispatch("drawSmoke", fireData.smokeGeojson);
@@ -169,7 +178,6 @@ const actions = {
   },
   downloadAndCreateLayers({ dispatch, commit, getters, rootGetters }, url) {
     const map = rootGetters.mapInstance;
-    commit(CLEAR_FIRE, map);
     commit(START_LOADING, null, { root: true });
 
     // download and pre-process the geojson for better performance while rendering
