@@ -86,6 +86,9 @@ export default {
       store.commit(SET_DRAW_INSTANCE, draw);
 
       store.commit(SET_FIRST_SYMBOL_LAYER);
+
+      // load any layers that want to be loaded right away
+      this.loadLayersOnStyleChange();
     },
     loadLayersOnStyleChange() {
       store.commit(SET_FIRST_SYMBOL_LAYER);
