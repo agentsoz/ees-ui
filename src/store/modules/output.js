@@ -125,7 +125,7 @@ const actions = {
   // Adds both source and layers back to the map in the event of a style change
   // Must be implemented by any module that
   // adds sources/layers to mapbox.
-  loadGlobalOff: {
+  loadGlobal: {
     root: true,
     handler({ dispatch }) {
       dispatch("load");
