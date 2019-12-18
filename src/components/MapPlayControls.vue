@@ -3,8 +3,8 @@
     <div class="time-slider-overlay-inner">
       <b-row>
         <b-col class="pt-2 time-slider-controls">
-          <button v-on:click="stepFrame">
-            <FontAwesomeIcon icon="play" size="2x" />
+          <button type="button" class="btn btn-outline-secondary" v-on:click="togglePlay">
+            <FontAwesomeIcon :icon="playPauseIcon" size="lg" />
           </button>
         </b-col>
         <b-col cols="11">
@@ -36,9 +36,9 @@ import VueSlider from "vue-slider-component";
 import "vue-slider-component/theme/default.css";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-library.add(faPlay);
+library.add(faPlay, faPause);
 
 import { mapState } from "vuex";
 
@@ -47,14 +47,21 @@ export default {
   components: { VueSlider, FontAwesomeIcon },
   props: {},
   data: () => {
-    const fps = 4;
+    const fps = 12;
     return {
+      playing: false,
       fps: fps,
       fpsInterval: 1000 / fps,
       lastFrame: 0
     };
   },
   computed: {
+    playPauseIcon() {
+      if (this.playing)
+        return "pause";
+      else
+        return "play";
+    },
     labelStep() {
       return {
         sm: (60 / this.stepMinutes) * 6,
@@ -87,14 +94,31 @@ export default {
     }
   },
   methods: {
-    stepFrame() {
+    togglePlay() {
+      // if we are sitting at the last fram and play is pressed,
+      // we may as well play from the beginning
+      if (this.visibleStep == this.maxSteps)
+        this.$store.dispatch("filter", 0);
+
+      this.playing = !this.playing;
+      this.stepFrames();
+    },
+    stepFrames() {
+      if (! this.playing )
+        return;
+
+      if (this.visibleStep >= this.maxSteps) {
+        this.playing = false;
+        return;
+      }
+
       const now = Date.now();
       const elapsed = now - this.lastFrame;
       if (elapsed > this.fpsInterval) {
         this.$store.dispatch("filter", this.visibleStep + 1);
         this.lastFrame = now;
       }
-      requestAnimationFrame(this.stepFrame);
+      requestAnimationFrame(this.stepFrames);
     },
     hasLabel(timeStep) {
       var interval = this.labelStep[this.$mq];
