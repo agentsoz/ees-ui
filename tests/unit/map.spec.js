@@ -19,6 +19,10 @@ const testAction = (
   let mutationCount = 0;
   let total = expectedDispatch.length + expectedMutations.length;
 
+  const state = {
+    selectedRegion: "a-region"
+  };
+
   const dispatch = (type, payload) => {
     const dispatchAction = expectedDispatch[dispatchCount];
     if (dispatchCount >= expectedDispatch.length) {
@@ -63,7 +67,7 @@ const testAction = (
   };
 
   // call the action with mocked store and arguments
-  action({ dispatch, commit, getters }, payload);
+  action({ dispatch, commit, getters, state }, payload);
 
   // check if no mutations should have been dispatched
   if (total === 0) {
