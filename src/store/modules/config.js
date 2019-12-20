@@ -96,13 +96,30 @@ const mutations = {
   }
 };
 const actions = {
-  getConfig({ commit }, url) {
+  getConfig({ commit, getters }, url) {
     commit(START_LOADING);
     fetch(url)
       .then(res => res.json())
       .then(json => {
         commit(DONE_LOADING);
         commit("SAVE_SETTINGS", json);
+
+        // we should check whether the server actually returned fire and populations
+        var empty = [];
+        if (Object.keys(getters.populations).length == 0)
+          empty.push("populations");
+        if (Object.keys(getters.fires).length == 0) empty.push("fires");
+
+        if (empty.length > 0)
+          commit(
+            "ERROR",
+            "The server did not return any " +
+              empty.join(" or ") +
+              " for use." +
+              "<br />" +
+              "The server may currently be downloading resources. Please refresh " +
+              "the page after about a minute."
+          );
       })
       .catch(e => {
         commit(

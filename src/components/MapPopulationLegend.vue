@@ -1,9 +1,18 @@
 <template>
-  <div v-if="popSelected != null" class="legend-overlay">
+  <div v-if="popSelected !== null" class="legend-overlay">
     <div class="legend-overlay-inner">
       <table id="pop-legend" cellspacing="3px">
-        <tr v-for="(color, id) in activityColors" :key="id">
-          <td :style="{ backgroundColor: color }">&nbsp;</td>
+        <tr v-for="(color, id, index) in currActivities" :key="id">
+          <td>
+            <verte
+              class="p-1"
+              menuPosition="top"
+              picker="square"
+              model="hex"
+              :value="color"
+              v-on:input="changeColor(index, $event)"
+            ></verte>
+          </td>
           <td class="p-2">{{ id }}</td>
         </tr>
       </table>
@@ -12,7 +21,9 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import Verte from "verte";
+import "verte/dist/verte.css";
+import { mapGetters } from "vuex";
 
 export default {
   name: "mapPopLegend",
@@ -20,15 +31,18 @@ export default {
   data: function() {
     return {};
   },
+  components: { Verte },
   computed: {
-    ...mapState({
-      activityColors: state => state.population.activityColors
-    }),
     ...mapGetters({
-      popSelected: "population/selected"
+      popSelected: "population/selected",
+      currActivities: "population/currActivities"
     })
   },
-  methods: {}
+  methods: {
+    changeColor: function(id, color) {
+      this.$store.dispatch("population/changeActivityColor", {id, color});
+    }
+  }
 };
 </script>
 
@@ -36,7 +50,7 @@ export default {
 .legend-overlay {
   position: absolute;
   width: 6%;
-  bottom: 200px;
+  bottom: 150px;
   right: 0;
   height: auto;
   overflow: visible;

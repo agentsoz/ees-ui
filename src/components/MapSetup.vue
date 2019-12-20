@@ -31,7 +31,7 @@
                 label-for="map-region"
               >
                 <b-form-select id="map-region" v-model="selectedRegion">
-                  <option value="any-region">(any)</option>
+                  <option value="any-placeholder">(any)</option>
                   <option
                     v-for="(r, id) in regions"
                     :key="id"
@@ -49,7 +49,11 @@
                 :description="popDesc"
               >
                 <b-form-select id="map-population" v-model="selectedPopulation">
-                  <option value="no-population">None</option>
+                  <option
+                    value="no-population"
+                    :disabled="selectedPopulation == 'no-population'"
+                    >None</option
+                  >
                   <option
                     v-for="(p, id) in popInSelectedRegion"
                     :key="id"
@@ -73,9 +77,19 @@
                 </h6>
               </template>
               <b-collapse visible id="collapse-incident">
-                <b-form inline>
+                <b-form-group
+                  label-cols-sm="12"
+                  label-cols-lg="4"
+                  label="Fire"
+                  label-for="map-fire"
+                  :description="eventDesc"
+                >
                   <b-form-select id="map-fire" v-model="selectedFire">
-                    <option value="no-fire" disabled></option>
+                    <option
+                      value="no-fire"
+                      :disabled="selectedFire == 'no-fire'"
+                      >None</option
+                    >
                     <option
                       v-for="(f, id) in firesInSelectedRegion"
                       :key="id"
@@ -84,14 +98,21 @@
                       >{{ f.display_name }}</option
                     >
                   </b-form-select>
+                </b-form-group>
+                <b-form-group
+                  label-cols-sm="12"
+                  label-cols-lg="4"
+                  label="Display Embers"
+                  label-for="map-embers"
+                >
                   <b-form-checkbox
+                    id="map-embers"
                     class="ml-2 form-check-input"
                     v-model="showSmoke"
-                    :disabled="this.$store.state.fire.selectedFire == null"
-                    >Display Embers
+                    :disabled="selectedFire == 'no-fire'"
+                  >
                   </b-form-checkbox>
-                </b-form>
-                <div class="p-2">{{ eventDesc }}</div>
+                </b-form-group>
               </b-collapse>
             </b-card>
             <!--<b-card no-body class="mb-1">
@@ -166,7 +187,7 @@
                   <b-form-group
                     label-cols-sm="12"
                     label-cols-lg="8"
-                    label="Smoke Opacity"
+                    label="Embers Opacity"
                     label-for="smoke_opacity"
                   >
                     <b-form-input
@@ -338,7 +359,7 @@ export default {
     },
     selectedPopulation: {
       get() {
-        return !this.$store.state.population.selected
+        return this.$store.getters["population/selected"] == null
           ? "no-population"
           : this.$store.state.population.selected;
       },
@@ -348,7 +369,7 @@ export default {
     },
     selectedFire: {
       get() {
-        return !this.$store.state.fire.selectedFire
+        return this.$store.getters["fire/selectedFire"] == null
           ? "no-fire"
           : this.$store.state.fire.selectedFire;
       },

@@ -10,7 +10,7 @@ import {
   SELECT_REGION,
   CLEAR_REGION,
   FLY_TO,
-  SET_FIRST_SYMBOL_LAYER,
+  MATSIM_ADD_PLACEHOLDER_LAYERS,
   MATSIM_ADD_SOURCE,
   MATSIM_ADD_LAYER,
   MATSIM_SET_BASE_LAYER,
@@ -27,6 +27,15 @@ const state = {
   isLoading: 0,
   mapboxStyle: "dark",
   firstSymbolLayer: null,
+  featureSetPlacementOrder: [
+    // this defines the visibility order of each thing we place on the map
+    "region",
+    "fire",
+    "smoke",
+    "population",
+    "output"
+  ],
+  featureSetPlaceholderLayerId: {}, // each element we draw will be placed before a layer stored here
   mapSettingsIsOpen: true,
   baseMATSimLayer: null,
   highlightMATSimLayer: null,
@@ -52,16 +61,21 @@ const getters = {
     var style = styles.find(obj => obj.id === state.mapboxStyle);
     return style;
   },
+  featureSetPlaceholderLayerId: state => state.featureSetPlaceholderLayerId,
   selectedRegion: (state, getters, rootState, rootGetters) => {
     if (!state.selectedRegion) return null;
-    return rootGetters.region(state.selectedRegion);
+
+    const region = rootGetters.region(state.selectedRegion);
+    // further checks to make sure we actually have a region selected
+    if (typeof region === "undefined") return null;
+    else return region;
   },
   popInSelectedRegion: (state, getters, rootState, rootGetters) => {
-    if (!state.selectedRegion) return [];
+    if (getters.selectedRegion === null) return getters.populations;
     return rootGetters.populationsWithTag(getters.selectedRegion.name);
   },
   firesInSelectedRegion: (state, getters, rootState, rootGetters) => {
-    if (!state.selectedRegion) return getters.fires;
+    if (getters.selectedRegion === null) return getters.fires;
     return rootGetters.firesWithTag(getters.selectedRegion.name);
   }
 };
@@ -132,7 +146,7 @@ const mutations = {
     if (value) state.mapInstance.easeTo({ pitch: 60 });
     else state.mapInstance.easeTo({ pitch: 0 });
   },
-  [SET_FIRST_SYMBOL_LAYER](state) {
+  [MATSIM_ADD_PLACEHOLDER_LAYERS](state) {
     var layers = state.mapInstance.getStyle().layers;
     // Find the index of the first symbol layer in the map style
     var firstSymbolId;
@@ -143,6 +157,29 @@ const mutations = {
       }
     }
     state.firstSymbolLayer = firstSymbolId;
+
+    // empty placeholder layers for each feature set
+    var sect = {
+      type: "FeatureCollection",
+      features: []
+    };
+    state.mapInstance.addSource("placeholder", {
+      type: "geojson",
+      data: sect
+    });
+    for (const s of state.featureSetPlacementOrder) {
+      const id = s + "-placeholder";
+      state.mapInstance.addLayer(
+        {
+          id: id,
+          type: "line",
+          source: "placeholder",
+          layout: { visibility: "none" }
+        },
+        state.firstSymbolLayer
+      );
+      state.featureSetPlaceholderLayerId[s] = id;
+    }
   },
   [MATSIM_ADD_LAYER](state, matsimNetwork) {
     state.mapInstance.addLayer(
@@ -163,7 +200,7 @@ const mutations = {
       // right before that layer in the stack, making it possible to put
       // 'overlays' anywhere in the layer stack.
       // Insert the layer beneath the first symbol layer.
-      state.firstSymbolLayer
+      state.featureSetPlaceholderLayerId["region"]
     );
     state.loadedMATSimLayers.push(matsimNetwork.layerName);
   },
@@ -228,12 +265,31 @@ const actions = {
     // ensure any existing matsim/fire artifacts are removed
     commit(CLEAR_REGION);
   },
-  selectRegion({ dispatch, commit, getters }, value) {
+  selectRegion({ dispatch, commit, getters, state }, value) {
+    if (state.selectedRegion == value) return; // noisy call because the computed property detected a 'change'
+
+    if (getters.selectedRegion !== null) dispatch("clearMap");
+
     commit(SELECT_REGION, value);
     // load the relevant MATSim layers
-    dispatch("clearMap");
-    dispatch("loadLayers");
-    commit(FLY_TO, getters.selectedRegion.center);
+    if (getters.selectedRegion != null) {
+      dispatch("loadLayers");
+      commit(FLY_TO, getters.selectedRegion.center);
+    }
+  },
+  // this is called when a population or incident is selected
+  // and region is not yet selected. we try to find one using the tags
+  selectRelevantRegion({ dispatch, commit, getters }, tags) {
+    // no region selected, see if we can find one in the tags
+    fireloop: for (const tag of tags)
+      for (const id in getters.regions)
+        if (tag == getters.regions[id].name) {
+          // we have found a tag that corresponds to a region
+          dispatch("selectRegion", id);
+          //dispatch("loadLayers");
+          //commit(FLY_TO, getters.selectedRegion.center);
+          break fireloop;
+        }
   },
   // Used in Map.vue by loadLayersOnStyleChange.
   // Adds both source and layers back to the map in the event of a style change
@@ -241,7 +297,8 @@ const actions = {
   // adds sources/layers to mapbox.
   loadGlobal: {
     root: true,
-    handler({ dispatch }) {
+    handler({ getters, dispatch }) {
+      const map = getters.mapInstance;
       dispatch("loadLayers");
     }
   },

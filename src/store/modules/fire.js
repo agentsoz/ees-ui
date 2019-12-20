@@ -35,7 +35,7 @@ const getters = {
     else return null;
   },
   description: (state, getters) => {
-    if (state.selectedFire) {
+    if (getters.selectedFire !== null) {
       return getters.selectedFire.description;
     } else return "";
   },
@@ -147,13 +147,19 @@ const actions = {
   },
   select({ dispatch, commit, getters, rootGetters }, fire) {
     commit(CLEAR_FIRE, rootGetters.mapInstance);
+    commit("smoke/CLEAR_SMOKE", rootGetters.mapInstance, { root: true });
     commit(SELECT_FIRE, fire);
     const fireData = getters.selectedFire;
 
-    if (getters.selectedFire) dispatch("load");
+    if (fireData) {
+      dispatch("load");
 
-    if (fireData && fireData.smokeGeojson)
-      dispatch("drawSmoke", fireData.smokeGeojson);
+      // handle the case where the fire has been selected without selecting a region
+      if (rootGetters.selectedRegion == null && fireData.tags)
+        dispatch("selectRelevantRegion", fireData.tags, { root: true });
+
+      if (fireData.smokeGeojson) dispatch("drawSmoke", fireData.smokeGeojson);
+    }
   },
   // Used in Map.vue by loadLayersOnStyleChange.
   // Adds both source and layers back to the map in the event of a style change
@@ -230,7 +236,7 @@ const actions = {
           });
           commit(PHOENIX_ADD_LAYER, {
             map: map,
-            beforeLayer: getters.fireBeforeLayer,
+            beforeLayer: rootGetters.featureSetPlaceholderLayerId["fire"],
             fireSlice: {
               sourceName: source,
               layerName: layer

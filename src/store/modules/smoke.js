@@ -16,7 +16,7 @@ import {
 const namespaced = true; // https://vuex.vuejs.org/guide/modules.html#namespacing
 
 const state = {
-  color: "#000000",
+  color: "#f3172d",
   visible: false,
   loadedLayers: [],
   loadedSources: [],
@@ -137,7 +137,7 @@ const actions = {
       });
       commit(EMBER_ADD_LAYER, {
         map: map,
-        beforeLayer: getters.smokeBeforeLayer,
+        beforeLayer: rootGetters.featureSetPlaceholderLayerId["smoke"],
         slice: {
           sourceName: source,
           layerName: layer

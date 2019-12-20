@@ -24,7 +24,7 @@ import store from "@/store";
 import {
   SET_MAP_INSTANCE,
   SET_DRAW_INSTANCE,
-  SET_FIRST_SYMBOL_LAYER,
+  MATSIM_ADD_PLACEHOLDER_LAYERS,
   MATSIM_SELECT_LINK,
   MATSIM_DESELECT_LINK
 } from "@/store/mutation-types";
@@ -85,13 +85,13 @@ export default {
       store.commit(SET_MAP_INSTANCE, map);
       store.commit(SET_DRAW_INSTANCE, draw);
 
-      store.commit(SET_FIRST_SYMBOL_LAYER);
-
       // load any layers that want to be loaded right away
       this.loadLayersOnStyleChange();
     },
     loadLayersOnStyleChange() {
-      store.commit(SET_FIRST_SYMBOL_LAYER);
+      // define the order of each feature set with placeholder layers
+      store.commit(MATSIM_ADD_PLACEHOLDER_LAYERS);
+      // load each feature set, each implements its own loadGlobal action
       store.dispatch("loadGlobal");
     },
     squareCreated(e) {

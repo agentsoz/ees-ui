@@ -5,6 +5,8 @@ import {
   DONE_LOADING,
   SELECT_POPULATION,
   POPULATION_SET_OPACITY,
+  POP_SET_ACTIVITIES,
+  POP_SET_ACTIVITY_COLOR,
   POP_ADD_SOURCE,
   POP_ADD_LAYER,
   CLEAR_POPULATION
@@ -17,13 +19,14 @@ const state = {
   loadedLayers: [],
   loadedSources: [],
   opacity: 1.0,
-  activityColors: {
-    home: "#fbb03b",
-    work: "#223b53",
-    beach: "#e55e5e",
-    shops: "#3bb2d0",
-    other: "#ccc"
-  }
+  activityColors: [
+    "#fbb03b",
+    "#223b53",
+    "#e55e5e",
+    "#3bb2d0",
+    "#cccccc" // must be 6 hex, due to reactive colorpicker feedback loops. more may be required
+  ],
+  currActivities: {}
 };
 
 const getters = {
@@ -34,8 +37,9 @@ const getters = {
     if (state.selected in all) return all[state.selected];
     else return null;
   },
+  currActivities: state => state.currActivities,
   description: (state, getters) => {
-    if (state.selected) {
+    if (getters.selected !== null) {
       return getters.selected.description;
     } else return "";
   },
@@ -51,6 +55,32 @@ const mutations = {
   },
   [POPULATION_SET_OPACITY](state, value) {
     state.opacity = value;
+  },
+  [POP_SET_ACTIVITIES](state, activities) {
+    var currActivities = {};
+    activities.sort();
+
+    for (var i = 0; i < activities.length; i++) {
+      if (i < state.activityColors.length) {
+        currActivities[activities[i]] = state.activityColors[i];
+      } else {
+        // seeded colour generator
+        var color = Math.floor(Math.abs(Math.sin(i) * 16777215) % 16777215);
+        color = color.toString(16);
+        // pad any colors shorter than 6 characters with leading 0s
+        while (color.length < 6) {
+          color = "0" + color;
+        }
+        currActivities[activities[i]] = "#" + color;
+				state.activityColors.push("#" + color);
+      }
+    }
+    state.currActivities = currActivities;
+  },
+  [POP_SET_ACTIVITY_COLOR](state, { id, color }) {
+    if (state.activityColors[id] != color) {
+      state.activityColors[id] = color;
+    }
   },
   [POP_ADD_SOURCE](state, payload) {
     var popSlice = payload.popSlice;
@@ -101,6 +131,7 @@ const mutations = {
     delete window.populationGeojson;
 
     state.selected = null;
+    state.currActivities = {};
   }
 };
 
@@ -117,7 +148,13 @@ const actions = {
   select({ dispatch, getters, rootGetters, commit }, pop) {
     commit(CLEAR_POPULATION, rootGetters.mapInstance);
     commit(SELECT_POPULATION, pop);
-    if (getters.selected) dispatch("load");
+    if (getters.selected) {
+      dispatch("load");
+
+      // handle the case where the population has been selected without selecting a region
+      if (rootGetters.selectedRegion == null && getters.selected.tags)
+        dispatch("selectRelevantRegion", getters.selected.tags, { root: true });
+    }
   },
   // Used in Map.vue by loadLayersOnStyleChange.
   // Adds both source and layers back to the map in the event of a style change
@@ -160,13 +197,20 @@ const actions = {
         );
 
         var whereareyounow = {};
+        var currActivities = [];
 
         // a first sweep to determine where everyone starts
+        // and total activity types
         for (const plan of json) {
           if (!(plan.id in whereareyounow)) {
             whereareyounow[plan.id] = plan;
           }
+          if (!currActivities.includes(plan.type)) {
+            currActivities.push(plan.type);
+          }
         }
+
+        commit(POP_SET_ACTIVITIES, currActivities);
 
         // this will track the geojson features array
         var j = 0;
@@ -196,7 +240,7 @@ const actions = {
                 person: whereareyounow[k].id,
                 end_hr: whereareyounow[k].end_hr,
                 type: whereareyounow[k].type,
-                color: state.activityColors[whereareyounow[k].type]
+                color: state.currActivities[whereareyounow[k].type]
               },
               geometry: {
                 type: "Point",
@@ -221,7 +265,7 @@ const actions = {
         });
         commit(POP_ADD_LAYER, {
           map: map,
-          beforeLayer: rootGetters.fireBeforeLayer,
+          beforeLayer: rootGetters.featureSetPlaceholderLayerId["population"],
           popSlice: {
             sourceName: source,
             layerName: layer
@@ -241,6 +285,13 @@ const actions = {
         s.setData(window.populationGeojson[fireStep]);
       }
     }
+  },
+  changeActivityColor({ state, dispatch, commit }, { id, color }) {
+		if (state.activityColors[id] != color) {
+			commit(POP_SET_ACTIVITY_COLOR, { id, color });
+			dispatch("select", state.selected);
+		}
+
   },
   setOpacity({ rootGetters, commit }, val) {
     var map = rootGetters.mapInstance;
