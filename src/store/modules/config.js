@@ -53,7 +53,7 @@ const getters = {
     }
   },
   outputs: state => {
-    if (state.data) {
+    if (state.data && "outputs" in state.data) {
       return state.data.outputs;
     } else {
       return {};

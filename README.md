@@ -26,6 +26,12 @@ npm install
 ```
 npm run serve
 ```
+#### Pointing the UI to a development ees-server
+Add a .env.local to the project root as follows:
+```
+# .env.local
+VUE_APP_EES_TILES_API=http://localhost:12345
+```
 
 #### Compiles and minifies for production
 ```
