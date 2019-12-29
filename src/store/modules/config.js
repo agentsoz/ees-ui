@@ -52,6 +52,13 @@ const getters = {
       return {};
     }
   },
+  outputs: state => {
+    if (state.data) {
+      return state.data.outputs;
+    } else {
+      return {};
+    }
+  },
   fires: state => {
     if (state.data) {
       return state.data.fires;
@@ -109,6 +116,8 @@ const actions = {
         if (Object.keys(getters.populations).length == 0)
           empty.push("populations");
         if (Object.keys(getters.fires).length == 0) empty.push("fires");
+        if (Object.keys(getters.outputs).length == 0)
+          empty.push("simulation outputs");
 
         if (empty.length > 0)
           commit(

@@ -3,7 +3,11 @@
     <div class="time-slider-overlay-inner">
       <b-row>
         <b-col class="pt-2 time-slider-controls">
-          <button type="button" class="btn btn-outline-secondary" v-on:click="togglePlay">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            v-on:click="togglePlay"
+          >
             <FontAwesomeIcon :icon="playPauseIcon" size="lg" />
           </button>
         </b-col>
@@ -47,7 +51,7 @@ export default {
   components: { VueSlider, FontAwesomeIcon },
   props: {},
   data: () => {
-    const fps = 12;
+    const fps = 6;
     return {
       playing: false,
       fps: fps,
@@ -57,21 +61,20 @@ export default {
   },
   computed: {
     playPauseIcon() {
-      if (this.playing)
-        return "pause";
-      else
-        return "play";
+      if (this.playing) return "pause";
+      else return "play";
     },
     labelStep() {
       return {
-        sm: (60 / this.stepMinutes) * 6,
-        md: (60 / this.stepMinutes) * 4,
-        lg: 60 / this.stepMinutes
+        sm: ((60 * 60) / this.stepSeconds) * 6,
+        md: ((60 * 60) / this.stepSeconds) * 4,
+        lg: (60 * 60) / this.stepSeconds
       };
     },
     ...mapState({
-      stepMinutes: state => state.output.stepMinutes,
-      visibleStep: state => state.output.visibleStep
+      stepSeconds: state => state.output.stepSeconds,
+      visibleStep: state => state.output.visibleStep,
+      fireStepMinutes: state => state.fire.stepMinutes // rest of system is on minute steps
     }),
     sliderConfig() {
       return {
@@ -86,26 +89,31 @@ export default {
         return this.visibleStep;
       },
       set(val) {
-        this.$store.dispatch("filter", val);
+        var minutes = (val * this.stepSeconds) / 60;
+        this.$store.dispatch(
+          "filter",
+          parseInt(minutes / this.fireStepMinutes)
+        );
+        this.$store.dispatch("filterSeconds", val);
       }
     },
     maxSteps() {
-      return (24 * 60) / this.stepMinutes;
+      return (24 * 60 * 60) / this.stepSeconds;
     }
   },
   methods: {
     togglePlay() {
       // if we are sitting at the last fram and play is pressed,
       // we may as well play from the beginning
+      if (this.visibleStep == this.maxSteps) this.$store.dispatch("filter", 0);
       if (this.visibleStep == this.maxSteps)
-        this.$store.dispatch("filter", 0);
+        this.$store.dispatch("filterSeconds", 0);
 
       this.playing = !this.playing;
       this.stepFrames();
     },
     stepFrames() {
-      if (! this.playing )
-        return;
+      if (!this.playing) return;
 
       if (this.visibleStep >= this.maxSteps) {
         this.playing = false;
@@ -115,7 +123,12 @@ export default {
       const now = Date.now();
       const elapsed = now - this.lastFrame;
       if (elapsed > this.fpsInterval) {
-        this.$store.dispatch("filter", this.visibleStep + 1);
+        var minutes = ((this.visibleStep + 1) * this.stepSeconds) / 60;
+        this.$store.dispatch(
+          "filter",
+          parseInt(minutes / this.fireStepMinutes)
+        ); // the rest of the system does not use second steps
+        this.$store.dispatch("filterSeconds", this.visibleStep + 1);
         this.lastFrame = now;
       }
       requestAnimationFrame(this.stepFrames);
@@ -130,9 +143,11 @@ export default {
     },
     stepToTime(timeStep) {
       return (
-        Math.floor((timeStep * this.stepMinutes) / 60).toString() +
+        Math.floor((timeStep * this.stepSeconds) / (60 * 60)).toString() +
         ":" +
-        ((timeStep * this.stepMinutes) % 60).toString().padStart(2, "0")
+        (parseInt((timeStep * this.stepSeconds) / 60) % 60)
+          .toString()
+          .padStart(2, "0")
       );
     }
   }

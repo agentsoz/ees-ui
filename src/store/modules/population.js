@@ -72,7 +72,7 @@ const mutations = {
           color = "0" + color;
         }
         currActivities[activities[i]] = "#" + color;
-				state.activityColors.push("#" + color);
+        state.activityColors.push("#" + color);
       }
     }
     state.currActivities = currActivities;
@@ -287,11 +287,10 @@ const actions = {
     }
   },
   changeActivityColor({ state, dispatch, commit }, { id, color }) {
-		if (state.activityColors[id] != color) {
-			commit(POP_SET_ACTIVITY_COLOR, { id, color });
-			dispatch("select", state.selected);
-		}
-
+    if (state.activityColors[id] != color) {
+      commit(POP_SET_ACTIVITY_COLOR, { id, color });
+      dispatch("select", state.selected);
+    }
   },
   setOpacity({ rootGetters, commit }, val) {
     var map = rootGetters.mapInstance;

@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     changeColor: function(id, color) {
-      this.$store.dispatch("population/changeActivityColor", {id, color});
+      this.$store.dispatch("population/changeActivityColor", { id, color });
     }
   }
 };

@@ -13,6 +13,7 @@ import {
 const namespaced = true; // https://vuex.vuejs.org/guide/modules.html#namespacing
 
 const state = {
+  stepSeconds: 60,
   stepMinutes: 1,
   visibleStep: 0,
   selected: null,
@@ -29,6 +30,8 @@ const state = {
 };
 
 const getters = {
+  stepMinutes: state => state.stepMinutes,
+  stepSeconds: state => state.stepSeconds,
   selected: (state, getters, rootState, rootGetters) => {
     const all = rootGetters.populations;
     if (!all) return null;
@@ -80,7 +83,10 @@ const mutations = {
           base: 1.75,
           stops: [[12, 2], [22, 180]]
         },
-        "circle-color": "#ffffff",
+        "circle-color": {
+          property: "v",
+          stops: [[0, "#ffffff"], [25, "#ff0000"]]
+        },
         "circle-opacity": state.opacity,
         "circle-opacity-transition": {
           duration: 0
@@ -128,16 +134,23 @@ const actions = {
   loadGlobal: {
     root: true,
     handler({ dispatch }) {
+      dispatch("selectRegion", "surf_coast_shire_network", { root: true });
+      dispatch(
+        "fire/select",
+        "Anglesea_evac_test_ffdi104_phx5_2016data_minsup_fh2017_grid",
+        { root: true }
+      );
       dispatch("load");
     }
   },
   load({ dispatch }) {
     dispatch(
       "downloadAndCreateLayers",
-      process.env.VUE_APP_EES_TILES_API + "/populations/link_entry_frames.json"
+      process.env.VUE_APP_EES_TILES_API +
+        "/populations/link_entry_frames_grouped.json"
     );
   },
-  downloadAndCreateLayers({ dispatch, commit, rootGetters }, url) {
+  downloadAndCreateLayers({ dispatch, commit, getters, rootGetters }, url) {
     const map = rootGetters.mapInstance;
     commit(START_LOADING, null, { root: true });
 
@@ -171,11 +184,17 @@ const actions = {
             layerName: layer
           }
         });
-        dispatch("filter", json.length - 1, { root: true }); // load the final fire step
+        var minutes = ((json.length - 1) * getters.stepSeconds) / 60;
+        dispatch(
+          "filter",
+          parseInt(minutes / rootGetters["fire/stepMinutes"]),
+          { root: true }
+        ); // load the final fire step
+        dispatch("filterSeconds", json.length - 1, { root: true }); // load the final fire step
         commit(DONE_LOADING, null, { root: true });
       });
   },
-  filter: {
+  filterSeconds: {
     root: true,
     handler({ commit, rootGetters }, step) {
       commit("SET_VISIBLE_STEP", step);
