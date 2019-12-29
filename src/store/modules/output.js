@@ -133,7 +133,9 @@ const actions = {
   // adds sources/layers to mapbox.
   loadGlobal: {
     root: true,
-    handler({ dispatch }) {
+    handler({ dispatch }, route) {
+      if (route.name != "output") return;
+
       dispatch("selectRegion", "surf_coast_shire_network", { root: true });
       dispatch(
         "fire/select",

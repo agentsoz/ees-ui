@@ -92,7 +92,7 @@ export default {
       // define the order of each feature set with placeholder layers
       store.commit(MATSIM_ADD_PLACEHOLDER_LAYERS);
       // load each feature set, each implements its own loadGlobal action
-      store.dispatch("loadGlobal");
+      store.dispatch("loadGlobal", this.$router.currentRoute);
     },
     squareCreated(e) {
       var feature = e.features[0];
