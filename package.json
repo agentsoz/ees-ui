@@ -21,7 +21,7 @@
     "mapbox-gl": "^1.6.1",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "mapbox-gl-vue": "^2.0.3",
-    "npm": "^6.13.1",
+    "npm": "^9.6.5",
     "verte": "0.0.12",
     "vue": "^2.6.10",
     "vue-mq": "^0.2.1",
